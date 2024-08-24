@@ -118,7 +118,6 @@ class Controller extends GetxController {
     ///
     /// Load Tags and Filters
     await loadTags();
-    members.value = MEMBERS;
     await fetchFilteredMembers([]);
     loading.value = false;
     update();
@@ -128,30 +127,3 @@ class Controller extends GetxController {
 
 }
 
-
-
-
-var FILTERS = {
-  'מגורים' : ['תל אביב' , 'הרצליה', 'קדימה' , 'רמת השרון'],
-  'תעשייה' : ['היי טק','תעשיה כבדה','רכב','בנקאות','פינטק','תיירות', 'פושטי רגל', 'לייף סטייל', 'אבטחה'],
-  'ספורט' : ['היי טק','תעשיה כבדה','רכב','בנקאות','פינטק','תיירות', 'פושטי רגל', 'לייף סטייל', 'אבטחה'],
-  'לייף סטייל' : ['היי טק','תעשיה כבדה','רכב','בנקאות','פינטק','תיירות', 'פושטי רגל', 'לייף סטייל', 'אבטחה'],
-  'פורום' : ['פורום 1','פורום 2','פורום 3','פורום 4','פורום 5','פורום 6', 'פורום 7', 'פורום 8', 'פורום 9'],
-  'שונות' : ['היי טק','תעשיה כבדה','רכב','בנקאות','פינטק','תיירות', 'פושטי רגל', 'לייף סטייל', 'אבטחה','קוסמטיקה'],
-};
-
-List<Member> MEMBERS = [
-    Member(id: 'NA', firstName: 'NA', lastName: 'NA', title: 'NA', residence: 'NA', mobile: 'NA', email: 'NA', forum: 0, memberSince: 0),
-  // Member('0', 'Shani', 'Ankorin','CEO NVIDIA','Tel Aviv' ,'0544-2323453', 'email@gamers.com',['תל אביב','היי טק'],'images/profile5.jpg',1,false),
-  // Member('1', 'Gilad', 'Baror','CEO Toyota','Herzliya', '23232323', 'email@gamers.com',['הרצליה','רכב'],'images/profile2.jpg',3,true),
-  // Member('2', 'Benny', 'Arbel','CEO Yoga International','Ramat Hasharon','094343443', 'email@gamers.com',['רמת השרון','לייף סטייל'],'images/profile3.jpg',5,false),
-  // Member('3', 'Yosi', 'Cohen','CEO Mossad','Kadima','03-9999999', 'email@gamers.com',['קדימה','אבטחה'],'images/profile4.jpg',5,true),
-  // Member('4', 'Shuli', 'Buli','Chariman BlaBla Inc.','Tel Aviv','04-434343', 'email@gamers.com',['תל אביב','פושטי רגל'],'images/profile1.jpg',6,true),
-  // Member('5', 'Herzi', 'Halevi','Chairman IDF','Even Yehuda','04-43432243', 'email@gamers.com',['אבן יהודה','אבטחה'],'images/profile6.jpg',8,true),
-  // Member('6', 'Barbie', 'Cohen','CEO Love Ltd.','Jerusalem','02-2143274', 'email@gamers.com',['ירושלים','קוסמטיקה'],'images/profile7.jpg',10,true),
-
-];
-
-/*
-{title: Chariman at  2Two, email: haggaibb@gmail.com, member_since: 2009, firstName: Haggai, free_text_tags: {favorite_food: Sushi, favorite_pet: Dog}, forum: 5, residence: Herzliya, filtered_tags: {industry: [Hi Tech]}, profileImage: https://media.licdn.com/dms/image/C4D03AQFXuPK5twkpJA/profile-displayphoto-shrink_200_200/0/1604828273946?e=2147483647&v=beta&t=xzlsaXyeFnu3TZpFE-e1thz2F6vPKUCTCfOFjbK4U2s, lastName: Barel, banner: false, mobile: 972544510999, uid: bbcssvVuF0Pa99zizafm2Mb4eC93, onBoarding: {borded: false, verified: true, uid: , registered: true}}
- */
