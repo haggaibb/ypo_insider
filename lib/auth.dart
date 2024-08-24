@@ -5,15 +5,22 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/widgets.dart';
+import 'package:ypo_connect/main.dart';
 import 'ctx.dart';
 import 'package:get/get.dart';
-
+import 'package:password_strength_checker/password_strength_checker.dart';
 
 class CustomEmailSignInForm extends StatelessWidget {
-  final EmailAuthController controller;
-  CustomEmailSignInForm({ required this.controller, super.key});
+  final EmailAuthController authController;
+  CustomEmailSignInForm({ required this.authController, super.key});
   final emailCtrl = TextEditingController();
   final passwordCtrl = TextEditingController();
+  final controller = Get.put(Controller());
+
+  signIn(BuildContext context) async {
+    controller.loading.value=true;
+    authController.setEmailAndPassword(emailCtrl.text, passwordCtrl.text);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,8 +51,11 @@ class CustomEmailSignInForm extends StatelessWidget {
                       Text('Dont have an account yet?' , style: TextStyle(fontSize: 14),),
                       GestureDetector(
                         onTap: ()  {
-                          print('register...');
-                          CustomEmailRegisterForm();
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => CustomEmailRegisterForm(authController: authController,),
+                            ),
+                          );
                         },
                           child: Text(' Register' , style: TextStyle(fontSize: 14 ,color: Colors.blue),)
                       ),
@@ -83,22 +93,22 @@ class CustomEmailSignInForm extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             GestureDetector(
-                                child: Text('Forgotten password?' , style: TextStyle(color: Colors.blueGrey),),
-                              onTap: () => {},
+                                child: Text('Forgotten password??' , style: TextStyle(color: Colors.blueGrey),),
+                              onTap: ()  {
+                                  Navigator.of(context).pushNamedAndRemoveUntil('/forgot-password',ModalRoute. withName('/'));
+                              },
                             ),
                           ],
                         ),
-                        SizedBox(
-                          height: 20,
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Obx(()=> Text(controller.authErrMsg.value, style: TextStyle(color: Colors.red),)),
                         ),
                         SizedBox(
                           width: 350,
                           child: ElevatedButton(
-                            onPressed: () {
-                              controller.setEmailAndPassword(
-                                emailCtrl.text,
-                                passwordCtrl.text,
-                              );
+                            onPressed: () async {
+                              await signIn(context);
                             },
                             child: const Text('Sign in'),
                           ),
@@ -119,17 +129,44 @@ class CustomEmailSignInForm extends StatelessWidget {
 
 class CustomEmailRegisterForm extends StatelessWidget {
   final controller = Get.put(Controller());
-  //final EmailAuthController authController;
-  CustomEmailRegisterForm({ super.key});
+  final EmailAuthController authController;
+  CustomEmailRegisterForm({required this.authController, super.key});
 
 
   final emailCtrl = TextEditingController();
   final passwordCtrl = TextEditingController();
+  final passwordCtrl2 = TextEditingController();
+  final passNotifier = ValueNotifier<PasswordStrength?>(null);
 
-  sendRegistration() {
-    print ('reg');
-    //authController.setEmailAndPassword(emailCtrl.text, passwordCtrl.text);
-    print('done');
+
+  validateMembersEmail(String email) async {
+    bool validated = await controller.validateMemberEmail(email);
+    return validated;
+  }
+
+  sendRegistration(BuildContext context) async {
+    controller.loading.value=true;
+    bool emailValidated = await validateMembersEmail(emailCtrl.text);
+    if (emailValidated) {
+      if ((passwordCtrl.text == passwordCtrl2.text) && (passwordCtrl.text!='')) {
+        var credentials =  await FirebaseAuth.instance.createUserWithEmailAndPassword(email: emailCtrl.text, password: passwordCtrl.text);
+        if (credentials.user!=null) {
+          await controller.onRegister(credentials.user!);
+          controller.loading.value=false;
+          Navigator.pushNamedAndRemoveUntil(context,'/verify-email' , ModalRoute. withName('/'));
+        }
+      }
+      else {
+        controller.loading.value=false;
+        controller.authErrMsg.value = 'The password fields do not match or are empty!';
+      }
+    }
+    else {
+      controller.loading.value=false;
+      controller.authErrMsg.value = 'This email is not recognized by YPO Israel!';
+      print('not a valid email');
+    }
+
   }
 
   @override
@@ -148,25 +185,7 @@ class CustomEmailRegisterForm extends StatelessWidget {
               children: [
                 Padding(
                   padding: const EdgeInsets.all(18.0),
-                  child: Text('Sign in' , style: TextStyle(fontSize: 28),),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left:18.0 ,right: 18.0, top: 8.0, bottom: 0),
-                  child: Text('Welcome to YPO Israel Insdier! Please sign in to continue..' , style: TextStyle(fontSize: 14),),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left:18.0 ,right: 18.0, top: 8.0, bottom: 20),
-                  child: Row(
-                    children: [
-                      Text('Dont have an account yet?' , style: TextStyle(fontSize: 14),),
-                      GestureDetector(
-                          onTap: () => {
-                            sendRegistration()
-                          },
-                          child: Text(' Register' , style: TextStyle(fontSize: 14 ,color: Colors.blue),)
-                      ),
-                    ],
-                  ),
+                  child: Text('Register' , style: TextStyle(fontSize: 28),),
                 ),
                 Center(
                   child: Container(
@@ -187,6 +206,9 @@ class CustomEmailRegisterForm extends StatelessWidget {
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: TextField(
+                            onChanged: (text) {
+                              passNotifier.value = PasswordStrength.calculate(text: text);
+                            },
                             obscureText: true,
                             controller: passwordCtrl,
                             decoration: InputDecoration(
@@ -195,14 +217,24 @@ class CustomEmailRegisterForm extends StatelessWidget {
                             ),
                           ),
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            GestureDetector(
-                              child: Text('Forgotten password?' , style: TextStyle(color: Colors.blueGrey),),
-                              onTap: () => {},
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: TextField(
+                            obscureText: true,
+                            controller: passwordCtrl2,
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              hintText: 'Confirm Password',
                             ),
-                          ],
+                          ),
+                        ),
+                        PasswordStrengthChecker(
+                          strength: passNotifier,
+                          //configuration: PasswordStrengthCheckerConfiguration(),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Obx(()=> Text(controller.authErrMsg.value, style: TextStyle(color: Colors.red),)),
                         ),
                         SizedBox(
                           height: 20,
@@ -211,10 +243,14 @@ class CustomEmailRegisterForm extends StatelessWidget {
                           width: 350,
                           child: ElevatedButton(
                             onPressed: () {
+                              sendRegistration(context);
                             },
-                            child: const Text('Sign in'),
+                            child: const Text('Register'),
                           ),
                         ),
+                        Obx(() => controller.loading.value?LinearProgressIndicator(
+                          semanticsLabel: 'Linear progress indicator',
+                        ):SizedBox(height: 10,))
                       ],
                     ),
                   ),

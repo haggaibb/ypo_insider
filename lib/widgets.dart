@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:ypo_connect/models.dart';
 import 'utils.dart';
-import 'profile_screen.dart';
+import 'profile_page.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class ResultCard extends StatefulWidget {
 
@@ -123,10 +124,43 @@ class ProfileAppDrawer extends StatelessWidget {
               Text('Forum '+member.forum.toString()??'Not in a Forum',style: TextStyle(fontSize: 12)),
             ],
           ),
-          ProfilePic(member.profileImage!,false)
+          ProfilePic(member.profileImage??'',false)
         ],
       ),
     );
 
+  }
+}
+
+
+
+class MainLoading extends StatelessWidget {
+  const MainLoading({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: SpinKitRotatingCircle(
+        color: Colors.blue,
+        size: 80.0,
+      ),
+    );
+  }
+}
+
+class ResultsLoading extends StatelessWidget {
+  const ResultsLoading({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(80.0),
+        child: SpinKitThreeInOut(
+          color: Colors.blue,
+          size: 80.0,
+        ),
+      ),
+    );
   }
 }

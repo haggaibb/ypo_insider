@@ -13,13 +13,35 @@ class Member {
   final String residence;
   final String mobile;
   final String email;
-  final List<String>? tags;
+  final int memberSince;
+  final int forum;
+  final Map? onBoarding;
+  final Map? freeTextTags;
+  final Map? filteredTags;
   final String? profileImage;
-  final int? forum;
   final bool? banner;
 
   String fullName() {
     return ('$firstName $lastName');
+  }
+
+  // String getFreeTextTagVale(tag) {
+  //   final freeTextTags = this.freeTextTags;
+  //   if (freeTextTags!=null) {
+  //     for (var element in freeTextTags) {
+  //       element.keys
+  //     }
+  //   } else return ''; /// todo? send back hint?
+  // }
+
+  bool hasFilteredTag(cat,tag) {
+    bool hasTag = false;
+    if (filteredTags!=null) {
+      if (filteredTags![cat]!=null) {
+        hasTag =filteredTags![cat].contains(tag);
+      }
+    }
+    return hasTag;
   }
 
   Member({
@@ -30,10 +52,14 @@ class Member {
     required this.residence,
     required this.mobile,
     required this.email,
-    required this.tags,
+    required this.forum,
+    required this.memberSince,
+    this.freeTextTags,
+    this.filteredTags,
     this.profileImage,
-    this.forum,
-    this.banner
+    this.banner,
+    this.onBoarding
+
   });
   Map<String, dynamic> toMap() {
     return {
@@ -53,15 +79,13 @@ class Member {
         residence = doc["residence"],
         mobile = doc["mobile"],
         email = doc["email"],
-        tags = [doc["residence"]],
         profileImage = doc["profileImage"],
         forum = doc["forum"],
-        banner = doc["banner"];
-// address = Address.fromMap(doc.data()!["address"]),
-// employeeTraits = doc.data()?["employeeTraits"] == null
-//     ? null
-//     : doc.data()?["employeeTraits"].cast<String>();
-
+        banner = doc["banner"],
+        onBoarding = doc["onBoarding"],
+        memberSince = doc['member_since'],
+        freeTextTags = doc["free_text_tags"],
+        filteredTags = doc["filtered_tags"];
 
 
 }

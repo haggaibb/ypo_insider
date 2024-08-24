@@ -10,6 +10,7 @@ import 'dart:math';
 import 'models.dart';
 import 'package:get/get.dart';
 
+
 class Controller extends GetxController {
   var db = FirebaseFirestore.instance;
   RxList<Member> members = RxList<Member>();
@@ -18,9 +19,16 @@ class Controller extends GetxController {
   RxBool loading = true.obs;
   RxBool resultsLoading = true.obs;
   RxString currentUserUid = ''.obs;
-  Rx<Member> currentMember = Member(id: 'NA', firstName: 'NAA', lastName: 'NA', title: 'NA', residence: 'NA', mobile: 'NA', email: 'NA', tags: ['NA']).obs;
-  Member noUser = Member(id: 'NA', firstName: 'NA', lastName: 'NA', title: 'NA', residence: 'NA', mobile: 'NA', email: 'NA', tags: ['NA']);
-
+  Rx<Member> currentMember = Member(memberSince: 0,forum: 0, id: 'NA', firstName: 'NAA', lastName: 'NA', title: 'NA', residence: 'NA', mobile: 'NA', email: 'NA').obs;
+  Member noUser = Member(memberSince: 0,forum: 0, id: 'NA', firstName: 'NA', lastName: 'NA', title: 'NA', residence: 'NA', mobile: 'NA', email: 'NA');
+  Rx<String> authErrMsg = ''.obs;
+  List<Map> freeTextTagsList = [];
+  List<Map> filteredTagsList = [];
+  /// AUTH
+  final user = FirebaseAuth.instance.currentUser;
+  setCurrentUser(User? user) async {
+    if (user!=null) currentMember.value = await getMemberInfo(user.email);
+  }
   fetchFilteredMembers(List<String> selectedFilters) async {
     resultsLoading.value = true;
     await Future.delayed(const Duration(seconds: 0));
@@ -30,27 +38,73 @@ class Controller extends GetxController {
     update();
 
   }
-
-  setCurrentUser(User? user) async {
-    if (user!=null) currentMember.value = await getMemberInfo(user.uid);
+  validateMemberEmail(String email) async {
+    CollectionReference membersRef = db.collection('Members');
+    QuerySnapshot memberSnapshot = await membersRef.where('email', isEqualTo: email).get();
+    return (memberSnapshot.docs.isNotEmpty);
   }
-
-  getMemberInfo(String uid) async {
-    print(uid);
-    DocumentReference memberRef = db.collection('Members').doc(uid);
-    DocumentSnapshot memberDoc = await memberRef.get();
-    return Member.DocumentSnapshot(memberDoc);
+  getMemberInfo(String? email) async {
+    if (email==null) return noUser;
+    CollectionReference membersRef = db.collection('Members');
+    QuerySnapshot membersSnapshot = await membersRef.where('email', isEqualTo: email).get();
+    return Member.DocumentSnapshot(membersSnapshot.docs.first);
+  }
+  onRegister(User user) async {
+    CollectionReference membersRef = db.collection('Members');
+    QuerySnapshot memberSnapshot = await membersRef.where('email', isEqualTo: user.email).get();
+    var memberId = memberSnapshot.docs.first.id;
+    var memberData = memberSnapshot.docs.first.data() as Map<String, dynamic>;
+    var displayName = memberData['firstName']+" "+memberData['lastname'];
+    await FirebaseAuth.instance.currentUser!.updateDisplayName(displayName);
+    membersRef.doc(memberId).update(
+      {
+        'uid' : user.uid,
+        'onBoarding.registered' : true
+      }
+    );
+    return (memberSnapshot.docs.isNotEmpty);
+  }
+  onVerify(User user) async {
+    CollectionReference membersRef = db.collection('Members');
+    QuerySnapshot memberSnapshot = await membersRef.where('email', isEqualTo: user.email).get();
+    var memberId = memberSnapshot.docs.first.id;
+    await membersRef.doc(memberId).update(
+        {
+          'onBoarding.verified' : true
+        }
+    );
+    return (memberSnapshot.docs.isNotEmpty);
+  }
+  /////
+  loadTags() async {
+    ///load free text tags
+    CollectionReference freeTextTagsRef = db.collection('FreeTextTags');
+    QuerySnapshot freeTextTagsSnapshot = await freeTextTagsRef.get();
+    List<QueryDocumentSnapshot>  freeTextTagsDocList =  freeTextTagsSnapshot.docs;
+    for (var tag in freeTextTagsDocList) {
+      freeTextTagsList.add(tag.data() as Map<String, dynamic>);
+    }
+    ///load filtered tags
+    CollectionReference filteredTagsRef = db.collection('FilterTags');
+    QuerySnapshot filteredTagsSnapshot = await filteredTagsRef.get();
+    List<QueryDocumentSnapshot>  filteredTagsQuery =  filteredTagsSnapshot.docs;
+    for (var tag in filteredTagsQuery) {
+      filteredTagsList.add(tag.data() as Map<String, dynamic>);
+    }
   }
 
   @override
   onInit() async {
     super.onInit();
-    await Future.delayed(const Duration(seconds: 0));
+    currentMember.value = await getMemberInfo(user?.email);
+    ///
+    /// Load Tags and Filters
+    await loadTags();
     members.value = MEMBERS;
     await fetchFilteredMembers([]);
     loading.value = false;
     update();
-    print('done init.');
+    print('ctx done init.');
   }
 
 
@@ -69,7 +123,7 @@ var FILTERS = {
 };
 
 List<Member> MEMBERS = [
-    Member(id: 'NA', firstName: 'NA', lastName: 'NA', title: 'NA', residence: 'NA', mobile: 'NA', email: 'NA', tags: ['NA']),
+    Member(id: 'NA', firstName: 'NA', lastName: 'NA', title: 'NA', residence: 'NA', mobile: 'NA', email: 'NA', forum: 0, memberSince: 0),
   // Member('0', 'Shani', 'Ankorin','CEO NVIDIA','Tel Aviv' ,'0544-2323453', 'email@gamers.com',['תל אביב','היי טק'],'images/profile5.jpg',1,false),
   // Member('1', 'Gilad', 'Baror','CEO Toyota','Herzliya', '23232323', 'email@gamers.com',['הרצליה','רכב'],'images/profile2.jpg',3,true),
   // Member('2', 'Benny', 'Arbel','CEO Yoga International','Ramat Hasharon','094343443', 'email@gamers.com',['רמת השרון','לייף סטייל'],'images/profile3.jpg',5,false),
@@ -79,3 +133,7 @@ List<Member> MEMBERS = [
   // Member('6', 'Barbie', 'Cohen','CEO Love Ltd.','Jerusalem','02-2143274', 'email@gamers.com',['ירושלים','קוסמטיקה'],'images/profile7.jpg',10,true),
 
 ];
+
+/*
+{title: Chariman at  2Two, email: haggaibb@gmail.com, member_since: 2009, firstName: Haggai, free_text_tags: {favorite_food: Sushi, favorite_pet: Dog}, forum: 5, residence: Herzliya, filtered_tags: {industry: [Hi Tech]}, profileImage: https://media.licdn.com/dms/image/C4D03AQFXuPK5twkpJA/profile-displayphoto-shrink_200_200/0/1604828273946?e=2147483647&v=beta&t=xzlsaXyeFnu3TZpFE-e1thz2F6vPKUCTCfOFjbK4U2s, lastName: Barel, banner: false, mobile: 972544510999, uid: bbcssvVuF0Pa99zizafm2Mb4eC93, onBoarding: {borded: false, verified: true, uid: , registered: true}}
+ */

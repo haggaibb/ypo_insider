@@ -17,6 +17,7 @@ import 'ctx.dart';
 import 'package:get/get.dart';
 import 'widgets.dart';
 import 'auth.dart';
+import 'profile_page.dart';
 
 
 final actionCodeSettings = ActionCodeSettings(
@@ -30,26 +31,12 @@ final emailLinkProviderConfig = EmailLinkAuthProvider(
   actionCodeSettings: actionCodeSettings,
 );
 final controller = Get.put(Controller());
+final User? user = FirebaseAuth.instance.currentUser;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  //await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
-  //
-  // FirebaseUIAuth.configureProviders([
-  //   EmailAuthProvider(),
-  // ]);
-  FirebaseUIAuth.configureProviders([
-    EmailAuthProvider(),
-    EmailLinkAuthProvider(
-      actionCodeSettings: ActionCodeSettings(
-        url: 'https://ypodex.web.app/',
-        handleCodeInApp: true,
-      ),
-    ),
-    // ... other providers
-  ]);
-  runApp(const FirebaseAuthUIExample());
+  runApp(FirebaseAuthUIExample());
 }
 
 // Overrides a label for en locale
@@ -63,11 +50,9 @@ class LabelOverrides extends DefaultLocalizations {
 }
 
 class FirebaseAuthUIExample extends StatelessWidget {
-  const FirebaseAuthUIExample({super.key});
-
+  FirebaseAuthUIExample({super.key});
   String get initialRoute {
     final user = FirebaseAuth.instance.currentUser;
-    print(user);
     return switch (user) {
       null => '/',
       User(emailVerified: false, email: final String _) => '/verify-email',
@@ -77,6 +62,7 @@ class FirebaseAuthUIExample extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     final buttonStyle = ButtonStyle(
       padding: MaterialStateProperty.all(const EdgeInsets.all(12)),
       shape: MaterialStateProperty.all(
@@ -84,18 +70,18 @@ class FirebaseAuthUIExample extends StatelessWidget {
       ),
     );
 
-    final mfaAction = AuthStateChangeAction<MFARequired>(
-          (context, state) async {
-            print('state');print(state);
-        final nav = Navigator.of(context);
-
-        await startMFAVerification(
-          resolver: state.resolver,
-          context: context,
-        );
-        nav.pushReplacementNamed('/home');
-      },
-    );
+    // final mfaAction = AuthStateChangeAction<MFARequired>(
+    //       (context, state) async {
+    //         print('state');print(state);
+    //     final nav = Navigator.of(context);
+    //
+    //     await startMFAVerification(
+    //       resolver: state.resolver,
+    //       context: context,
+    //     );
+    //     nav.pushReplacementNamed('/home');
+    //   },
+    // );
 
     return MaterialApp(
       theme: ThemeData(
@@ -112,46 +98,40 @@ class FirebaseAuthUIExample extends StatelessWidget {
       initialRoute: initialRoute,
       routes: {
         '/': (context) {
-          var myAuth = AuthFlowBuilder<EmailAuthController>(
-            listener: (oldState, state, controller) {
-              if (state is SignedIn) {
-                Navigator.of(context).pushReplacementNamed('/home');
-              }
-            },
-            builder: (context, state, controller, _) {
-              print(state);
-              if (state is AwaitingEmailAndPassword) {
-                return CustomEmailSignInForm(controller:  controller);
-              } else if (state is SigningIn) {
-                print('Signing In');
-                return Text('Signing In');
-              } else if (state is AuthFailed) {
-                // FlutterFireUIWidget that shows a human-readable error message.
-                return Text('Auth Failed!');
-                return ErrorText(exception: state.exception);
-              }
-              return Text('No Auth Satte');
-            },
-          );
           return AuthFlowBuilder<EmailAuthController>(
-            listener: (oldState, state, controller) {
+            listener: (oldState, state, authController) async {
+              //print('listen state msg:');print(state);
               if (state is SignedIn) {
-                Navigator.of(context).pushReplacementNamed('/home');
+                final user = FirebaseAuth.instance.currentUser;
+                await controller.setCurrentUser(user);
+                if (user?.emailVerified??false) {
+                  if (!controller.currentMember.value.onBoarding?['verified']) controller.onVerify(user!);
+                  controller.loading.value =false;
+                  Navigator.of(context).pushReplacementNamed('/home');
+                }
+                else {
+                  controller.loading.value =false;
+                  Navigator.of(context).pushNamedAndRemoveUntil('/verify-email', ModalRoute. withName('/'));
+                }
               }
             },
-            builder: (context, state, controller, _) {
-              print(state);
+            builder: (context, state, authController, _) {
+              //print('build state msg:');print(state);
               if (state is AwaitingEmailAndPassword) {
-                return CustomEmailSignInForm(controller:  controller);
+                return CustomEmailSignInForm(authController:  authController);
               } else if (state is SigningIn) {
-                print('Signing In');
-                return Text('Signing In');
+                return MainLoading();
+              } else if (state is SigningUp) {
+                return MainLoading();
               } else if (state is AuthFailed) {
+                print(state.exception);
                 // FlutterFireUIWidget that shows a human-readable error message.
-                return Text('Auth Failed!');
-                return ErrorText(exception: state.exception);
+                controller.authErrMsg.value ='Authentication Failed!';
+                //controller.loading.value =false;
+                return CustomEmailSignInForm(authController:  authController);
+                //return ErrorText(exception: state.exception);
               }
-              return Text('No Auth Satte');
+              return MainLoading();
             },
           );
         },
@@ -162,6 +142,7 @@ class FirebaseAuthUIExample extends StatelessWidget {
             actionCodeSettings: actionCodeSettings,
             actions: [
               EmailVerifiedAction(() {
+                controller.onVerify(user!);
                 Navigator.pushReplacementNamed(context, '/home');
               }),
               AuthCancelledAction((context) {
@@ -192,7 +173,6 @@ class FirebaseAuthUIExample extends StatelessWidget {
         '/sms': (context) {
           final arguments = ModalRoute.of(context)?.settings.arguments
           as Map<String, dynamic>?;
-
           return SMSCodeInputScreen(
             actions: [
               AuthStateChangeAction<SignedIn>((context, state) {
@@ -207,9 +187,10 @@ class FirebaseAuthUIExample extends StatelessWidget {
         },
         '/forgot-password': (context) {
           final arguments = ModalRoute.of(context)?.settings.arguments
-          as Map<String, dynamic>?;
-
+            as Map<String, dynamic>?;
+          print(arguments);
           return ForgotPasswordScreen(
+            auth: FirebaseAuth.instance,
             email: arguments?['email'],
             headerMaxExtent: 200,
             headerBuilder: headerIcon(Icons.lock),
@@ -231,7 +212,30 @@ class FirebaseAuthUIExample extends StatelessWidget {
         },
         '/profile': (context) {
           final platform = Theme.of(context).platform;
-          return ProfileScreen(
+          return ProfilePage(controller.currentMember.value);
+        },
+        '/home': (context) {
+          return Home(title: 'YPO Insider' , user: FirebaseAuth.instance.currentUser );
+        }
+      },
+      title: 'YPO Insider',
+      debugShowCheckedModeBanner: false,
+      supportedLocales: const [Locale('en')],
+      localizationsDelegates: [
+        FirebaseUILocalizations.withDefaultOverrides(const LabelOverrides()),
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        FirebaseUILocalizations.delegate,
+      ],
+    );
+  }
+}
+
+
+
+
+/*
+ProfileScreen(
             avatar: Center(child: ProfilePic(controller.currentMember.value.profileImage??'',false)),
             children: [
               Text('test'),
@@ -247,7 +251,7 @@ class FirebaseAuthUIExample extends StatelessWidget {
               SignedOutAction((context) {
                 Navigator.pushReplacementNamed(context, '/');
               }),
-              mfaAction,
+              //mfaAction,
             ],
             actionCodeSettings: actionCodeSettings,
             showMFATile: kIsWeb ||
@@ -256,60 +260,4 @@ class FirebaseAuthUIExample extends StatelessWidget {
             showUnlinkConfirmationDialog: true,
             showDeleteConfirmationDialog: true,
           );
-        },
-        '/home': (context) { return Home(title: 'YPO Insider' , user: FirebaseAuth.instance.currentUser );}
-      },
-      title: 'YPO Insider',
-      debugShowCheckedModeBanner: false,
-      supportedLocales: const [Locale('en')],
-      localizationsDelegates: [
-        FirebaseUILocalizations.withDefaultOverrides(const LabelOverrides()),
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        FirebaseUILocalizations.delegate,
-      ],
-    );
-  }
-}
-
-class MyLoginScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext) {
-    return Scaffold(
-      body: Row(
-        children: [
-          Text('my widget'),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: FirebaseUIActions(
-              actions: [
-                AuthStateChangeAction<SignedIn>((context, state) {
-                  if (!state.user!.emailVerified) {
-                    Navigator.pushNamed(context, '/verify-email');
-                  } else {
-                    Navigator.pushReplacementNamed(context, '/home');
-                  }
-                }),
-              ],
-              child: Column(
-                children: [
-
-                  SizedBox(
-                    width: 200,
-                    height: 400,
-                    child: LoginView(
-                      action: AuthAction.signUp,
-                      providers: FirebaseUIAuth.providersFor(
-                        FirebaseAuth.instance.app,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          )
-        ],
-      ),
-    );
-  }
-}
+ */

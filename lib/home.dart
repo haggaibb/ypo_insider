@@ -6,7 +6,6 @@ import 'filters.dart';
 import 'ctx.dart';
 import 'results_page.dart';
 import 'package:get/get.dart';
-import 'utils.dart';
 import 'widgets.dart';
 
 
@@ -21,6 +20,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  //final user = FirebaseAuth.instance.currentUser;
   List selectedFiltersList = [];
   SheetController sheetController = SheetController();
   final controller = Get.put(Controller());
@@ -36,7 +36,6 @@ class _HomeState extends State<Home> {
 
   @override
   void initState() {
-    //controller.setCurrentUser(widget.user);
     super.initState();
   }
 
@@ -60,7 +59,8 @@ class _HomeState extends State<Home> {
                   decoration: BoxDecoration(
                     color: Colors.white,
                   ),
-                  child: Obx(() => ProfileAppDrawer(controller.loading.value?controller.currentMember.value:controller.noUser)),
+                  child: Obx(() => ProfileAppDrawer(controller.loading.value?controller.noUser:controller.currentMember.value)),
+                  //child: Obx(() => ProfileAppDrawer(controller.loading.value?controller.noUser:controller.currentMember.value)),
                 ),
                 ListTile(
                   leading: const Icon(
