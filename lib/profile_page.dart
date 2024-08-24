@@ -109,8 +109,8 @@ class ProfilePage extends StatelessWidget {
                         title:
                             controller.freeTextTagsList[index]['label'] + ': ',
                         icon: Icons.info,
-                        value: member.freeTextTags![
-                            controller.freeTextTagsList[index]['key']],
+                        value: member.freeTextTags!=null
+                            ?member.freeTextTags![controller.freeTextTagsList[index]['key']]:'',
                         onPress: () {});
                   })),
                   const Divider(),

@@ -1,4 +1,3 @@
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'firebase_options.dart';
@@ -15,7 +14,7 @@ class Controller extends GetxController {
   var db = FirebaseFirestore.instance;
   RxList<Member> members = RxList<Member>();
   List<String> activeFilters = <String>[].obs;
-  List<Member> filteredResults = <Member>[].obs;
+  RxList<Member> filteredResults = RxList<Member>();
   RxBool loading = true.obs;
   RxBool resultsLoading = true.obs;
   RxString currentUserUid = ''.obs;
@@ -30,13 +29,21 @@ class Controller extends GetxController {
     if (user!=null) currentMember.value = await getMemberInfo(user.email);
   }
   fetchFilteredMembers(List<String> selectedFilters) async {
+    if (selectedFilters.isEmpty) {
+      filteredResults.value = [];
+      resultsLoading.value = false;
+      return;
+    }
     resultsLoading.value = true;
-    await Future.delayed(const Duration(seconds: 0));
-    filteredResults = [MEMBERS[Random().nextInt(1)],MEMBERS[Random().nextInt(1)],MEMBERS[Random().nextInt(1)],MEMBERS[Random().nextInt(1)],MEMBERS[Random().nextInt(1)]];
-    //filteredResults = [MEMBERS[Random().nextInt(7)],MEMBERS[Random().nextInt(7)],MEMBERS[Random().nextInt(7)],MEMBERS[Random().nextInt(7)],MEMBERS[Random().nextInt(7)],MEMBERS[Random().nextInt(7)],MEMBERS[Random().nextInt(7)],MEMBERS[Random().nextInt(7)]];
+    final membersRef = db.collection("Members");
+    final membersQuery = await membersRef.where("tags", arrayContainsAny: selectedFilters).get();
+    final membersDocs = membersQuery.docs;
+    filteredResults.value =[];
+    for (var member in membersDocs) {
+      filteredResults.add(Member.DocumentSnapshot(member));
+    }
     resultsLoading.value = false;
     update();
-
   }
   validateMemberEmail(String email) async {
     CollectionReference membersRef = db.collection('Members');
@@ -92,11 +99,22 @@ class Controller extends GetxController {
       filteredTagsList.add(tag.data() as Map<String, dynamic>);
     }
   }
+  List<String> getFilteredTagsFromCategory(category) {
+    List<String> list = [];
+    var catIndex = filteredTagsList.indexWhere((cat) => cat['key']==category);
+    List tagsList = filteredTagsList[catIndex]['tags_list'];
+    for (var tag in tagsList) {
+      list.add(tag);
+    }
+    return list;
+  }
 
   @override
   onInit() async {
     super.onInit();
     currentMember.value = await getMemberInfo(user?.email);
+    filteredResults.add(currentMember.value);
+
     ///
     /// Load Tags and Filters
     await loadTags();
