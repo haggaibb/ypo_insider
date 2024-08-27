@@ -50,7 +50,15 @@ class _HomeState extends State<Home> {
               child: Image.network('assets/images/logo.png'),
             )],
             backgroundColor: Colors.white,
-            title: Text('YPO Insider', style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),),
+            title: Column(
+              children: [
+                const Text('YPO Israel Insider', style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),),
+              Obx(() =>!controller.loading.value
+                  ?Text('${controller.numberOfMembers} registered members', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.indigo),)
+                  :const SizedBox(width: 1,)
+              ),
+              ],
+            ),
           ),
           drawer: Drawer(
             child: ListView(

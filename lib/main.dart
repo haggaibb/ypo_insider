@@ -39,9 +39,6 @@ Future<void> main() async {
   runApp(FirebaseAuthUIExample());
 }
 
-// Overrides a label for en locale
-// To add localization for a custom language follow the guide here:
-// https://flutter.dev/docs/development/accessibility-and-localization/internationalization#an-alternative-class-for-the-apps-localized-resources
 class LabelOverrides extends DefaultLocalizations {
   const LabelOverrides();
 
@@ -230,34 +227,3 @@ class FirebaseAuthUIExample extends StatelessWidget {
     );
   }
 }
-
-
-
-
-/*
-ProfileScreen(
-            avatar: Center(child: ProfilePic(controller.currentMember.value.profileImage??'',false)),
-            children: [
-              Text('test'),
-              Text('here')
-            ],
-            appBar: AppBar(
-              leading: IconButton(
-                icon: Icon(Icons.arrow_back),
-                onPressed: () { Navigator.pop(context);Navigator.pop(context);},
-              ),
-            ),
-            actions: [
-              SignedOutAction((context) {
-                Navigator.pushReplacementNamed(context, '/');
-              }),
-              //mfaAction,
-            ],
-            actionCodeSettings: actionCodeSettings,
-            showMFATile: kIsWeb ||
-                platform == TargetPlatform.iOS ||
-                platform == TargetPlatform.android,
-            showUnlinkConfirmationDialog: true,
-            showDeleteConfirmationDialog: true,
-          );
- */

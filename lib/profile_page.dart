@@ -256,6 +256,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   )
                       :SizedBox(),
                   SizedBox(height: 20,),
+                  /// email
                   SizedBox(
                     width: 200,
                     child: editModeOn?ElevatedButton(
@@ -279,7 +280,6 @@ class _ProfilePageState extends State<ProfilePage> {
                   const SizedBox(height: 30),
                   const Divider(),
                   const SizedBox(height: 10),
-                  /// -- Main Info
                   /// Residence
                   editModeOn ?Padding(
                     padding: const EdgeInsets.only(bottom: 20.0, left :60),
@@ -429,26 +429,33 @@ class _ProfilePageState extends State<ProfilePage> {
                       value: widget.member.joinDate,
                       onPress: () {}),
                   /// Forum
-                  editModeOn ?Padding(
-                    padding: const EdgeInsets.only(bottom: 16.0),
+                  editModeOn?Padding(
+                    padding: const EdgeInsets.only(bottom: 20.0, left :60),
                     child: SizedBox(
                       width: 300,
-                      child: TextField(
-                        decoration: InputDecoration(
-                            icon: Icon(Icons.group,),
-                            label: Text('Forum:'),
-                            contentPadding: EdgeInsets.symmetric(
-                              vertical: 0.0,
-                              horizontal: 0.0,
-                            ),
-                            isDense: true,
-                            helperText: editModeOn?'Please fill in your main forum number':'',
-                            border: editModeOn? OutlineInputBorder() :InputBorder.none
+                      child: DropdownMenu(
+                        leadingIcon: Icon(Icons.group),
+                        label: Text('Forum:'),
+                        initialSelection: widget.member.forum,
+                        inputDecorationTheme: const InputDecorationTheme(
+                          filled: false,
+                          isDense: true,
+                          border:  OutlineInputBorder(),
+                          contentPadding: EdgeInsets.symmetric(vertical: 5.0),
                         ),
-                        textAlign: TextAlign.center,
+                        dropdownMenuEntries: controller.forumList
+                            .map<DropdownMenuEntry<String>>(
+                                (String city) {
+                              return DropdownMenuEntry<String>(
+                                value: city,
+                                label: city,
+                                style: MenuItemButton.styleFrom(
+                                  foregroundColor: Colors.black,
+                                ),
+                              );
+                            }).toList(),
                         controller: forumCtrl,
                         enabled: editModeOn?true:false,
-                        style: TextStyle(fontSize: 20 , color: Colors.black),
                       ),
                     ),
                   ):ProfileMenuWidget(
@@ -473,8 +480,10 @@ class _ProfilePageState extends State<ProfilePage> {
                               child: SizedBox(
                                 //height: 200,
                                 width: 800,
-                                child: controller
-                                    .filteredTagsList[index]['key']!='residence'?Card(
+                                child: (  controller.filteredTagsList[index]['key']!='residence' &&
+                                          controller.filteredTagsList[index]['key']!='forum'
+                                        )
+                                    ?Card(
                                   elevation: 10,
                                   child: Column(
                                     children: [

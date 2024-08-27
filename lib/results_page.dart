@@ -44,7 +44,7 @@ class _ResultsPageState extends State<ResultsPage> {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(10.0),
-                  boxShadow: [
+                  boxShadow: const [
                     BoxShadow(
                       color: Colors.black,
                       offset: Offset(4, 4),

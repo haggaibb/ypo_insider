@@ -20,12 +20,15 @@ import 'package:path/path.dart';
 
 class Controller extends GetxController {
   var db = FirebaseFirestore.instance;
-  RxList<Member> members = RxList<Member>();
-  List<String> activeFilters = <String>[].obs;
-  RxList<Member> filteredResults = RxList<Member>();
   RxBool loading = true.obs;
   RxBool resultsLoading = true.obs;
   RxBool loadingProfileImage = false.obs;
+
+  RxList<Member> members = RxList<Member>();
+  List<String> activeFilters = <String>[].obs;
+  RxList<Member> filteredResults = RxList<Member>();
+  late int numberOfMembers;
+
   RxString currentUserUid = ''.obs;
   Rx<Member> currentMember = Member(forum: 'NA', id: 'NA', firstName: 'NAA', lastName: 'NA', residence: 'NA', mobile: 'NA', email: 'NA', birthdate: Timestamp.now(), currentTitle: 'NA', currentBusinessName: 'NA', mobileCountryCode: 'NA',joinDate: 'NA').obs;
   Member noUser = Member(forum: 'NA', id: 'NA', firstName: 'NA', lastName: 'NA', residence: 'NA', mobile: 'NA', email: 'NA' , birthdate: Timestamp.now(), currentTitle: 'NA', currentBusinessName: 'NA', mobileCountryCode: 'NA',joinDate: 'NA');
@@ -35,8 +38,9 @@ class Controller extends GetxController {
   /// storage for profile pics
   Reference storageRef = FirebaseStorage.instance.ref();
   late Reference tempProfilePicRef ;
-
+  /// profile date for dropdowns
   List<String> residenceList=[];
+  List<String> forumList=[];
 
   /// AUTH
   final user = FirebaseAuth.instance.currentUser;
@@ -64,7 +68,7 @@ class Controller extends GetxController {
         'onBoarding.registered' : true,
         'onBoarding.verified' : false,
         'onBoarding.boarded' : false,
-        'filtered_tags' : [],
+        'filtered_tags' : [memberData['residence'],memberData['forum']],
         'free_text_tags' : {}
       }
     );
@@ -151,12 +155,22 @@ class Controller extends GetxController {
     for (var tag in filteredTagsQuery) {
       filteredTagsList.add(tag.data() as Map<String, dynamic>);
       var tempTag = tag.data() as Map<String, dynamic>;
+      /// build residence list for use in dropdown in profile
       if (tempTag['key']=='residence') {
         List list = tempTag['tags_list'];
         list.sort((a, b) => a.compareTo(b));
         residenceList = [];
         for (var element in list) {
           residenceList.add(element);
+        }
+      }
+      /// build forum list for use in dropdown in profile
+      if (tempTag['key']=='forum') {
+        List list = tempTag['tags_list'];
+        //list.sort((a, b) => a.compareTo(b));
+        forumList = [];
+        for (var element in list) {
+          forumList.add(element);
         }
       }
     }
@@ -171,12 +185,12 @@ class Controller extends GetxController {
     return list;
   }
   /// first result screen = tags
-  loadRandomResults() async {
+  loadRandomResults(size) async {
     resultsLoading.value = true;
     List randomArr =[];
     final Random _random = Random();
-    for (int i=0; i<10;i++) {
-      int _randomNumber = _random.nextInt(100);
+    for (int i=0; i<15;i++) {
+      int _randomNumber = _random.nextInt(size);
       randomArr.add(_randomNumber);
     }
     CollectionReference membersRef = db.collection('Members');
@@ -201,9 +215,11 @@ class Controller extends GetxController {
     // CollectionReference membersRef = db.collection('Members');
     // QuerySnapshot membersSnapshot = await membersRef.get();
     // for (var element in membersSnapshot.docs) {
+    //   var data = element.data() as Map<String, dynamic>;
     //   await db.collection('Members').doc(element.id).update({
-    //     'filter_tags' : [],
-    //     'filtered_tags': FieldValue.delete()
+    //     'filter_tags' : [data['residence'],data['forum']],
+    //     //'filtered_tags': FieldValue.delete()
+    //
     //   });
     // }
     // print('Done!!!!!!!!!!!');
@@ -213,7 +229,9 @@ class Controller extends GetxController {
     ///
     /// Load Tags and Filters
     await loadTags();
-    await loadRandomResults();
+    AggregateQuerySnapshot query = await db.collection('Members').count().get();
+    numberOfMembers = query.count??0;
+    await loadRandomResults(numberOfMembers);
     //await fetchFilteredMembers([]);
     loading.value = false;
     update();
