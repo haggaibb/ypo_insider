@@ -51,6 +51,7 @@ class _FiltersState extends State<Filters> {
                       //color: Colors.blueAccent,
                     ),
                     Expanded(
+                      flex: 3,
                       child: ListView(
                         children: List.generate(filtersCategory.length, (index) =>
                             Padding(
@@ -89,6 +90,7 @@ class _FiltersState extends State<Filters> {
                         ),
                       ),
                     ),
+                    SizedBox(height: 50,)
                   ]),
             ),
           ),

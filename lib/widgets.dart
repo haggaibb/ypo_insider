@@ -43,8 +43,28 @@ class _ResultCardState extends State<ResultCard> {
                 children: [
                   SizedBox(height: 20,),
                   Padding(
+                      padding: const EdgeInsets.only(left :8.0),
+                      child: SizedBox(
+                        width: 230,
+                        child: Text(
+                          widget.member.currentBusinessName,
+                          overflow: TextOverflow.fade,
+                          softWrap: false,
+                          maxLines: 2,
+                        ),
+                      )
+                  ),
+                  Padding(
                     padding: const EdgeInsets.only(left :8.0),
-                    child: Text(widget.member.currentTitle),
+                    child: SizedBox(
+                      width: 230,
+                      child: Text(
+                          widget.member.currentTitle,
+                          overflow: TextOverflow.fade,
+                          softWrap: false,
+                          maxLines: 2,
+                      ),
+                    )
                   ),
                   Padding(
                     padding: const EdgeInsets.only(left :8.0),

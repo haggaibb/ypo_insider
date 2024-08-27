@@ -37,9 +37,11 @@ class Controller extends GetxController {
   late Reference tempProfilePicRef ;
 
   /// TODO for debuggin
-  List<String> residenceList = ['Tel Aviv','Kiryat Ono','Ramot' 'Hashavim', 'Be\'er Sheva' ,'Ramat Gan', 'Savyon', 'Rishon LeTsiyon', 'Hod Hasharon'];
+  List<String> residenceList=[];
+/*
+ ['Tel Aviv','Kiryat Ono','Ramot' 'Hashavim', 'Be\'er Sheva' ,'Ramat Gan', 'Savyon', 'Rishon LeTsiyon', 'Hod Hasharon'];
 
-
+ */
 
   /// AUTH
   final user = FirebaseAuth.instance.currentUser;
@@ -111,13 +113,9 @@ class Controller extends GetxController {
     loadingProfileImage.value = false;
     return url;
   }
-  deleteTempProfilePic() async {
-    await tempProfilePicRef.delete();
+  deleteTempProfilePic(Reference ref) async {
+    await ref.delete();
   }
-  // saveProfileImage(String url, String memberId) async {
-  //   CollectionReference membersRef = db.collection('Members');
-  //   membersRef.doc(currentMember.value.id).update({'profileImage' : url});
-  // }
   /// update member
   updateMemberInfo(Member member) async {
     CollectionReference membersRef = db.collection('Members');
@@ -149,12 +147,22 @@ class Controller extends GetxController {
     for (var tag in freeTextTagsDocList) {
       freeTextTagsList.add(tag.data() as Map<String, dynamic>);
     }
+
     ///load filtered tags
     CollectionReference filteredTagsRef = db.collection('FilterTags');
-    QuerySnapshot filteredTagsSnapshot = await filteredTagsRef.get();
+    QuerySnapshot filteredTagsSnapshot = await filteredTagsRef.orderBy('show_order').get();
     List<QueryDocumentSnapshot>  filteredTagsQuery =  filteredTagsSnapshot.docs;
     for (var tag in filteredTagsQuery) {
       filteredTagsList.add(tag.data() as Map<String, dynamic>);
+      var tempTag = tag.data() as Map<String, dynamic>;
+      if (tempTag['key']=='residence') {
+        List list = tempTag['tags_list'];
+        list.sort((a, b) => a.compareTo(b));
+        residenceList = [];
+        for (var element in list) {
+          residenceList.add(element);
+        }
+      }
     }
   }
   List<String> getFilteredTagsFromCategory(category) {
@@ -167,18 +175,40 @@ class Controller extends GetxController {
     return list;
   }
 
+  /// first result screen = tags
+  loadRandomResults() async {
+    resultsLoading.value = true;
+    List randomArr =[];
+    final Random _random = Random();
+    for (int i=0; i<10;i++) {
+      int _randomNumber = _random.nextInt(100);
+      randomArr.add(_randomNumber);
+    }
+    CollectionReference membersRef = db.collection('Members');
+    QuerySnapshot membersSnapshot = await membersRef.get();
+    List<QueryDocumentSnapshot> membersDocs = membersSnapshot.docs;
+    filteredResults.value =[];
+    for (var index in randomArr) {
+      if (membersDocs[index].id != currentMember.value.id) {
+        filteredResults.add(Member.DocumentSnapshot(membersDocs[index]));
+      }
+    }
+    print('done with random');
+    resultsLoading.value = false;
+  }
+
 
   @override
   onInit() async {
     super.onInit();
-    print(user);
+    //print(user);
     currentMember.value = await getMemberInfo(user?.email);
-    //appDocDir = await getApplicationDocumentsDirectory();
-    //profilePicsRef = storageRef.child("profile_pics/");
+    tempProfilePicRef =storageRef.child("");
     ///
     /// Load Tags and Filters
     await loadTags();
-    await fetchFilteredMembers([]);
+    await loadRandomResults();
+    //await fetchFilteredMembers([]);
     loading.value = false;
     update();
     print('ctx done init.');

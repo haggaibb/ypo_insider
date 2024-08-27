@@ -12,6 +12,7 @@ import 'package:get/get.dart';
 import 'utils.dart';
 import 'widgets.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 
 
@@ -38,6 +39,8 @@ class _ProfilePageState extends State<ProfilePage> {
   late List<String> memberFilterTags;
   List<String> selectedTags = [];
   /// Profile Image
+  Reference storageRef = FirebaseStorage.instance.ref();
+  late Reference tempProfilePicRef;
   String tempProfileImageUrl = '';
   final ImagePicker picker = ImagePicker();
   XFile? profileImage;
@@ -46,8 +49,8 @@ class _ProfilePageState extends State<ProfilePage> {
   cancelEdit() {
     setState(() {
       selectedTags=[];
-      controller.deleteTempProfilePic();
-      tempProfileImageUrl = '';
+      if (tempProfilePicRef.name!='') controller.deleteTempProfilePic(tempProfilePicRef);
+      tempProfileImageUrl = controller.currentMember.value.profileImage??'';
       editModeOn = false;
     });
   }
@@ -63,7 +66,8 @@ class _ProfilePageState extends State<ProfilePage> {
       editedMember.currentBusinessName = currentBusinessCtrl.text;
       editedMember.profileImage = tempProfileImageUrl;
       await controller.updateMemberInfo(editedMember);
-    }
+      tempProfilePicRef = storageRef.child("");
+  }
 
 
   @override
@@ -81,6 +85,7 @@ class _ProfilePageState extends State<ProfilePage> {
     /// Tags
     memberFilterTags = widget.member.getMemberFilterTags();
     ///ProfileImage
+    tempProfilePicRef = storageRef.child("");
     tempProfileImageUrl = widget.member.profileImage??'';
   }
 
@@ -94,10 +99,17 @@ class _ProfilePageState extends State<ProfilePage> {
           leading: editModeOn?SizedBox(width: 5,):IconButton(
               onPressed: () {
                 cancelEdit();
-                Navigator.pop(context); Navigator.pop(context);
+                Navigator.pop(context);
               },
               icon: Icon(Icons.arrow_back)),
-          title: Text(widget.member.fullName(), style: TextStyle(fontSize: 24)),
+          title: Column(
+            children: [
+              Text(widget.member.fullName(), style: TextStyle(fontSize: 24)),
+              Obx(() => controller.loading.value?LinearProgressIndicator(
+                semanticsLabel: 'Linear progress indicator',
+              ):SizedBox(height: 10,))
+            ],
+          ),
           //actions: [IconButton(onPressed: () {}, icon: Icon(isDark ? Icons.light_mode : Icons.dark_mode))],
         ),
         body: Directionality(
@@ -177,6 +189,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   SizedBox(
                     width: 300,
                     child: TextField(
+                      maxLines: 2,
                       decoration: InputDecoration(
                           contentPadding: EdgeInsets.symmetric(
                             vertical: 0.0,
@@ -193,7 +206,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
                   SizedBox(
-                    width: 300,
+                    width: 350,
                     child: TextField(
                       decoration: InputDecoration(
                           contentPadding: EdgeInsets.symmetric(
@@ -226,7 +239,9 @@ class _ProfilePageState extends State<ProfilePage> {
                       child: const Text('Edit', style: TextStyle(color: Colors.black)),
                     ):ElevatedButton(
                       onPressed: () async {
-                        controller.loading.value=true;
+                        setState(() {
+                          controller.loading.value=true;
+                        });
                         await updateMemberInfo();
                         setState(() {
                           editModeOn = false;
@@ -249,7 +264,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blue, side: BorderSide.none, shape: const StadiumBorder()),
                       child: const Text('Cancel', style: TextStyle(color: Colors.black)),
-                    ):ElevatedButton(
+                    ):controller.currentMember.value.email==widget.member.email?ElevatedButton(
                     onPressed: () async {
                       print('logout');
                       await FirebaseAuth.instance.signOut();
@@ -258,7 +273,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue, side: BorderSide.none, shape: const StadiumBorder()),
                     child: const Text('Logout', style: TextStyle(color: Colors.black)),
-                  )
+                  ):SizedBox(height: 5,)
                   ),
                   const SizedBox(height: 30),
                   const Divider(),
@@ -457,7 +472,8 @@ class _ProfilePageState extends State<ProfilePage> {
                               child: SizedBox(
                                 //height: 200,
                                 width: 800,
-                                child: Card(
+                                child: controller
+                                    .filteredTagsList[index]['key']!='residence'?Card(
                                   elevation: 10,
                                   child: Column(
                                     children: [
@@ -497,7 +513,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                             ),
                                     ],
                                   ),
-                                ),
+                                ):SizedBox(height: 10,),
                               ),
                             )),
                   ),

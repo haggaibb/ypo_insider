@@ -67,7 +67,7 @@ class _ResultsPageState extends State<ResultsPage> {
                                     (index) => Padding(
                                           padding: const EdgeInsets.all(20.0),
                                           child: SizedBox(
-                                            height: 120,
+                                            height: 160,
                                             child: GestureDetector(
                                               child: ResultCard(controller
                                                   .filteredResults[index]),
