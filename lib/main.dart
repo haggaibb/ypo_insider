@@ -50,6 +50,7 @@ class FirebaseAuthUIExample extends StatelessWidget {
   FirebaseAuthUIExample({super.key});
   String get initialRoute {
     final user = FirebaseAuth.instance.currentUser;
+    print(user);
     return switch (user) {
       null => '/',
       User(emailVerified: false, email: final String _) => '/verify-email',
@@ -97,7 +98,7 @@ class FirebaseAuthUIExample extends StatelessWidget {
         '/': (context) {
           return AuthFlowBuilder<EmailAuthController>(
             listener: (oldState, state, authController) async {
-              //print('listen state msg:');print(state);
+              print('listen state msg:');print(state);
               if (state is SignedIn) {
                 final user = FirebaseAuth.instance.currentUser;
                 await controller.setCurrentUser(user);
@@ -113,7 +114,7 @@ class FirebaseAuthUIExample extends StatelessWidget {
               }
             },
             builder: (context, state, authController, _) {
-              //print('build state msg:');print(state);
+              print('build state msg:');print(state);
               if (state is AwaitingEmailAndPassword) {
                 return CustomEmailSignInForm(authController:  authController);
               } else if (state is SigningIn) {

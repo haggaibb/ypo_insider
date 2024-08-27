@@ -48,7 +48,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   cancelEdit() {
     setState(() {
-      selectedTags=[];
+      selectedTags=memberFilterTags;
       if (tempProfilePicRef.name!='') controller.deleteTempProfilePic(tempProfilePicRef);
       tempProfileImageUrl = controller.currentMember.value.profileImage??'';
       editModeOn = false;
@@ -85,6 +85,7 @@ class _ProfilePageState extends State<ProfilePage> {
     forumCtrl.text = widget.member.forum;
     /// Tags
     memberFilterTags = widget.member.getMemberFilterTags();
+    selectedTags = memberFilterTags;
     ///ProfileImage
     tempProfilePicRef = storageRef.child("");
     tempProfileImageUrl = widget.member.profileImage??'';
@@ -269,8 +270,9 @@ class _ProfilePageState extends State<ProfilePage> {
                     ):controller.currentMember.value.email==widget.member.email?ElevatedButton(
                     onPressed: () async {
                       print('logout');
-                      await FirebaseAuth.instance.signOut();
-                      Navigator.pop(context);Navigator.pop(context);
+                      //await FirebaseAuth.instance.signOut();
+                      await controller.logout();
+                      Navigator.popUntil(context, ModalRoute.withName('/'));
                     },
                     style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue, side: BorderSide.none, shape: const StadiumBorder()),

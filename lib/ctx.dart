@@ -96,6 +96,10 @@ class Controller extends GetxController {
       }
     return Member.DocumentSnapshot(membersSnapshot.docs.first);
   }
+  logout() async {
+    print('logout'); /// TODO does not work, still see home
+    await FirebaseAuth.instance.signOut();
+  }
   /// profile image
   Future<String> uploadProfileImage(XFile img, String id) async {
     loadingProfileImage.value = true;

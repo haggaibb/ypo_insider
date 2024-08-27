@@ -41,6 +41,9 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    if (controller.currentMember.value.id == 'NA') {
+      return Center(child: Text('Invalid Access!!!'));
+    }
     return Directionality(
       textDirection: TextDirection.ltr,
       child: Scaffold(
