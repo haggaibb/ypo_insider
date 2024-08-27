@@ -36,12 +36,7 @@ class Controller extends GetxController {
   Reference storageRef = FirebaseStorage.instance.ref();
   late Reference tempProfilePicRef ;
 
-  /// TODO for debuggin
   List<String> residenceList=[];
-/*
- ['Tel Aviv','Kiryat Ono','Ramot' 'Hashavim', 'Be\'er Sheva' ,'Ramat Gan', 'Savyon', 'Rishon LeTsiyon', 'Hod Hasharon'];
-
- */
 
   /// AUTH
   final user = FirebaseAuth.instance.currentUser;
@@ -69,7 +64,7 @@ class Controller extends GetxController {
         'onBoarding.registered' : true,
         'onBoarding.verified' : false,
         'onBoarding.boarded' : false,
-        'filtered_tags' : {},
+        'filtered_tags' : [],
         'free_text_tags' : {}
       }
     );
@@ -124,13 +119,14 @@ class Controller extends GetxController {
   /// Tags
   fetchFilteredMembers(List<String> selectedFilters) async {
     if (selectedFilters.isEmpty) {
-      filteredResults.value = [];
+      //print('no selected tags');
+      filteredResults.value = []; /// TODO add ref to def res
       resultsLoading.value = false;
       return;
     }
     resultsLoading.value = true;
     final membersRef = db.collection("Members");
-    final membersQuery = await membersRef.where("tags", arrayContainsAny: selectedFilters).get();
+    final membersQuery = await membersRef.where("filter_tags", arrayContainsAny: selectedFilters).get();
     final membersDocs = membersQuery.docs;
     filteredResults.value =[];
     for (var member in membersDocs) {
@@ -174,7 +170,6 @@ class Controller extends GetxController {
     }
     return list;
   }
-
   /// first result screen = tags
   loadRandomResults() async {
     resultsLoading.value = true;
@@ -202,6 +197,17 @@ class Controller extends GetxController {
   onInit() async {
     super.onInit();
     //print(user);
+    /// for debugging
+    // CollectionReference membersRef = db.collection('Members');
+    // QuerySnapshot membersSnapshot = await membersRef.get();
+    // for (var element in membersSnapshot.docs) {
+    //   await db.collection('Members').doc(element.id).update({
+    //     'filter_tags' : [],
+    //     'filtered_tags': FieldValue.delete()
+    //   });
+    // }
+    // print('Done!!!!!!!!!!!');
+    // return;
     currentMember.value = await getMemberInfo(user?.email);
     tempProfilePicRef =storageRef.child("");
     ///
@@ -220,75 +226,3 @@ class Controller extends GetxController {
 
 
 
-
-
-
-
-
-
-
-
-/*
-
-Herzliya
-Binyamina
-Jerusalem
-Ben Shemen
-Bat Hefer
-Modi'in-Maccabim-Re'ut
-Ramat Raziel
-Haifa
-Ganei Yehuda
-Ra'anana
-Rishpon
-Even Yehuda
-Petah Tikva
-Yehud-Monosson
-Ramat Hasharon
-Kefar Sava
-Mishmeret
-USA
-SOUTH AFRICA
-Ness Ziona
-Caesarea
-Bnei Zion
-Be'er Ya'akov
-UK
-Ganei Tikva
-Kadima Zoran
-Bnei Dror
-Bnei Atarot
-Kochav Yair
-{
-  "banner": false,
-  "email": "haggaibb@gmail.com",
-  "filtered_tags": {
-    "industry": [
-      "Hi Tech"
-    ]
-  },
-  "firstName": "Haggai",
-  "forum": 5,
-  "free_text_tags": {
-    "favorite_food": "Sushi",
-    "favorite_pet": "Dog"
-  },
-  "lastName": "Barel",
-  "member_since": 2009,
-  "mobile": "972544510999",
-  "onBoarding": {
-    "boarded": false,
-    "registered": true,
-    "uid": "",
-    "verified": true
-  },
-  "profileImage": "https://media.licdn.com/dms/image/C4D03AQFXuPK5twkpJA/profile-displayphoto-shrink_200_200/0/1604828273946?e=2147483647&v=beta&t=xzlsaXyeFnu3TZpFE-e1thz2F6vPKUCTCfOFjbK4U2s",
-  "residence": "Herzliya",
-  "tags": [
-    "Hi Tech",
-    "Herzliya"
-  ],
-  "title": "Chariman at  2Two",
-  "uid": "bbcssvVuF0Pa99zizafm2Mb4eC93"
-}
- */

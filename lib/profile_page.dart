@@ -65,6 +65,7 @@ class _ProfilePageState extends State<ProfilePage> {
       editedMember.joinDate = memberSinceCtrl.text;
       editedMember.currentBusinessName = currentBusinessCtrl.text;
       editedMember.profileImage = tempProfileImageUrl;
+      editedMember.filterTags = selectedTags;
       await controller.updateMemberInfo(editedMember);
       tempProfilePicRef = storageRef.child("");
   }

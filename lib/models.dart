@@ -18,7 +18,7 @@ class Member {
   Timestamp birthdate;
   late String? profileImage;
   Map? freeTextTags;
-  Map? filteredTags;
+  List<String>? filterTags;
   Map? onBoarding;
 
   Member({
@@ -36,7 +36,7 @@ class Member {
     required this.birthdate,
     this.profileImage,
     this.freeTextTags,
-    this.filteredTags = const {},
+    this.filterTags = const [],
     this.onBoarding = const {
 
     }
@@ -47,18 +47,15 @@ class Member {
   }
   bool hasFilterTag(cat,tag) {
     bool hasTag = false;
-    if (filteredTags!=null) {
-      if (filteredTags![cat]!=null) {
-        hasTag =filteredTags![cat].contains(tag);
-      }
-    }
+    if (filterTags!=null) {
+      hasTag =filterTags![cat].contains(tag);
+        }
     return hasTag;
   }
   List<String> getMemberFilterTags() {
     List<String> tags =[];
-    if (filteredTags!=null) {
-      for (var v in filteredTags!.values) {
-        print("Value: $v");
+    if (filterTags!=null) {
+      for (var v in filterTags!) {
         tags.add(v);
       }
     }
@@ -80,7 +77,7 @@ class Member {
       'current_business_name' : currentBusinessName,
       'birthdate' : birthdate,
       'free_text_tags' : freeTextTags,
-      'filtered_tags' : filteredTags,
+      'filter_tags' : filterTags,
       'onBoarding' : onBoarding
     };
   }
@@ -100,7 +97,7 @@ class Member {
         currentBusinessName = doc['current_business_name'],
         birthdate = doc['birthdate'],
         freeTextTags = doc["free_text_tags"]??{},
-        filteredTags = doc["filtered_tags"]??{},
+        filterTags =  List<String>.from(doc["filter_tags"]),
         onBoarding = doc["onBoarding"];
 }
 
