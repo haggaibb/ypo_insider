@@ -3,38 +3,49 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 
-
-
 class Member {
   final String id;
   final String firstName;
   final String lastName;
-  final String title;
-  final String residence;
-  final String mobile;
-  final String email;
-  final int memberSince;
-  final int forum;
-  final Map? onBoarding;
-  final Map? freeTextTags;
-  final Map? filteredTags;
-  final String? profileImage;
-  final bool? banner;
+  String currentTitle;
+  String residence;
+  String mobile;
+  String mobileCountryCode;
+  String email;
+  String forum;
+  String joinDate;
+  String currentBusinessName;
+  Timestamp birthdate;
+  late String? profileImage;
+  Map? freeTextTags;
+  Map? filteredTags;
+  Map? onBoarding;
+
+  Member({
+    required this.id,
+    required this.firstName,
+    required this.lastName,
+    required this.currentTitle,
+    required this.residence,
+    required this.mobile,
+    required this.mobileCountryCode,
+    required this.email,
+    required this.forum,
+    required this.joinDate,
+    required this.currentBusinessName,
+    required this.birthdate,
+    this.profileImage,
+    this.freeTextTags,
+    this.filteredTags = const {},
+    this.onBoarding = const {
+
+    }
+  });
 
   String fullName() {
     return ('$firstName $lastName');
   }
-
-  // String getFreeTextTagVale(tag) {
-  //   final freeTextTags = this.freeTextTags;
-  //   if (freeTextTags!=null) {
-  //     for (var element in freeTextTags) {
-  //       element.keys
-  //     }
-  //   } else return ''; /// todo? send back hint?
-  // }
-
-  bool hasFilteredTag(cat,tag) {
+  bool hasFilterTag(cat,tag) {
     bool hasTag = false;
     if (filteredTags!=null) {
       if (filteredTags![cat]!=null) {
@@ -43,31 +54,34 @@ class Member {
     }
     return hasTag;
   }
-
-  Member({
-    required this.id,
-    required this.firstName,
-    required this.lastName,
-    required this.title,
-    required this.residence,
-    required this.mobile,
-    required this.email,
-    required this.forum,
-    required this.memberSince,
-    this.freeTextTags,
-    this.filteredTags,
-    this.profileImage,
-    this.banner,
-    this.onBoarding
-
-  });
+  List<String> getMemberFilterTags() {
+    List<String> tags =[];
+    if (filteredTags!=null) {
+      for (var v in filteredTags!.values) {
+        print("Value: $v");
+        tags.add(v);
+      }
+    }
+    return tags;
+  }
   Map<String, dynamic> toMap() {
     return {
       'id': id,
       'firstName': firstName,
       'lastName': lastName,
-      'title': title,
-      'residence': residence
+      'title': currentTitle,
+      'residence': residence,
+      'mobile' :mobile,
+      'mobile_country_code' :mobileCountryCode,
+      'email' : email,
+      'profileImage' : profileImage,
+      'forum' : forum,
+      'join_date' : joinDate,
+      'current_business_name' : currentBusinessName,
+      'birthdate' : birthdate,
+      'free_text_tags' : freeTextTags,
+      'filtered_tags' : filteredTags,
+      'onBoarding' : onBoarding
     };
   }
 
@@ -75,18 +89,18 @@ class Member {
         id = doc.id,
         firstName = doc["firstName"],
         lastName = doc["lastName"],
-        title = doc["title"],
+        currentTitle = doc["current_title"],
         residence = doc["residence"],
         mobile = doc["mobile"],
+        mobileCountryCode = doc['mobile_country_code'],
         email = doc["email"],
         profileImage = doc["profileImage"],
         forum = doc["forum"],
-        banner = doc["banner"],
-        onBoarding = doc["onBoarding"],
-        memberSince = doc['member_since'],
-        freeTextTags = doc["free_text_tags"],
-        filteredTags = doc["filtered_tags"];
-
-
+        joinDate = doc['join_date'],
+        currentBusinessName = doc['current_business_name'],
+        birthdate = doc['birthdate'],
+        freeTextTags = doc["free_text_tags"]??{},
+        filteredTags = doc["filtered_tags"]??{},
+        onBoarding = doc["onBoarding"];
 }
 

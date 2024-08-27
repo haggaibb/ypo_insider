@@ -60,7 +60,6 @@ class _HomeState extends State<Home> {
                     color: Colors.white,
                   ),
                   child: Obx(() => ProfileAppDrawer(controller.loading.value?controller.noUser:controller.currentMember.value)),
-                  //child: Obx(() => ProfileAppDrawer(controller.loading.value?controller.noUser:controller.currentMember.value)),
                 ),
                 ListTile(
                   leading: const Icon(

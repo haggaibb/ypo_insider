@@ -44,7 +44,7 @@ class _ResultCardState extends State<ResultCard> {
                   SizedBox(height: 20,),
                   Padding(
                     padding: const EdgeInsets.only(left :8.0),
-                    child: Text(widget.member.title),
+                    child: Text(widget.member.currentTitle),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(left :8.0),
@@ -56,7 +56,7 @@ class _ResultCardState extends State<ResultCard> {
                   ),
                 ],
               ),
-              ProfilePic(widget.member.profileImage??'',widget.member.banner??false),
+              ProfilePic(widget.member.profileImage??''),
             ],
           ),
         ],
@@ -68,10 +68,9 @@ class _ResultCardState extends State<ResultCard> {
 ////////////////
 
 class ProfilePic extends StatelessWidget {
-  const ProfilePic( this.uri , this.banner , {super.key, });
+  const ProfilePic( this.uri, {super.key, });
 
   final String uri;
-  final bool banner;
 
   @override
   Widget build(BuildContext context) {
@@ -86,21 +85,10 @@ class ProfilePic extends StatelessWidget {
               ? Image.network(uri)
               : Image(image:AssetImage(uri!=''?uri:'images/profile0.jpg'))),
         ),
-        banner?Positioned(
-          bottom: 0,
-          right: 0,
-          child: Container(
-            width: 35,
-            height: 35,
-            child: Image(image: AssetImage('images/new.png'))
-          ),
-        ):SizedBox(),
       ],
     );
   }
 }
-
-
 class ProfileAppDrawer extends StatelessWidget {
   const ProfileAppDrawer( this.member , {super.key});
 
@@ -119,20 +107,19 @@ class ProfileAppDrawer extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(member.fullName() , style: TextStyle(fontWeight: FontWeight.bold),),
-              Text(member.email ,style: TextStyle(fontSize: 12),),
-              Text('Forum '+member.forum.toString()??'Not in a Forum',style: TextStyle(fontSize: 12)),
+              Text(member.fullName() , style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
+              SizedBox(height: 10,),
+              Text(member.email ,style: TextStyle(fontSize: 14),),
+              Text('Forum '+member.forum.toString()??'Not in a Forum',style: TextStyle(fontSize: 14)),
             ],
           ),
-          ProfilePic(member.profileImage??'',false)
+          ProfilePic(member.profileImage??'')
         ],
       ),
     );
 
   }
 }
-
-
 
 class MainLoading extends StatelessWidget {
   const MainLoading({Key? key}) : super(key: key);
@@ -147,7 +134,6 @@ class MainLoading extends StatelessWidget {
     );
   }
 }
-
 class ResultsLoading extends StatelessWidget {
   const ResultsLoading({Key? key}) : super(key: key);
 
@@ -159,6 +145,22 @@ class ResultsLoading extends StatelessWidget {
         child: SpinKitThreeInOut(
           color: Colors.blue,
           size: 80.0,
+        ),
+      ),
+    );
+  }
+}
+class ProfileImageLoading extends StatelessWidget {
+  const ProfileImageLoading({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: SpinKitThreeInOut(
+          color: Colors.blue,
+          size: 30.0,
         ),
       ),
     );
