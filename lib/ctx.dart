@@ -41,6 +41,10 @@ class Controller extends GetxController {
   /// profile date for dropdowns
   List<String> residenceList=[];
   List<String> forumList=[];
+  List<QueryDocumentSnapshot> allMembers = [];
+  List<ResultRecord> allMembersFullName = [];
+  List<ResultRecord> allCompanies =[];
+  List<ResultRecord> suggestionsList =[];
 
   /// AUTH
   final user = FirebaseAuth.instance.currentUser;
@@ -125,24 +129,6 @@ class Controller extends GetxController {
     await membersRef.doc(member.id).update(member.toMap());
   }
   /// Tags
-  fetchFilteredMembers(List<String> selectedFilters) async {
-    if (selectedFilters.isEmpty) {
-      //print('no selected tags');
-      filteredResults.value = []; /// TODO add ref to def res
-      resultsLoading.value = false;
-      return;
-    }
-    resultsLoading.value = true;
-    final membersRef = db.collection("Members");
-    final membersQuery = await membersRef.where("filter_tags", arrayContainsAny: selectedFilters).get();
-    final membersDocs = membersQuery.docs;
-    filteredResults.value =[];
-    for (var member in membersDocs) {
-      filteredResults.add(Member.DocumentSnapshot(member));
-    }
-    resultsLoading.value = false;
-    update();
-  }
   loadTags() async {
     ///load free text tags
     CollectionReference freeTextTagsRef = db.collection('FreeTextTags');
@@ -188,7 +174,33 @@ class Controller extends GetxController {
     }
     return list;
   }
-  /// first result screen = tags
+  fetchFilteredMembers(List<String> selectedFilters) async {
+    if (selectedFilters.isEmpty) {
+      //print('no selected tags');
+      filteredResults.value = []; /// TODO add ref to def res
+      resultsLoading.value = false;
+      return;
+    }
+    resultsLoading.value = true;
+    final membersRef = db.collection("Members");
+    final membersQuery = await membersRef.where("filter_tags", arrayContainsAny: selectedFilters).get();
+    final membersDocs = membersQuery.docs;
+    filteredResults.value =[];
+    for (var member in membersDocs) {
+      filteredResults.add(Member.DocumentSnapshot(member));
+    }
+    resultsLoading.value = false;
+    update();
+  }
+  String getFreeTextTagLabel(key) {
+    String value ='';
+    for (var element in freeTextTagsList) {
+      var foundKey = element['key']==key;
+      if (foundKey) value = element['label'];
+    }
+    return value;
+  }
+  /// results and search
   loadRandomResults(size) async {
     resultsLoading.value = true;
     List randomArr =[];
@@ -206,37 +218,52 @@ class Controller extends GetxController {
         filteredResults.add(Member.DocumentSnapshot(membersDocs[index]));
       }
     }
-    print('done with random');
     resultsLoading.value = false;
   }
+  loadSearchInfo() async {
+    CollectionReference membersRef = db.collection('Members');
+    QuerySnapshot membersSnapshot = await membersRef.get();
+    List<QueryDocumentSnapshot> members= membersSnapshot.docs;
+    for (var element in members) {
+     var member = element.data() as Map<String, dynamic>;
 
+    }}
+  loadAllMembers() async {
+    final membersRef = db.collection("Members");
+    final membersQuery = await membersRef.get();
+    allMembers = membersQuery.docs;
+    for (var member in allMembers) {
+      Member memberObj = Member.DocumentSnapshot(member);
+      suggestionsList.add(ResultRecord(label: memberObj.fullName(), id: memberObj.id));
+      suggestionsList.add(ResultRecord(label: memberObj.currentBusinessName, id: memberObj.id));
+    }
+  }
 
   @override
   onInit() async {
     super.onInit();
     //print(user);
     /// for debugging
-    // CollectionReference membersRef = db.collection('Members');
-    // QuerySnapshot membersSnapshot = await membersRef.get();
+    CollectionReference membersRef = db.collection('Members');
+    QuerySnapshot membersSnapshot = await membersRef.get();
     // for (var element in membersSnapshot.docs) {
     //   var data = element.data() as Map<String, dynamic>;
     //   await db.collection('Members').doc(element.id).update({
-    //     'filter_tags' : [data['residence'],data['forum']],
-    //     //'filtered_tags': FieldValue.delete()
-    //
+    //     //'filter_tags' : [data['residence'],data['forum']],
+    //     //'free_text_tags': FieldValue.delete()
+    //     'free_text_tags': []
     //   });
     // }
     // print('Done!!!!!!!!!!!');
     // return;
     currentMember.value = await getMemberInfo(user?.email);
     tempProfilePicRef =storageRef.child("");
-    ///
     /// Load Tags and Filters
     await loadTags();
     AggregateQuerySnapshot query = await db.collection('Members').count().get();
     numberOfMembers = query.count??0;
     await loadRandomResults(numberOfMembers);
-    //await fetchFilteredMembers([]);
+    await loadAllMembers();
     loading.value = false;
     update();
     print('ctx done init.');

@@ -41,9 +41,80 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    if (controller.currentMember.value.id == 'NA') {
-      return Center(child: Text('Invalid Access!!!'));
-    }
+    Obx(()=> (controller.currentMember.value.id == 'NA')
+        ? Center(child: Text('Invalid Access!!!'))
+        : Directionality(
+      textDirection: TextDirection.ltr,
+      child: Scaffold(
+          appBar: AppBar(
+            actions: [Padding(
+              padding: const EdgeInsets.all(0.0),
+              child: Image.network('assets/images/logo.png'),
+            )],
+            backgroundColor: Colors.white,
+            title: Column(
+              children: [
+                const Text('YPO Israel Insider', style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),),
+                Obx(() =>!controller.loading.value
+                    ?Text('${controller.numberOfMembers} registered members', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.indigo),)
+                    :const SizedBox(width: 1,)
+                ),
+              ],
+            ),
+          ),
+          drawer: Drawer(
+            child: ListView(
+              children: [
+                DrawerHeader(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                  ),
+                  child: Obx(() => ProfileAppDrawer(controller.loading.value?controller.noUser:controller.currentMember.value)),
+                ),
+                ListTile(
+                  leading: const Icon(
+                    Icons.settings,
+                  ),
+                  title: const Text('settings'),
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(
+                    Icons.person,
+                  ),
+                  title: const Text('Profile'),
+                  onTap: () {
+                    Navigator.pushNamed(context, '/profile');
+                  },
+                )
+              ],
+            ),
+          ),
+          body: Obx(() =>
+          !controller.loading.value?
+          Stack(
+            children: [
+              ResultsPage(),
+              Sheet(
+                shape: ContinuousRectangleBorder(
+                  borderRadius: BorderRadius.circular(50),
+                ),
+                elevation: 10,
+                backgroundColor: Colors.black,
+                controller: sheetController,
+                minExtent: minSheetPos,
+                initialExtent: initSheetPos,
+                fit: SheetFit.expand,
+                child:  Filters(()=> sheetJumpFunction()),
+              ),
+            ],
+          ):MainLoading()
+            // This trailing comma makes auto-formatting nicer for build methods.
+          )),
+    )
+    );
     return Directionality(
       textDirection: TextDirection.ltr,
       child: Scaffold(

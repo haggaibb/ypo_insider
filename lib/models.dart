@@ -17,7 +17,7 @@ class Member {
   String currentBusinessName;
   Timestamp birthdate;
   late String? profileImage;
-  Map? freeTextTags;
+  List<Map<String, dynamic>>? freeTextTags;
   List<String>? filterTags;
   Map? onBoarding;
 
@@ -42,6 +42,7 @@ class Member {
     }
   });
 
+
   String fullName() {
     return ('$firstName $lastName');
   }
@@ -60,6 +61,27 @@ class Member {
       }
     }
     return tags;
+  }
+  List<dynamic> getMemberFreeTextTags() {
+    //print('in model get free tags');
+    //print(freeTextTags);
+    //var freeTextTagsList = freeTextTags?.entries.map( (entry) => entry.value).toList();
+    //print(freeTextTagsList);
+    //return freeTextTagsList??[];
+    return freeTextTags??[];
+  }
+  String getFreeTextTagValueByKey(key) {
+    String value ='';
+    freeTextTags?.forEach((element) {
+      var foundKey = element.containsKey(key);
+      if (foundKey) value = element[key];
+    });
+    //print('in model get free tags');
+    //print(freeTextTags);
+    //var freeTextTagsList = freeTextTags?.entries.map( (entry) => entry.value).toList();
+    //print(freeTextTagsList);
+    //return freeTextTagsList??[];
+    return value;
   }
   Map<String, dynamic> toMap() {
     return {
@@ -81,7 +103,6 @@ class Member {
       'onBoarding' : onBoarding
     };
   }
-
   Member.DocumentSnapshot(DocumentSnapshot<Object?> doc):
         id = doc.id,
         firstName = doc["firstName"],
@@ -96,8 +117,16 @@ class Member {
         joinDate = doc['join_date'],
         currentBusinessName = doc['current_business_name'],
         birthdate = doc['birthdate'],
-        freeTextTags = doc["free_text_tags"]??{},
+        freeTextTags = List<Map<String, dynamic>>.from(doc["free_text_tags"])??[],
         filterTags =  List<String>.from(doc["filter_tags"]),
         onBoarding = doc["onBoarding"];
+}
+
+class ResultRecord {
+  final String label;
+  final String id;
+
+  const ResultRecord({required this.label, required this.id});
+
 }
 

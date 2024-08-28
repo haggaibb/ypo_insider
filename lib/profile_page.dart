@@ -1,15 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
-import 'package:ypo_connect/main.dart';
 import 'package:ypo_connect/models.dart';
 import 'profile_menu.dart';
 import 'ctx.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:chips_choice/chips_choice.dart';
-import 'package:get/get.dart';
-import 'utils.dart';
 import 'widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -35,9 +29,11 @@ class _ProfilePageState extends State<ProfilePage> {
   TextEditingController emailCtrl = TextEditingController();
   TextEditingController memberSinceCtrl = TextEditingController();
   TextEditingController forumCtrl = TextEditingController();
-  /// Tags
+  /// Filter Tags
   late List<String> memberFilterTags;
   List<String> selectedTags = [];
+  /// Free Text Tags
+  late List<TextEditingController> freeTextControls= [];
   /// Profile Image
   Reference storageRef = FirebaseStorage.instance.ref();
   late Reference tempProfilePicRef;
@@ -48,9 +44,18 @@ class _ProfilePageState extends State<ProfilePage> {
 
   cancelEdit() {
     setState(() {
+      /// clear Filter Tags
       selectedTags=memberFilterTags;
+      /// reset TextFiled Tags
+      for (var i=0; i<controller.freeTextTagsList.length ; i++) {
+        freeTextControls.add(TextEditingController());
+        //init ctrl with member value if pre exists
+        freeTextControls[i].text = widget.member.getFreeTextTagValueByKey(controller.freeTextTagsList[i]['key']);
+      }
+      /// clear temp ProfilePic
       if (tempProfilePicRef.name!='') controller.deleteTempProfilePic(tempProfilePicRef);
       tempProfileImageUrl = controller.currentMember.value.profileImage??'';
+
       editModeOn = false;
     });
   }
@@ -65,7 +70,17 @@ class _ProfilePageState extends State<ProfilePage> {
       editedMember.joinDate = memberSinceCtrl.text;
       editedMember.currentBusinessName = currentBusinessCtrl.text;
       editedMember.profileImage = tempProfileImageUrl;
+      selectedTags.add(editedMember.residence);
+      selectedTags.add(editedMember.forum);
       editedMember.filterTags = selectedTags;
+      /// FreeTextTags
+      editedMember.freeTextTags = [];
+      for (var i=0; i< freeTextControls.length; i++) {
+        if (freeTextControls[i].text!='') {
+          editedMember.freeTextTags?.add({controller.freeTextTagsList[i]['key'] : freeTextControls[i].text});
+        }
+      }
+      /// Save to Db
       await controller.updateMemberInfo(editedMember);
       tempProfilePicRef = storageRef.child("");
   }
@@ -83,9 +98,16 @@ class _ProfilePageState extends State<ProfilePage> {
     emailCtrl.text = widget.member.email;
     memberSinceCtrl.text = widget.member.joinDate;
     forumCtrl.text = widget.member.forum;
-    /// Tags
+    /// Filter Tags
     memberFilterTags = widget.member.getMemberFilterTags();
     selectedTags = memberFilterTags;
+    /// Free Text Tags
+    /// // build controllers for edit mode
+    for (var i=0; i<controller.freeTextTagsList.length ; i++) {
+      freeTextControls.add(TextEditingController());
+      //init ctrl with member value if pre exists
+      freeTextControls[i].text = widget.member.getFreeTextTagValueByKey(controller.freeTextTagsList[i]['key']);
+    }
     ///ProfileImage
     tempProfilePicRef = storageRef.child("");
     tempProfileImageUrl = widget.member.profileImage??'';
@@ -501,6 +523,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                             children:
                                              List.generate(controller
                                                  .filteredTagsList[index]['tags_list'].length, (tagIndex) =>
+                                                 selectedTags.contains(controller.filteredTagsList[index]['tags_list'][tagIndex])?
                                                  ChoiceChip(
                                                    onSelected: (val) {
                                                      if (editModeOn) {
@@ -519,7 +542,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                    labelStyle: const TextStyle(
                                                        fontWeight: FontWeight.bold, color: Colors.black),
                                                    selected: selectedTags.contains(controller.filteredTagsList[index]['tags_list'][tagIndex])
-                                                   )
+                                                   ):SizedBox(width: 1,)
                                                  )
                                              ),
                                             ),
@@ -534,21 +557,45 @@ class _ProfilePageState extends State<ProfilePage> {
                   const SizedBox(
                     child: Padding(
                       padding: EdgeInsets.all(8.0),
-                      child: Text('Additional Information'),
+                      child: Text('Additional Information', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
                     ),
                   ),
-                  controller.freeTextTagsList.isNotEmpty?Column(
+                  editModeOn?
+                      Column(
+                        children: List.generate(controller.freeTextTagsList.length, (index) {
+                         return Padding(
+                           padding: const EdgeInsets.only(bottom: 20.0),
+                           child: TextField(
+                             decoration: InputDecoration(
+                                 icon: Icon(IconData(int.parse(controller.freeTextTagsList[index]['icon_code']),fontFamily: 'MaterialIcons')),
+                                 label: Text(controller.freeTextTagsList[index]['label']),
+                                 contentPadding: EdgeInsets.symmetric(
+                                   vertical: 0.0,
+                                   horizontal: 0.0,
+                                 ),
+                                 isDense: true,
+                                 helperText: controller.freeTextTagsList[index]['hint'],
+                                 border: OutlineInputBorder()
+                             ),
+                             textAlign: TextAlign.center,
+                             controller: freeTextControls[index],
+                             enabled: true,
+                             style: TextStyle(fontSize: 20 , color: Colors.black),
+                           ),
+                         );
+                         })
+                      )
+                      :widget.member.freeTextTags!.isNotEmpty
+                      ?Column(
                       children: List.generate(
-                          controller.freeTextTagsList.length, (index) {
+                          widget.member.freeTextTags!.length, (index) {
                         return ProfileMenuWidget(
-                            title:
-                            controller.freeTextTagsList[index]['label'] + ': ',
-                            icon: Icons.info,
-                            value: widget.member.freeTextTags!=null && widget.member.freeTextTags!.isNotEmpty
-                                ?widget.member.freeTextTags![controller.freeTextTagsList[index]['key']]:'',
+                            title: controller.getFreeTextTagLabel(widget.member.freeTextTags![index].keys.single) + ': ',
+                            icon: IconData(int.parse(controller.freeTextTagsList[index]['icon_code']),fontFamily: 'MaterialIcons'),
+                            value: widget.member.freeTextTags![index].values.single,
                             onPress: () {});
-                      })):Text('You have not provided any extra information'),
-
+                      }))
+                      :const Text('You have not provided any extra information-Please Update!')
                 ],
               )),
             ),
