@@ -585,7 +585,7 @@ class _ProfilePageState extends State<ProfilePage> {
                          );
                          })
                       )
-                      :widget.member.freeTextTags!.isNotEmpty
+                      :widget.member.freeTextTags!=null
                       ?Column(
                       children: List.generate(
                           widget.member.freeTextTags!.length, (index) {

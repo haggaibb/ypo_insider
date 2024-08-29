@@ -62,7 +62,7 @@ class Controller extends GetxController {
     var memberId = memberSnapshot.docs.first.id;
     var memberData = memberSnapshot.docs.first.data() as Map<String, dynamic>;
     var displayName = memberData['firstName']+" "+memberData['lastName'];
-    await FirebaseAuth.instance.currentUser!.updateDisplayName(displayName);
+    //// await FirebaseAuth.instance.currentUser!.updateDisplayName(displayName);
     membersRef.doc(memberId).update(
       {
         'id' : memberId,
@@ -89,6 +89,17 @@ class Controller extends GetxController {
     );
     return (memberSnapshot.docs.isNotEmpty);
   }
+  onBoardingFinished() async {
+    await FirebaseAuth.instance.currentUser!.updateDisplayName(currentMember.value.fullName());
+    CollectionReference membersRef = db.collection('Members');
+    QuerySnapshot memberSnapshot = await membersRef.where('email', isEqualTo: currentMember.value.email).get();
+    var memberId = memberSnapshot.docs.first.id;
+    await membersRef.doc(memberId).update(
+        {
+          'onBoarding.boarded' : true
+        }
+    );
+  }
   getMemberInfo(String? email) async {
     if (email==null) return noUser;
     CollectionReference membersRef = db.collection('Members');
@@ -98,6 +109,30 @@ class Controller extends GetxController {
         print('no member found for ${user?.email}');
         return controller.noUser;
       }
+    return Member.DocumentSnapshot(membersSnapshot.docs.first);
+  }
+  /// TODO do this diff, Class of Members.
+  Future<Member> getMemberById(String id) async {
+
+    if (id=='') return noUser;
+    CollectionReference membersRef = db.collection('Members');
+    QuerySnapshot membersSnapshot = await membersRef.where('id', isEqualTo: id).get();
+    if (membersSnapshot.docs.isEmpty)
+    {
+      print('no member found for ${user?.email}');
+      return controller.noUser;
+    }
+    return Member.DocumentSnapshot(membersSnapshot.docs.first);
+  }
+  Future<Member> getMemberByEMail(String email) async {
+    if (email=='') return noUser;
+    CollectionReference membersRef = db.collection('Members');
+    QuerySnapshot membersSnapshot = await membersRef.where('email', isEqualTo: email).get();
+    if (membersSnapshot.docs.isEmpty)
+    {
+      print('no member found for ${user?.email}');
+      return controller.noUser;
+    }
     return Member.DocumentSnapshot(membersSnapshot.docs.first);
   }
   logout() async {
@@ -172,6 +207,7 @@ class Controller extends GetxController {
     for (var tag in tagsList) {
       list.add(tag);
     }
+    list.sort((a, b) => a.compareTo(b));
     return list;
   }
   fetchFilteredMembers(List<String> selectedFilters) async {
@@ -236,7 +272,9 @@ class Controller extends GetxController {
       Member memberObj = Member.DocumentSnapshot(member);
       suggestionsList.add(ResultRecord(label: memberObj.fullName(), id: memberObj.id));
       suggestionsList.add(ResultRecord(label: memberObj.currentBusinessName, id: memberObj.id));
+      suggestionsList.sort((a, b) => a.label. compareTo(b.label));
     }
+
   }
 
   @override

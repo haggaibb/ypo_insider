@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'ctx.dart';
 import 'package:get/get.dart';
@@ -5,6 +6,7 @@ import 'profile_page.dart';
 import 'widgets.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'models.dart';
+
 
 class ResultsPage extends StatefulWidget {
   const ResultsPage({
@@ -65,9 +67,19 @@ class _ResultsPageState extends State<ResultsPage> {
                       //subtitle: Text(result.country),
                     );
                   },
-                  onSelected: (result) {
+                  onSelected: (result) async {
                     print('result picked');
                     print(result);
+                    QueryDocumentSnapshot memberQuery = controller.allMembers.firstWhere((element) => element.id==result.id);
+                    var memberData = memberQuery.data() as Map<String, dynamic>;
+                    var memberEmail = memberData['email'];
+                    Member member = await controller.getMemberByEMail(memberEmail);
+                    //Member member = await controller.getMemberById(result.id);
+                    Navigator.of(context).push<void>(
+                      MaterialPageRoute(
+                        builder: (context) => ProfilePage(member),
+                      ),
+                    );
                     // Navigator.of(context).push<void>(
                     //   MaterialPageRoute(
                     //     builder: (context) => CityPage(city: city),
@@ -194,6 +206,7 @@ class _ResultsPageState extends State<ResultsPage> {
                                 padding: const EdgeInsets.all(20.0),
                                 child: Column(
                                   children: [
+                                    const Text('No results found.'),
                                     Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
@@ -208,12 +221,11 @@ class _ResultsPageState extends State<ResultsPage> {
                                             icon: Icon(Icons.shuffle)),
                                       ],
                                     ),
-                                    const Text('No Results Found'),
                                     const Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       children: [
-                                        Text('Use may use the filters below'),
+                                        Text('You can use the filters below'),
                                         Icon(Icons.filter_list_outlined)
                                       ],
                                     )

@@ -103,6 +103,7 @@ class Member {
       'onBoarding' : onBoarding
     };
   }
+
   Member.DocumentSnapshot(DocumentSnapshot<Object?> doc):
         id = doc.id,
         firstName = doc["firstName"],

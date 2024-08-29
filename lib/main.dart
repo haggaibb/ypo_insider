@@ -18,7 +18,7 @@ import 'package:get/get.dart';
 import 'widgets.dart';
 import 'auth.dart';
 import 'profile_page.dart';
-
+import 'onboarding.dart';
 
 final actionCodeSettings = ActionCodeSettings(
   url: 'https://ypodex.web.app/',
@@ -37,6 +37,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(FirebaseAuthUIExample());
+  //runApp(MainOnBoarding());
 }
 
 class LabelOverrides extends DefaultLocalizations {
@@ -50,6 +51,9 @@ class FirebaseAuthUIExample extends StatelessWidget {
   FirebaseAuthUIExample({super.key});
   String get initialRoute {
     final user = FirebaseAuth.instance.currentUser;
+    /// for debug TODO del and test real on boarding using diplayname
+    print(user?.displayName==null);
+    if (user?.displayName==null) return '/onboarding';
     return switch (user) {
       null => '/',
       User(emailVerified: false, email: final String _) => '/verify-email',
@@ -140,7 +144,7 @@ class FirebaseAuthUIExample extends StatelessWidget {
             actions: [
               EmailVerifiedAction(() {
                 controller.onVerify(user!);
-                Navigator.pushReplacementNamed(context, '/home');
+                Navigator.pushReplacementNamed(context, '/onboarding');
               }),
               AuthCancelledAction((context) {
                 FirebaseUIAuth.signOut(context: context);
@@ -213,6 +217,10 @@ class FirebaseAuthUIExample extends StatelessWidget {
         },
         '/home': (context) {
           return Home(title: 'YPO Insider' , user: FirebaseAuth.instance.currentUser );
+        },
+        '/onboarding': (context) {
+          print('in onboarding');
+          return MainOnBoarding();
         }
       },
       title: 'YPO Insider',

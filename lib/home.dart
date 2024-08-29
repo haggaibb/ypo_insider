@@ -24,9 +24,9 @@ class _HomeState extends State<Home> {
   List selectedFiltersList = [];
   SheetController sheetController = SheetController();
   final controller = Get.put(Controller());
-  var minSheetPos = 50.0;
+  var minSheetPos = 85.0;
   var openSheetPos = 600.0;
-  var initSheetPos = 50.0;
+  var initSheetPos = 85.0;
 
   void sheetJumpFunction(){
     sheetController.offset<=initSheetPos
