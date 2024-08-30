@@ -118,7 +118,7 @@ class Member {
         joinDate = doc['join_date'],
         currentBusinessName = doc['current_business_name'],
         birthdate = doc['birthdate'],
-        freeTextTags = List<Map<String, dynamic>>.from(doc["free_text_tags"])??[],
+        freeTextTags = List<Map<String, dynamic>>.from(doc["free_text_tags"]),
         filterTags =  List<String>.from(doc["filter_tags"]),
         onBoarding = doc["onBoarding"];
 }

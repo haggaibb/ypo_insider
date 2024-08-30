@@ -128,7 +128,7 @@ class _ProfilePageState extends State<ProfilePage> {
               icon: Icon(Icons.arrow_back)),
           title: Column(
             children: [
-              Text(widget.member.fullName(), style: TextStyle(fontSize: 24)),
+              Text(widget.member.fullName(), style: Theme.of(context).textTheme.bodyMedium!),
               Obx(() => controller.loading.value?LinearProgressIndicator(
                 semanticsLabel: 'Linear progress indicator',
               ):SizedBox(height: 10,))
@@ -174,10 +174,10 @@ class _ProfilePageState extends State<ProfilePage> {
                               child:  Container(
                             width: 35,
                             height: 35,
-                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(100), color: Colors.blue),
+                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(100)),
                             child: const Icon(
                               LineAwesomeIcons.edit,
-                              color: Colors.black,
+                              //color: Colors.black,
                               size: 20,
                             ),
                           ),
@@ -226,7 +226,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       textAlign: TextAlign.center,
                       controller: currentTitleCtrl,
                       enabled: editModeOn?true:false,
-                      style: TextStyle(fontSize: 20 , color: Colors.black),
+                      style: Theme.of(context).textTheme.titleLarge!,
                     ),
                   ),
                   SizedBox(
@@ -244,7 +244,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       textAlign: TextAlign.center,
                       controller: currentBusinessCtrl,
                       enabled: editModeOn?true:false,
-                      style: TextStyle(fontSize: 20 , color: Colors.black),
+                      style: Theme.of(context).textTheme.titleLarge!,
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -260,7 +260,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       },
                       style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blue, side: BorderSide.none, shape: const StadiumBorder()),
-                      child: const Text('Edit', style: TextStyle(color: Colors.black)),
+                      child: const Text('Edit'),
                     ):ElevatedButton(
                       onPressed: () async {
                         setState(() {
@@ -274,7 +274,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       },
                       style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blue, side: BorderSide.none, shape: const StadiumBorder()),
-                      child: const Text('Save', style: TextStyle(color: Colors.black)),
+                      child: const Text('Save'),
                     ),
                   )
                       :SizedBox(),
@@ -288,7 +288,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       },
                       style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blue, side: BorderSide.none, shape: const StadiumBorder()),
-                      child: const Text('Cancel', style: TextStyle(color: Colors.black)),
+                      child: const Text('Cancel'),
                     ):controller.currentMember.value.email==widget.member.email?ElevatedButton(
                     onPressed: () async {
                       print('logout');
@@ -298,7 +298,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     },
                     style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue, side: BorderSide.none, shape: const StadiumBorder()),
-                    child: const Text('Logout', style: TextStyle(color: Colors.black)),
+                    child: const Text('Logout'),
                   ):SizedBox(height: 5,)
                   ),
                   const SizedBox(height: 30),
@@ -365,7 +365,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               textAlign: TextAlign.center,
                               controller: mobileCountryCodeCtrl,
                               enabled: editModeOn?true:false,
-                              style: TextStyle(fontSize: 20 , color: Colors.black),
+                              style: TextStyle(fontSize: 20 ),
                             ),
                           ),
                           SizedBox(
@@ -384,7 +384,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               textAlign: TextAlign.center,
                               controller: mobileCtrl,
                               enabled: editModeOn?true:false,
-                              style: TextStyle(fontSize: 20 , color: Colors.black),
+                              style: TextStyle(fontSize: 20 ,),
                             ),
                           ),
                         ],
@@ -416,7 +416,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         textAlign: TextAlign.center,
                         controller: emailCtrl,
                         enabled: editModeOn?true:false,
-                        style: TextStyle(fontSize: 20 , color: Colors.black),
+                        style: TextStyle(fontSize: 20),
                       ),
                     ),
                   ): ProfileMenuWidget(
@@ -444,7 +444,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         textAlign: TextAlign.center,
                         controller: memberSinceCtrl,
                         enabled: editModeOn?true:false,
-                        style: TextStyle(fontSize: 20 , color: Colors.black),
+                        style: TextStyle(fontSize: 20),
                       ),
                     ),
                   ):ProfileMenuWidget(
@@ -523,8 +523,28 @@ class _ProfilePageState extends State<ProfilePage> {
                                             children:
                                              List.generate(controller
                                                  .filteredTagsList[index]['tags_list'].length, (tagIndex) =>
-                                                 selectedTags.contains(controller.filteredTagsList[index]['tags_list'][tagIndex])?
-                                                 ChoiceChip(
+                                                 editModeOn
+                                                     ? ChoiceChip(
+                                                     onSelected: (val) {
+                                                       if (editModeOn) {
+                                                         setState(() {
+                                                           if (selectedTags.contains(controller.filteredTagsList[index]['tags_list'][tagIndex])){
+                                                             selectedTags.remove(controller.filteredTagsList[index]['tags_list'][tagIndex]);
+                                                           } else {
+                                                             selectedTags.add(controller.filteredTagsList[index]['tags_list'][tagIndex]);
+                                                           }
+
+                                                         });
+                                                       }
+                                                     },
+                                                     label: Text(controller
+                                                         .filteredTagsList[index]['tags_list'][tagIndex]),
+                                                     labelStyle: const TextStyle(
+                                                         fontWeight: FontWeight.bold),
+                                                     selected: selectedTags.contains(controller.filteredTagsList[index]['tags_list'][tagIndex])
+                                                 )
+                                                     : selectedTags.contains(controller.filteredTagsList[index]['tags_list'][tagIndex])
+                                                       ? ChoiceChip(
                                                    onSelected: (val) {
                                                      if (editModeOn) {
                                                        setState(() {
@@ -540,7 +560,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                    label: Text(controller
                                                        .filteredTagsList[index]['tags_list'][tagIndex]),
                                                    labelStyle: const TextStyle(
-                                                       fontWeight: FontWeight.bold, color: Colors.black),
+                                                       fontWeight: FontWeight.bold),
                                                    selected: selectedTags.contains(controller.filteredTagsList[index]['tags_list'][tagIndex])
                                                    ):SizedBox(width: 1,)
                                                  )
@@ -580,12 +600,12 @@ class _ProfilePageState extends State<ProfilePage> {
                              textAlign: TextAlign.center,
                              controller: freeTextControls[index],
                              enabled: true,
-                             style: TextStyle(fontSize: 20 , color: Colors.black),
+                             style: TextStyle(fontSize: 20 ),
                            ),
                          );
                          })
                       )
-                      :widget.member.freeTextTags!=null
+                      :widget.member.freeTextTags!.isNotEmpty
                       ?Column(
                       children: List.generate(
                           widget.member.freeTextTags!.length, (index) {
@@ -595,7 +615,10 @@ class _ProfilePageState extends State<ProfilePage> {
                             value: widget.member.freeTextTags![index].values.single,
                             onPress: () {});
                       }))
-                      :const Text('You have not provided any extra information-Please Update!')
+                      :Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: const Text('You have not provided any extra information-Please Edit and Update!'),
+                      )
                 ],
               )),
             ),

@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
@@ -35,6 +35,7 @@ class Controller extends GetxController {
   Rx<String> authErrMsg = ''.obs;
   List<Map> freeTextTagsList = [];
   List<Map> filteredTagsList = [];
+  RxList<String> tags = <String>[].obs;
   /// storage for profile pics
   Reference storageRef = FirebaseStorage.instance.ref();
   late Reference tempProfilePicRef ;
@@ -45,11 +46,12 @@ class Controller extends GetxController {
   List<ResultRecord> allMembersFullName = [];
   List<ResultRecord> allCompanies =[];
   List<ResultRecord> suggestionsList =[];
+  Rx<ThemeMode> themeMode = ThemeMode.system.obs;
 
   /// AUTH
   final user = FirebaseAuth.instance.currentUser;
   setCurrentUser(User? user) async {
-    if (user!=null) currentMember.value = await getMemberInfo(user.email);
+    if (user!=null) currentMember.value = await loadMemberByUid(user.uid);
   }
   validateMemberEmail(String email) async {
     CollectionReference membersRef = db.collection('Members');
@@ -57,12 +59,14 @@ class Controller extends GetxController {
     return (memberSnapshot.docs.isNotEmpty);
   }
   onRegister(User user) async {
+    print('Start Registration');
+    print('for User ${user.email} uid is ${user.uid}');
     CollectionReference membersRef = db.collection('Members');
     QuerySnapshot memberSnapshot = await membersRef.where('email', isEqualTo: user.email).get();
     var memberId = memberSnapshot.docs.first.id;
     var memberData = memberSnapshot.docs.first.data() as Map<String, dynamic>;
     var displayName = memberData['firstName']+" "+memberData['lastName'];
-    //// await FirebaseAuth.instance.currentUser!.updateDisplayName(displayName);
+    await FirebaseAuth.instance.currentUser!.updateDisplayName(displayName);
     membersRef.doc(memberId).update(
       {
         'id' : memberId,
@@ -73,32 +77,50 @@ class Controller extends GetxController {
         'onBoarding.verified' : false,
         'onBoarding.boarded' : false,
         'filtered_tags' : [memberData['residence'],memberData['forum']],
-        'free_text_tags' : {}
+        'free_text_tags' : []
       }
     );
     return (memberSnapshot.docs.isNotEmpty);
   }
   onVerify(User user) async {
+    print('user has just verified his email');
+    print('update his profile');
     CollectionReference membersRef = db.collection('Members');
-    QuerySnapshot memberSnapshot = await membersRef.where('email', isEqualTo: user.email).get();
-    var memberId = memberSnapshot.docs.first.id;
+    var memberId = currentMember.value.id;
+    // QuerySnapshot memberSnapshot = await membersRef.where('email', isEqualTo: user.email).get();
+    // var memberId = memberSnapshot.docs.first.id;
     await membersRef.doc(memberId).update(
         {
           'onBoarding.verified' : true
         }
     );
-    return (memberSnapshot.docs.isNotEmpty);
   }
   onBoardingFinished() async {
+    print('finished onboarding');
+    print('update full name to Auth User, this must be done as it acts as a flag for onboarding');
     await FirebaseAuth.instance.currentUser!.updateDisplayName(currentMember.value.fullName());
+    var memberId = currentMember.value.id;
     CollectionReference membersRef = db.collection('Members');
-    QuerySnapshot memberSnapshot = await membersRef.where('email', isEqualTo: currentMember.value.email).get();
-    var memberId = memberSnapshot.docs.first.id;
+    //QuerySnapshot memberSnapshot = await membersRef.where('email', isEqualTo: currentMember.value.email).get();
+    //var memberId = memberSnapshot.docs.first.id;
     await membersRef.doc(memberId).update(
         {
           'onBoarding.boarded' : true
         }
     );
+  }
+  getMemberData(String? email) async {
+    if (email==null) return noUser;
+    CollectionReference membersRef = db.collection('Members');
+    QuerySnapshot membersSnapshot = await membersRef.where('email', isEqualTo: email).get();
+    if (membersSnapshot.docs.isEmpty)
+    {
+      print('no member found for ${user?.email}');
+      return controller.noUser;
+    }
+    print('Got here');
+    print(membersSnapshot.docs.first.data());
+    return Member.DocumentSnapshot(membersSnapshot.docs.first);
   }
   getMemberInfo(String? email) async {
     if (email==null) return noUser;
@@ -109,9 +131,10 @@ class Controller extends GetxController {
         print('no member found for ${user?.email}');
         return controller.noUser;
       }
+    print('Got here');
+    print(membersSnapshot.docs.first.data());
     return Member.DocumentSnapshot(membersSnapshot.docs.first);
   }
-  /// TODO do this diff, Class of Members.
   Future<Member> getMemberById(String id) async {
 
     if (id=='') return noUser;
@@ -128,6 +151,18 @@ class Controller extends GetxController {
     if (email=='') return noUser;
     CollectionReference membersRef = db.collection('Members');
     QuerySnapshot membersSnapshot = await membersRef.where('email', isEqualTo: email).get();
+    if (membersSnapshot.docs.isEmpty)
+    {
+      print('no member found for ${user?.email}');
+      return controller.noUser;
+    }
+    return Member.DocumentSnapshot(membersSnapshot.docs.first);
+  }
+  /// TODO do this diff, Class of Members., clean get members
+  Future<Member> loadMemberByUid(String uid) async {
+    if (uid=='') return noUser;
+    CollectionReference membersRef = db.collection('Members');
+    QuerySnapshot membersSnapshot = await membersRef.where('uid', isEqualTo: uid).get();
     if (membersSnapshot.docs.isEmpty)
     {
       print('no member found for ${user?.email}');
@@ -207,7 +242,8 @@ class Controller extends GetxController {
     for (var tag in tagsList) {
       list.add(tag);
     }
-    list.sort((a, b) => a.compareTo(b));
+    if (category!='forum') list.sort((a, b) => a.compareTo(b));
+
     return list;
   }
   fetchFilteredMembers(List<String> selectedFilters) async {
@@ -256,14 +292,6 @@ class Controller extends GetxController {
     }
     resultsLoading.value = false;
   }
-  loadSearchInfo() async {
-    CollectionReference membersRef = db.collection('Members');
-    QuerySnapshot membersSnapshot = await membersRef.get();
-    List<QueryDocumentSnapshot> members= membersSnapshot.docs;
-    for (var element in members) {
-     var member = element.data() as Map<String, dynamic>;
-
-    }}
   loadAllMembers() async {
     final membersRef = db.collection("Members");
     final membersQuery = await membersRef.get();
@@ -271,7 +299,7 @@ class Controller extends GetxController {
     for (var member in allMembers) {
       Member memberObj = Member.DocumentSnapshot(member);
       suggestionsList.add(ResultRecord(label: memberObj.fullName(), id: memberObj.id));
-      suggestionsList.add(ResultRecord(label: memberObj.currentBusinessName, id: memberObj.id));
+      if (memberObj.currentBusinessName!='') suggestionsList.add(ResultRecord(label: memberObj.currentBusinessName, id: memberObj.id));
       suggestionsList.sort((a, b) => a.label. compareTo(b.label));
     }
 
@@ -280,10 +308,9 @@ class Controller extends GetxController {
   @override
   onInit() async {
     super.onInit();
+    print('start init ctx');
     //print(user);
     /// for debugging
-    CollectionReference membersRef = db.collection('Members');
-    QuerySnapshot membersSnapshot = await membersRef.get();
     // for (var element in membersSnapshot.docs) {
     //   var data = element.data() as Map<String, dynamic>;
     //   await db.collection('Members').doc(element.id).update({
@@ -294,7 +321,7 @@ class Controller extends GetxController {
     // }
     // print('Done!!!!!!!!!!!');
     // return;
-    currentMember.value = await getMemberInfo(user?.email);
+    ///
     tempProfilePicRef =storageRef.child("");
     /// Load Tags and Filters
     await loadTags();

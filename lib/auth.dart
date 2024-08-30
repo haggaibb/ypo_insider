@@ -18,7 +18,7 @@ class CustomEmailSignInForm extends StatelessWidget {
   final controller = Get.put(Controller());
 
   signIn(BuildContext context) async {
-    controller.loading.value=true;
+    //controller.loading.value=true;
     authController.setEmailAndPassword(emailCtrl.text, passwordCtrl.text);
   }
 

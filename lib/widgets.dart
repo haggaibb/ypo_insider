@@ -29,7 +29,7 @@ class _ResultCardState extends State<ResultCard> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color : Colors.white,
+      //color : Colors.white,
       elevation: 10,
       child: Column(
         children: [
@@ -109,12 +109,12 @@ class ProfilePic extends StatelessWidget {
     );
   }
 }
+///
+///
+///
 class ProfileAppDrawer extends StatelessWidget {
   const ProfileAppDrawer( this.member , {super.key});
-
   final Member member;
-
-
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -124,14 +124,17 @@ class ProfileAppDrawer extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(member.fullName() , style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
-              SizedBox(height: 10,),
-              Text(member.email ,style: TextStyle(fontSize: 14),),
-              Text('Forum '+member.forum.toString()??'Not in a Forum',style: TextStyle(fontSize: 14)),
-            ],
+          Padding(
+            padding: const EdgeInsets.only(left: 10, top: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(member.fullName() , style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
+                SizedBox(height: 10,),
+                Text(member.email ,style: TextStyle(fontSize: 14),),
+                Text('Forum '+member.forum.toString()??'Not in a Forum',style: TextStyle(fontSize: 14)),
+              ],
+            ),
           ),
           ProfilePic(member.profileImage??'')
         ],

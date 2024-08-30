@@ -36,57 +36,74 @@ class _FiltersState extends State<Filters> {
     return Directionality(
         textDirection: TextDirection.ltr,
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.only(top: 10.0),
           child: Container(
-            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(50)),
+          decoration: BoxDecoration(
+            border: const Border.fromBorderSide(BorderSide(width: 0.5)),
+              borderRadius: const BorderRadius.only(
+                topRight: Radius.circular(200),
+                topLeft: Radius.circular(200),
+              ),
+              color: Theme.of(context).scaffoldBackgroundColor,
+          ),
             child: Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.only(top: 0.0),
               child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   //mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    IconButton(
-                      onPressed: widget.jumpFunction,
-                      icon : Icon(Icons.filter_list_outlined),
-                      //color: Colors.blueAccent,
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 30.0),
+                      child: IconButton(
+                        onPressed: widget.jumpFunction,
+                        icon : Icon(Icons.filter_list_outlined),
+                        //color: Colors.blueAccent,
+                      ),
                     ),
                     Expanded(
-                      flex: 3,
-                      child: ListView(
-                        children: List.generate(filtersCategory.length, (index) =>
-                            Padding(
-                              padding: const EdgeInsets.only(left : 30.0, right: 30.0, top: 10, bottom: 10),
-                              child: SizedBox(
-                                //height: 200,
-                                width: 800,
-                                child: Card(
-                                  elevation: 5,
-                                  child: Column(
-                                    children: [
-                                      ListTile(
-                                        title:  Text(filtersCategory[index]['label']),
-                                      ),
-                                      ChipsChoice<String>.multiple(
-                                        value: tags,
-                                        onChanged: (val) {
-                                          setState(() => tags = val);
-                                          controller.fetchFilteredMembers(val);
-                                        },
-                                        choiceItems: C2Choice.listFrom<String, String>(
-                                          source: controller.getFilteredTagsFromCategory(filtersCategory[index]['key']),
-                                          value: (i, v) => v,
-                                          label: (i, v) => v,
-                                          tooltip: (i, v) => v,
+                      flex: 1,
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        child: ListView(
+                          children: List.generate(filtersCategory.length, (index) =>
+                              Padding(
+                                padding: const EdgeInsets.only(left : 30.0, right: 30.0, top: 10, bottom: 10),
+                                child: SizedBox(
+                                  //height: 200,
+                                  width: 800,
+                                  child: Card(
+                                    elevation: 5,
+                                    child: Column(
+                                      children: [
+                                        ListTile(
+                                          title:  Text(filtersCategory[index]['label']),
                                         ),
-                                        choiceCheckmark: true,
-                                        textDirection: TextDirection.ltr,
-                                        wrapped: true,
-                                      ),
-                                    ],
+                                        Obx(() {
+                                          controller.tags.isNotEmpty;
+                                          return ChipsChoice<String>.multiple(
+                                          value: controller.tags,
+                                          onChanged: (val) {
+                                            setState(()  {tags = val;controller.tags.value=val;});
+                                            controller.fetchFilteredMembers(val);
+                                          },
+                                          choiceItems: C2Choice.listFrom<String, String>(
+                                            source: controller.getFilteredTagsFromCategory(filtersCategory[index]['key']),
+                                            value: (i, v) => v,
+                                            label: (i, v) => v,
+                                            tooltip: (i, v) => v,
+                                          ),
+                                          choiceCheckmark: true,
+                                          textDirection: TextDirection.ltr,
+                                          wrapped: true,
+                                        );}),
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ),
-                            )
+                              )
+                          ),
                         ),
                       ),
                     ),

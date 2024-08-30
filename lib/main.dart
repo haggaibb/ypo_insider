@@ -19,6 +19,7 @@ import 'widgets.dart';
 import 'auth.dart';
 import 'profile_page.dart';
 import 'onboarding.dart';
+import 'theme.dart';
 
 final actionCodeSettings = ActionCodeSettings(
   url: 'https://ypodex.web.app/',
@@ -36,7 +37,7 @@ final User? user = FirebaseAuth.instance.currentUser;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(FirebaseAuthUIExample());
+  runApp(InsiderApp());
   //runApp(MainOnBoarding());
 }
 
@@ -47,29 +48,59 @@ class LabelOverrides extends DefaultLocalizations {
   String get emailInputLabel => 'Enter your email';
 }
 
-class FirebaseAuthUIExample extends StatelessWidget {
-  FirebaseAuthUIExample({super.key});
+class InsiderApp extends StatefulWidget {
+  InsiderApp({super.key});
+
+  @override
+  State<InsiderApp> createState() => _InsiderAppState();
+}
+
+class _InsiderAppState extends State<InsiderApp> {
   String get initialRoute {
     final user = FirebaseAuth.instance.currentUser;
-    /// for debug TODO del and test real on boarding using diplayname
-    print(user?.displayName==null);
-    if (user?.displayName==null) return '/onboarding';
-    return switch (user) {
-      null => '/',
-      User(emailVerified: false, email: final String _) => '/verify-email',
-      _ => '/home',
-    };
+    print('################  Insider Init App ######################');
+    print('check for user....');
+    if (user!=null) {
+      //controller.currentMember.value = await controller.loadMemberByUid(user.uid);
+      if (user.displayName!=null) {
+        print('user has a display name');
+        print(user.displayName);
+        print('assume onboarding done');
+        print('goto Home');
+        return '/home';
+      }
+      else {
+        print('user does not have has a display name');
+        print('assume he did nor finish onBoarding');
+        print('goto onboarding');
+        return '/onboarding';
+      }
+      //if (user?.displayName==null) return '/onboarding';
+      return switch (user) {
+        User(emailVerified: false, email: final String _) => '/verify-email',
+        _ => '/home',
+      };
+    } else {
+      print('no user found -> goto sign-in');
+        return '/';
+    }
+
   }
+  late ThemeMode themeMode;
+
+
+  @override
+  void initState()  {
+    print('init InsiderApp');
+    super.initState();
+    setState(() {
+      themeMode = controller.themeMode.value;
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
-
-    final buttonStyle = ButtonStyle(
-      padding: MaterialStateProperty.all(const EdgeInsets.all(12)),
-      shape: MaterialStateProperty.all(
-        RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      ),
-    );
 
     // final mfaAction = AuthStateChangeAction<MFARequired>(
     //       (context, state) async {
@@ -83,9 +114,8 @@ class FirebaseAuthUIExample extends StatelessWidget {
     //     nav.pushReplacementNamed('/home');
     //   },
     // );
-
-    return MaterialApp(
-      theme: ThemeData(
+/*
+ThemeData(
         brightness: Brightness.light,
         visualDensity: VisualDensity.standard,
         useMaterial3: true,
@@ -96,6 +126,12 @@ class FirebaseAuthUIExample extends StatelessWidget {
         textButtonTheme: TextButtonThemeData(style: buttonStyle),
         outlinedButtonTheme: OutlinedButtonThemeData(style: buttonStyle),
       ),
+ */
+    return Obx( () => MaterialApp(
+      theme: InsiderTheme.lightThemeData(context),
+      darkTheme: InsiderTheme.darkThemeData(),
+      themeMode: controller.themeMode.value,
+      //theme: InsiderTheme.darkThemeData(),
       initialRoute: initialRoute,
       routes: {
         '/': (context) {
@@ -103,11 +139,12 @@ class FirebaseAuthUIExample extends StatelessWidget {
             listener: (oldState, state, authController) async {
               //print('listen state msg:');print(state);
               if (state is SignedIn) {
+                print('sign in state activated');
                 final user = FirebaseAuth.instance.currentUser;
                 await controller.setCurrentUser(user);
                 if (user?.emailVerified??false) {
                   if (!controller.currentMember.value.onBoarding?['verified']) controller.onVerify(user!);
-                  controller.loading.value =false;
+                  //controller.loading.value =true;
                   Navigator.of(context).pushReplacementNamed('/home');
                 }
                 else {
@@ -126,9 +163,8 @@ class FirebaseAuthUIExample extends StatelessWidget {
                 return MainLoading();
               } else if (state is AuthFailed) {
                 print(state.exception);
-                // FlutterFireUIWidget that shows a human-readable error message.
                 controller.authErrMsg.value ='Authentication Failed!';
-                //controller.loading.value =false;
+                controller.loading.value =false;
                 return CustomEmailSignInForm(authController:  authController);
                 //return ErrorText(exception: state.exception);
               }
@@ -232,6 +268,6 @@ class FirebaseAuthUIExample extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
         FirebaseUILocalizations.delegate,
       ],
-    );
+    ));
   }
 }

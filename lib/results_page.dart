@@ -6,6 +6,7 @@ import 'profile_page.dart';
 import 'widgets.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'models.dart';
+import 'package:chips_choice/chips_choice.dart';
 
 
 class ResultsPage extends StatefulWidget {
@@ -87,121 +88,81 @@ class _ResultsPageState extends State<ResultsPage> {
                     // );
                   },
                 ),
-                // SearchAnchor(builder:
-                //     (BuildContext context, SearchController controller) {
-                //   return SearchBar(
-                //     controller: controller,
-                //     padding: const MaterialStatePropertyAll<EdgeInsets>(
-                //         EdgeInsets.symmetric(horizontal: 16.0)),
-                //     onTap: () {
-                //       controller.openView();
-                //     },
-                //     onChanged: (_) {
-                //       controller.openView();
-                //     },
-                //     leading: const Icon(Icons.search),
-                //     trailing: <Widget>[
-                //       Row(
-                //         children: [
-                //           Tooltip(
-                //             message: 'Search by Name',
-                //             child: IconButton(
-                //               isSelected: memberSearchIsActive,
-                //               onPressed: () {
-                //                 setState(() {
-                //                   memberSearchIsActive = !memberSearchIsActive;
-                //                   companySearchIsActive = !companySearchIsActive;
-                //                 });
-                //               },
-                //               icon: const Icon(Icons.person, color: Colors.grey,),
-                //               selectedIcon: const Icon(Icons.person),
-                //             ),
-                //           ),
-                //           Tooltip(
-                //             message: 'Search by Company',
-                //             child: IconButton(
-                //               isSelected: companySearchIsActive,
-                //               onPressed: () {
-                //                 setState(() {
-                //                   if (companySearchIsActive) {
-                //                     print('already picked');
-                //                   } else {
-                //                     memberSearchIsActive = false;
-                //                     companySearchIsActive = true;
-                //                   }
-                //                 });
-                //               },
-                //               icon: const Icon(Icons.work, color: Colors.grey,),
-                //               selectedIcon: const Icon(Icons.work),
-                //             ),
-                //           )
-                //         ],
-                //       )
-                //     ],
-                //   );
-                // }, suggestionsBuilder:
-                //     (BuildContext context, SearchController sController) {
-                //   List<String> activeList = memberSearchIsActive?controller.allMembersFullName:controller.allCompanies;
-                //   return List<ListTile>.generate(activeList.length, (int index) {
-                //     final String item = activeList[index];
-                //     return ListTile(
-                //       title: Text(item),
-                //       onTap: () {
-                //         setState(() {
-                //           sController.closeView(item);
-                //         });
-                //       },
-                //     );
-                //   });
-                // }),
                 Padding(
                   padding: const EdgeInsets.only(top: 20.0),
                   child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10.0),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.black,
-                          offset: Offset(4, 4),
-                          blurRadius: 10,
-                        ),
-                      ],
-                    ),
+                    // decoration: BoxDecoration(
+                    //   color: Colors.white,
+                    //   borderRadius: BorderRadius.circular(10.0),
+                    //   boxShadow: const [
+                    //     BoxShadow(
+                    //       color: Colors.black,
+                    //       offset: Offset(4, 4),
+                    //       blurRadius: 10,
+                    //     ),
+                    //   ],
+                    // ),
                     //width: 350,
                     child: Obx(() => controller.resultsLoading.value
                         ? ResultsLoading()
                         : controller.filteredResults.isNotEmpty
-                            ? ListView(
-                      physics: BouncingScrollPhysics(),
-                                padding: const EdgeInsets.all(20.0),
-                                shrinkWrap: true,
-                                //physics: ClampingScrollPhysics(),
-                                children: ListTile.divideTiles(
-                                    context: context,
-                                    tiles: List.generate(
-                                        controller.filteredResults.length,
-                                        (index) => Padding(
-                                              padding:
-                                                  const EdgeInsets.all(20.0),
-                                              child: SizedBox(
-                                                height: 160,
-                                                child: GestureDetector(
-                                                  child: ResultCard(controller
-                                                      .filteredResults[index]),
-                                                  onTap: () => {
-                                                    Navigator.of(context).push(
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              ProfilePage(controller
-                                                                      .filteredResults[
-                                                                  index])),
-                                                    )
-                                                  },
-                                                ),
-                                              ),
-                                            ))).toList(),
-                              )
+                            ? Column(
+                              children: [
+                                controller.tags.isNotEmpty
+                                    ? SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                      child: Row(
+                                                                        children: [ChipsChoice<String>.multiple(
+                                      value: controller.tags,
+                                      onChanged: (val) {
+                                        setState(() => controller.tags.value = val);
+                                        controller.fetchFilteredMembers(val);
+                                      },
+                                      choiceItems: C2Choice.listFrom<String, String>(
+                                        source: controller.tags,
+                                        value: (i, v) => v,
+                                        label: (i, v) => v,
+                                        tooltip: (i, v) => v,
+                                      ),
+                                      choiceCheckmark: true,
+                                      textDirection: TextDirection.ltr,
+                                      wrapped: true,
+                                                                        )],
+                                                                      ),
+                                    )
+                                    :SizedBox(width: 1,),
+                                ListView(
+                                                      physics: BouncingScrollPhysics(),
+                                    padding: const EdgeInsets.all(10.0),
+                                    shrinkWrap: true,
+                                    //physics: ClampingScrollPhysics(),
+                                    children: ListTile.divideTiles(
+                                        context: context,
+                                        tiles: List.generate(
+                                            controller.filteredResults.length,
+                                            (index) => Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(0.0),
+                                                  child: SizedBox(
+                                                    height: 180,
+                                                    child: GestureDetector(
+                                                      child: ResultCard(controller
+                                                          .filteredResults[index]),
+                                                      onTap: () => {
+                                                        Navigator.of(context).push(
+                                                          MaterialPageRoute(
+                                                              builder: (context) =>
+                                                                  ProfilePage(controller
+                                                                          .filteredResults[
+                                                                      index])),
+                                                        )
+                                                      },
+                                                    ),
+                                                  ),
+                                                ))).toList(),
+                                  ),
+                              ],
+                            )
                             : Padding(
                                 padding: const EdgeInsets.all(20.0),
                                 child: Column(

@@ -5,6 +5,7 @@ import 'package:introduction_screen/introduction_screen.dart';
 import 'package:get/get.dart';
 import 'package:ypo_connect/ctx.dart';
 import 'home.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class MainOnBoarding extends StatelessWidget {
   const MainOnBoarding({super.key});
@@ -34,7 +35,17 @@ class OnBoardingPage extends StatefulWidget {
 class OnBoardingPageState extends State<OnBoardingPage> {
   final introKey = GlobalKey<IntroductionScreenState>();
   final controller = Get.put(Controller());
+  final user = FirebaseAuth.instance.currentUser;
 
+
+  @override
+  void initState() {
+    super.initState();
+    if (user==null) {
+      print('Invalid access to OnBoarding page, user is NULL');
+      Navigator.of(context).pop;
+    }
+  }
 
   void _onIntroEnd(context) async  {
     await controller.onBoardingFinished();
@@ -42,7 +53,6 @@ class OnBoardingPageState extends State<OnBoardingPage> {
       MaterialPageRoute(builder: (_) => const Home(title : 'YPO Israel Insider Home Page')),
     );
   }
-
   Widget _buildFullscreenImage() {
     return Image.asset(
       'images/welcome.png',
@@ -52,7 +62,6 @@ class OnBoardingPageState extends State<OnBoardingPage> {
       alignment: Alignment.center,
     );
   }
-
   Widget _buildImage(String assetName, [double width = 350]) {
     return Image.asset('images/$assetName', width: width);
   }
@@ -185,24 +194,24 @@ class OnBoardingPageState extends State<OnBoardingPage> {
           ),
           image: _buildImage('onboarding-edit2.jpg'),
           reverse: false,
-          footer: Padding(
-            padding: const EdgeInsets.only(top:20.0,right: 50,left: 50),
-            child: ElevatedButton(
-              onPressed: () {
-                introKey.currentState?.animateScroll(0);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.lightBlue,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-              ),
-              child: const Text(
-                'Go To Your Profile Page Now!',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-          ),
+          // footer: Padding(
+          //   padding: const EdgeInsets.only(top:20.0,right: 50,left: 50),
+          //   child: ElevatedButton(
+          //     onPressed: () {
+          //       Navigator.pushNamed(context, '/');
+          //     },
+          //     style: ElevatedButton.styleFrom(
+          //       backgroundColor: Colors.lightBlue,
+          //       shape: RoundedRectangleBorder(
+          //         borderRadius: BorderRadius.circular(8.0),
+          //       ),
+          //     ),
+          //     child: const Text(
+          //       'Go To Your Profile Page Now!',
+          //       style: TextStyle(color: Colors.white),
+          //     ),
+          //   ),
+          // ),
         ),
       ],
       onDone: () => _onIntroEnd(context),
@@ -237,34 +246,3 @@ class OnBoardingPageState extends State<OnBoardingPage> {
     );
   }
 }
-
-//
-// class HomePage extends StatelessWidget {
-//   const HomePage({super.key});
-//
-//   void _onBackToIntro(context) {
-//     Navigator.of(context).pushReplacement(
-//       MaterialPageRoute(builder: (_) => const OnBoardingPage()),
-//     );
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(title: const Text('Home')),
-//       body: Center(
-//         child: Column(
-//           mainAxisSize: MainAxisSize.min,
-//           children: [
-//             const Text("This is the screen after Introduction"),
-//             const SizedBox(height: 16.0),
-//             ElevatedButton(
-//               onPressed: () => _onBackToIntro(context),
-//               child: const Text('Back to Introduction'),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
