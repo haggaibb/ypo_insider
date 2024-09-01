@@ -1,24 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import 'package:ypo_connect/models.dart';
-import 'utils.dart';
-import 'profile_page.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+import 'dart:html' as html;
 
 class ResultCard extends StatefulWidget {
-
   final Member member;
 
-  const ResultCard(this.member, {super.key,});
+  const ResultCard(
+    this.member, {
+    super.key,
+  });
 
   @override
   _ResultCardState createState() => _ResultCardState();
 }
-class _ResultCardState extends State<ResultCard> {
 
+class _ResultCardState extends State<ResultCard> {
   @override
   void initState() {
     super.initState();
-
   }
 
   @override
@@ -33,50 +36,68 @@ class _ResultCardState extends State<ResultCard> {
       elevation: 10,
       child: Column(
         children: [
-          Text(widget.member.fullName(),style: TextStyle(fontWeight: FontWeight.bold),),
+          Text(
+            widget.member.fullName(),
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(height: 20,),
+                  SizedBox(
+                    height: 20,
+                  ),
                   Padding(
-                      padding: const EdgeInsets.only(left :8.0),
+                      padding: const EdgeInsets.only(left: 8.0, bottom: 6),
+                      child: SizedBox(
+                        width: 230,
+                        height: 20,
+                        child: Text(
+                          widget.member.currentTitle,
+                          //overflow: TextOverflow.fade,
+                          //softWrap: false,
+                          maxLines: 2,
+                        ),
+                      )),
+                  Padding(
+                      padding: const EdgeInsets.only(left: 8.0, bottom: 6),
                       child: SizedBox(
                         width: 230,
                         child: Text(
                           widget.member.currentBusinessName,
-                          overflow: TextOverflow.fade,
-                          softWrap: false,
+                          //overflow: TextOverflow.ellipsis,
+                          //softWrap: false,
                           maxLines: 2,
                         ),
-                      )
-                  ),
+                      )),
                   Padding(
-                    padding: const EdgeInsets.only(left :8.0),
-                    child: SizedBox(
-                      width: 230,
-                      child: Text(
-                          widget.member.currentTitle,
-                          overflow: TextOverflow.fade,
-                          softWrap: false,
-                          maxLines: 2,
-                      ),
-                    )
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left :8.0),
+                    padding: const EdgeInsets.only(left: 8.0, bottom: 6),
                     child: Text(widget.member.residence),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(left :8.0),
+                    padding: const EdgeInsets.only(left: 8.0),
                     child: Text('Forum  ${widget.member.forum}'),
                   ),
                 ],
               ),
-              ProfilePic(widget.member.profileImage??''),
+              Column(
+                children: [
+                  ProfilePic(widget.member.profileImage ?? ''),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10.0),
+                    child: SizedBox(
+                        width: 90,
+                        height: 20,
+                        child: SocialBar(
+                            linkedin: widget.member.linkedin,
+                            instagram: widget.member.instagram,
+                            facebook: widget.member.facebook)),
+                  )
+                ],
+              ),
             ],
           ),
         ],
@@ -88,32 +109,38 @@ class _ResultCardState extends State<ResultCard> {
 ////////////////
 
 class ProfilePic extends StatelessWidget {
-  const ProfilePic( this.uri, {super.key, });
+  const ProfilePic(
+    this.uri, {
+    super.key,
+  });
 
   final String uri;
 
   @override
   Widget build(BuildContext context) {
-    return
-      Stack(
+    return Stack(
       children: [
         SizedBox(
           width: 90,
           height: 90,
           child: ClipRRect(
-              borderRadius: BorderRadius.circular(100), child: uri!=''
-              ? Image.network(uri)
-              : Image(image:AssetImage(uri!=''?uri:'images/profile0.jpg'))),
+              borderRadius: BorderRadius.circular(100),
+              child: uri != ''
+                  ? Image.network(uri)
+                  : Image(
+                      image:
+                          AssetImage(uri != '' ? uri : 'images/profile0.jpg'))),
         ),
       ],
     );
   }
 }
+
 ///
 ///
 ///
 class ProfileAppDrawer extends StatelessWidget {
-  const ProfileAppDrawer( this.member , {super.key});
+  const ProfileAppDrawer(this.member, {super.key});
   final Member member;
   @override
   Widget build(BuildContext context) {
@@ -129,18 +156,26 @@ class ProfileAppDrawer extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text(member.fullName() , style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
-                SizedBox(height: 10,),
-                Text(member.email ,style: TextStyle(fontSize: 14),),
-                Text('Forum '+member.forum.toString()??'Not in a Forum',style: TextStyle(fontSize: 14)),
+                Text(
+                  member.fullName(),
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Text(
+                  member.email,
+                  style: TextStyle(fontSize: 14),
+                ),
+                Text('Forum ' + member.forum.toString() ?? 'Not in a Forum',
+                    style: TextStyle(fontSize: 14)),
               ],
             ),
           ),
-          ProfilePic(member.profileImage??'')
+          ProfilePic(member.profileImage ?? '')
         ],
       ),
     );
-
   }
 }
 
@@ -157,6 +192,7 @@ class MainLoading extends StatelessWidget {
     );
   }
 }
+
 class ResultsLoading extends StatelessWidget {
   const ResultsLoading({Key? key}) : super(key: key);
 
@@ -173,6 +209,7 @@ class ResultsLoading extends StatelessWidget {
     );
   }
 }
+
 class ProfileImageLoading extends StatelessWidget {
   const ProfileImageLoading({super.key});
 
@@ -187,5 +224,150 @@ class ProfileImageLoading extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+///
+///
+/// open url in browser
+Future<void> _launchInBrowser(String url) async {
+  print(url);
+  final Uri _url = Uri.parse(url);
+  if (!await launchUrl(
+    webOnlyWindowName: '_blank',
+    _url,
+    mode: LaunchMode.externalApplication,
+  )) {
+    throw Exception('Could not launch $_url');
+  }
+}
+
+/// send email
+void _launchMailClient(String targetEmail) async {
+  String mailUrl = 'mailto:$targetEmail';
+  try {
+    await launchUrlString(mailUrl);
+  } catch (e) {}
+}
+
+///
+///
+class SocialBar extends StatelessWidget {
+  final String? linkedin;
+  final String? instagram;
+  final String? facebook;
+  const SocialBar({Key? key, this.linkedin, this.instagram, this.facebook})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        /// linkedin
+        linkedin != ''
+            ? InkWell(
+                onTap: () async {
+                  html.window.open(linkedin!, 'new tab');
+                  //await _launchInBrowser(linkedin!);
+                },
+                child: Image.asset('images/linkedin.png'),
+              )
+            : Image.asset('images/linkedin.png', color: Colors.grey,  colorBlendMode: BlendMode.saturation,),
+
+        /// instagram
+        instagram != ''
+            ? InkWell(
+                onTap: () async {
+                  html.window.open(instagram!, 'new tab');
+                  //await _launchInBrowser(instagram!);
+                },
+                child: Image.asset('images/instagram.png'),
+              )
+            : Image.asset('images/instagram.png', color: Colors.grey, colorBlendMode: BlendMode.saturation,),
+
+        /// facebook
+        facebook != ''
+            ? InkWell(
+                onTap: () async {
+                  html.window.open(facebook!, 'new tab');
+                  //await _launchInBrowser(facebook!);
+                },
+                child: Image.asset('images/facebook.png'),
+              )
+            : Image.asset('images/facebook.png', color: Colors.grey, colorBlendMode: BlendMode.saturation,),
+      ],
+    );
+  }
+}
+
+///
+///
+class ProfileMenuWidget extends StatelessWidget {
+  const ProfileMenuWidget(
+      {super.key,
+      required this.title,
+      required this.value,
+      required this.icon,
+      required this.onPress,
+      this.type});
+
+  final String title;
+  final String value;
+  final IconData icon;
+  final VoidCallback onPress;
+  final String? type;
+
+  @override
+  Widget build(BuildContext context) {
+    var isDark = MediaQuery.of(context).platformBrightness == Brightness.dark;
+    var iconColor = isDark ? Colors.blue : Colors.greenAccent;
+    return Column(children: [
+      Row(children: [
+        Icon(icon, color: iconColor),
+        Padding(
+          padding: const EdgeInsets.only(left: 8.0, right: 4),
+          child: Text(
+            title,
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+        ),
+        type == 'text'
+            ? Text(
+                value,
+                maxLines: 1,
+                 style: TextStyle(fontSize: 20),
+              )
+            : type == 'link'
+                ? GestureDetector(
+                    onTap: () => html.window.open(value, 'new tab'),//_launchInBrowser(value),
+                    child: SizedBox(
+                      width: 180,
+                      child: Text(value,
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: true,
+                          maxLines: 1,
+                          style: TextStyle(fontSize: 18,color: Colors.blue)),
+                    ))
+                : type == 'email'
+                    ? GestureDetector(
+                        onTap: () => _launchMailClient(value),
+                        child: Text(
+                          value,
+                          maxLines: 1,
+                          style: TextStyle(fontSize: 20),
+                        ))
+                    : const SizedBox(width: 1),
+      ]),
+      type == 'textbox'
+          ? SizedBox(
+              height: (value.length / 50 * 20),
+              width: 300,
+              child: Text(
+                value,
+                maxLines: 3,
+              ))
+          : SizedBox(width: 1),
+    ]);
   }
 }

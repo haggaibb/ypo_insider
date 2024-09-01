@@ -33,7 +33,7 @@ class Controller extends GetxController {
   Rx<Member> currentMember = Member(forum: 'NA', id: 'NA', firstName: 'NAA', lastName: 'NA', residence: 'NA', mobile: 'NA', email: 'NA', birthdate: Timestamp.now(), currentTitle: 'NA', currentBusinessName: 'NA', mobileCountryCode: 'NA',joinDate: 'NA').obs;
   Member noUser = Member(forum: 'NA', id: 'NA', firstName: 'NA', lastName: 'NA', residence: 'NA', mobile: 'NA', email: 'NA' , birthdate: Timestamp.now(), currentTitle: 'NA', currentBusinessName: 'NA', mobileCountryCode: 'NA',joinDate: 'NA');
   Rx<String> authErrMsg = ''.obs;
-  List<Map> freeTextTagsList = [];
+  List< Map<String, dynamic>> freeTextTagsList = [];
   List<Map> filteredTagsList = [];
   RxList<String> tags = <String>[].obs;
   /// storage for profile pics
@@ -73,11 +73,15 @@ class Controller extends GetxController {
         'uid' : user.uid,
         'profileImage' : '',
         'banner' : false,
+        'linkedin' : '',
+        'instagram' : '',
+        'facebook' : '',
         'onBoarding.registered' : true,
         'onBoarding.verified' : false,
         'onBoarding.boarded' : false,
         'filtered_tags' : [memberData['residence'],memberData['forum']],
-        'free_text_tags' : []
+        'free_text_tags' : [],
+        'settings' : {'themeMode' : 'light'},
       }
     );
     return (memberSnapshot.docs.isNotEmpty);
@@ -207,15 +211,14 @@ class Controller extends GetxController {
     for (var tag in freeTextTagsDocList) {
       freeTextTagsList.add(tag.data() as Map<String, dynamic>);
     }
-
     ///load filtered tags
     CollectionReference filteredTagsRef = db.collection('FilterTags');
     QuerySnapshot filteredTagsSnapshot = await filteredTagsRef.orderBy('show_order').get();
     List<QueryDocumentSnapshot>  filteredTagsQuery =  filteredTagsSnapshot.docs;
     for (var tag in filteredTagsQuery) {
       filteredTagsList.add(tag.data() as Map<String, dynamic>);
-      var tempTag = tag.data() as Map<String, dynamic>;
       /// build residence list for use in dropdown in profile
+      var tempTag = tag.data() as Map<String, dynamic>;
       if (tempTag['key']=='residence') {
         List list = tempTag['tags_list'];
         list.sort((a, b) => a.compareTo(b));
@@ -234,6 +237,9 @@ class Controller extends GetxController {
         }
       }
     }
+  }
+  Map<String, dynamic> newFreeTextTag(key){
+    return freeTextTagsList.firstWhere((element) => element['key']==key);
   }
   List<String> getFilteredTagsFromCategory(category) {
     List<String> list = [];
@@ -304,6 +310,13 @@ class Controller extends GetxController {
     }
 
   }
+  /// set settings
+  saveThemeMode(themeMode) {
+    var id = currentMember.value.id;
+    db.collection("Members").doc(id).update({
+      'settings.theme_mode' : themeMode
+    });
+  }
 
   @override
   onInit() async {
@@ -311,17 +324,18 @@ class Controller extends GetxController {
     print('start init ctx');
     //print(user);
     /// for debugging
+    // var membersSnapshot = await db.collection('Members').get();
     // for (var element in membersSnapshot.docs) {
     //   var data = element.data() as Map<String, dynamic>;
     //   await db.collection('Members').doc(element.id).update({
-    //     //'filter_tags' : [data['residence'],data['forum']],
-    //     //'free_text_tags': FieldValue.delete()
-    //     'free_text_tags': []
+    //     'settings' : {'themeMode' : 'light'},
+    //     // 'instagram' : '',
+    //     // 'facebook' : '',
+    //     // 'free_text_tags': [],
     //   });
     // }
     // print('Done!!!!!!!!!!!');
     // return;
-    ///
     tempProfilePicRef =storageRef.child("");
     /// Load Tags and Filters
     await loadTags();

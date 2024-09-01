@@ -40,7 +40,7 @@ class _HomeState extends State<Home> {
   void initState()  {
     super.initState();
     controller.setCurrentUser(user).then((response) {
-      print('init Home for member');
+        controller.themeMode.value = controller.currentMember.value.settings?['theme_mode']=='light'?ThemeMode.light:ThemeMode.dark;
     });
   }
 
@@ -67,71 +67,89 @@ class _HomeState extends State<Home> {
               ],
             ),
           ),
-          drawer: Drawer(
-            child: ListView(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 20.0),
-                  child: EndDrawerButton(
-                    onPressed: () {
-                     Navigator.pop(context);
-                    },
-                    style: ButtonStyle(),
-                  ),
-                ),
-                SizedBox(height: 8,),
-                //Image.network('assets/images/logo.png' ,width: 130, height: 130,),
-                DrawerHeader(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(150),
-                    //color: Colors.blue.shade50,
-                  ),
-                  child: Obx(() => ProfileAppDrawer(controller.currentMember.value)),
-                ),
-                ListTile(
-                  leading: const Icon(
-                    Icons.settings,
-                  ),
-                  title: const Text('settings'),
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(
-                    Icons.person,
-                  ),
-                  title: const Text('Profile'),
-                  onTap: () {
-                    Navigator.pushNamed(context, '/profile');
-                  },
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left:28.0,top:50),
-                  child: ListTile(
-                    title: Text('Screen Mode'),
-                    subtitle: ChipsChoice<ThemeMode>.single(
-                      value: controller.themeMode.value,
-                      onChanged: (val) {
-                          setState(() {
-                            controller.themeMode.value = val;
-                          });
+          drawer: SizedBox(
+            height: 500,
+            child: Drawer(
+              child: ListView(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 20.0),
+                    child: EndDrawerButton(
+                      onPressed: () {
+                       Navigator.pop(context);
                       },
-                      choiceItems: C2Choice.listFrom<ThemeMode,Map<dynamic, dynamic>>(
-                        source: [
-                          { 'label' : 'Light'  , 'mode': ThemeMode.light},
-                          { 'label' : 'Dark'  ,  'mode'  : ThemeMode.dark},
-                        ],
-                        value: (index, item) => item['mode']!,
-                        label: (index, item) => item['label']!,
-                      ),
+                      style: ButtonStyle(),
                     ),
+                  ),
+                  SizedBox(height: 8,),
+                  //Image.network('assets/images/logo.png' ,width: 130, height: 130,),
+                  DrawerHeader(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(150),
+                      //color: Colors.blue.shade50,
+                    ),
+                    child: Obx(() => ProfileAppDrawer(controller.currentMember.value)),
+                  ),
+                  ListTile(
+                    leading: const Icon(
+                      Icons.person,
+                    ),
+                    title: const Text('Profile'),
                     onTap: () {
                       Navigator.pushNamed(context, '/profile');
                     },
                   ),
-                )
-              ],
+                  // Padding(
+                  //   padding: const EdgeInsets.only(left:28.0,top:50),
+                  //   child: ListTile(
+                  //     title: Text('Screen Mode'),
+                  //     subtitle: ChipsChoice<ThemeMode>.single(
+                  //       value: controller.themeMode.value,
+                  //       onChanged: (val) {
+                  //           setState(() {
+                  //             controller.themeMode.value = val;
+                  //           });
+                  //       },
+                  //       choiceItems: C2Choice.listFrom<ThemeMode,Map<dynamic, dynamic>>(
+                  //         source: [
+                  //           { 'label' : 'Light'  , 'mode': ThemeMode.light},
+                  //           { 'label' : 'Dark'  ,  'mode'  : ThemeMode.dark},
+                  //         ],
+                  //         value: (index, item) => item['mode']!,
+                  //         label: (index, item) => item['label']!,
+                  //       ),
+                  //     ),
+                  //     onTap: () {
+                  //       //Navigator.pushNamed(context, '/profile');
+                  //     },
+                  //   ),
+                  // ),
+                  ExpansionTile(
+                    leading: Icon(Icons.settings),
+                    trailing: controller.themeMode.value.name=='dark'?Icon(Icons.dark_mode):Icon(Icons.light_mode),
+                    title: Text('Settings'),
+                    children: <Widget>[
+                      ChipsChoice<ThemeMode>.single(
+                        value: controller.themeMode.value,
+                        onChanged: (val) {
+                          setState(() {
+                            controller.saveThemeMode(val.name);
+                            controller.themeMode.value = val;
+                          });
+                        },
+                        choiceItems: C2Choice.listFrom<ThemeMode,Map<dynamic, dynamic>>(
+                          source: [
+                            { 'label' : 'Light'  , 'mode': ThemeMode.light},
+                            { 'label' : 'Dark'  ,  'mode'  : ThemeMode.dark},
+                          ],
+                          value: (index, item) => item['mode']!,
+                          label: (index, item) => item['label']!,
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              ),
             ),
           ),
           body: Obx(() =>

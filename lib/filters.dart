@@ -44,7 +44,7 @@ class _FiltersState extends State<Filters> {
                 topRight: Radius.circular(200),
                 topLeft: Radius.circular(200),
               ),
-              color: Theme.of(context).scaffoldBackgroundColor,
+              color: Theme.of(context).primaryColor,
           ),
             child: Padding(
               padding: const EdgeInsets.only(top: 0.0),

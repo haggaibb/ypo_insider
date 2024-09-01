@@ -1,8 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:ypo_connect/models.dart';
-import 'profile_menu.dart';
 import 'ctx.dart';
 import 'widgets.dart';
 import 'package:image_picker/image_picker.dart';
@@ -29,6 +29,9 @@ class _ProfilePageState extends State<ProfilePage> {
   TextEditingController emailCtrl = TextEditingController();
   TextEditingController memberSinceCtrl = TextEditingController();
   TextEditingController forumCtrl = TextEditingController();
+  TextEditingController linkedInCtrl = TextEditingController();
+  TextEditingController instagramCtrl = TextEditingController();
+  TextEditingController facebookCtrl = TextEditingController();
   /// Filter Tags
   late List<String> memberFilterTags;
   List<String> selectedTags = [];
@@ -48,7 +51,7 @@ class _ProfilePageState extends State<ProfilePage> {
       selectedTags=memberFilterTags;
       /// reset TextFiled Tags
       for (var i=0; i<controller.freeTextTagsList.length ; i++) {
-        freeTextControls.add(TextEditingController());
+        //freeTextControls.add(TextEditingController());
         //init ctrl with member value if pre exists
         freeTextControls[i].text = widget.member.getFreeTextTagValueByKey(controller.freeTextTagsList[i]['key']);
       }
@@ -73,11 +76,16 @@ class _ProfilePageState extends State<ProfilePage> {
       selectedTags.add(editedMember.residence);
       selectedTags.add(editedMember.forum);
       editedMember.filterTags = selectedTags;
+      editedMember.linkedin = linkedInCtrl.text;
+      editedMember.instagram = instagramCtrl.text;
+      editedMember.facebook = facebookCtrl.text;
       /// FreeTextTags
       editedMember.freeTextTags = [];
       for (var i=0; i< freeTextControls.length; i++) {
         if (freeTextControls[i].text!='') {
-          editedMember.freeTextTags?.add({controller.freeTextTagsList[i]['key'] : freeTextControls[i].text});
+          Map<String, dynamic> freeTextTag = controller.newFreeTextTag(controller.freeTextTagsList[i]['key']);
+          freeTextTag['value'] = freeTextControls[i].text;
+          editedMember.freeTextTags?.add(freeTextTag);
         }
       }
       /// Save to Db
@@ -98,6 +106,9 @@ class _ProfilePageState extends State<ProfilePage> {
     emailCtrl.text = widget.member.email;
     memberSinceCtrl.text = widget.member.joinDate;
     forumCtrl.text = widget.member.forum;
+    linkedInCtrl.text = widget.member.linkedin??'';
+    instagramCtrl.text = widget.member.instagram??'';
+    facebookCtrl.text = widget.member.facebook??'';
     /// Filter Tags
     memberFilterTags = widget.member.getMemberFilterTags();
     selectedTags = memberFilterTags;
@@ -128,7 +139,7 @@ class _ProfilePageState extends State<ProfilePage> {
               icon: Icon(Icons.arrow_back)),
           title: Column(
             children: [
-              Text(widget.member.fullName(), style: Theme.of(context).textTheme.bodyMedium!),
+              Text(widget.member.fullName(), style: Theme.of(context).textTheme.titleLarge),
               Obx(() => controller.loading.value?LinearProgressIndicator(
                 semanticsLabel: 'Linear progress indicator',
               ):SizedBox(height: 10,))
@@ -183,30 +194,6 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                         ),
                         ) //   GestureDetector(
-                      //   onTap: () async {
-                      //     controller.loadingProfileImage.value=true;
-                      //     profileImage = await picker.pickImage(source: ImageSource.gallery);
-                      //     if (profileImage==null) return;
-                      //     String url = await controller.uploadProfileImage(profileImage!,widget.member.id);
-                      //     setState(() {
-                      //       controller.loadingProfileImage.value=false;
-                      //     });
-                      //   },
-                      //   child: Positioned(
-                      //     bottom: 0,
-                      //     right: 0,
-                      //     child: Container(
-                      //       width: 35,
-                      //       height: 35,
-                      //       decoration: BoxDecoration(borderRadius: BorderRadius.circular(100), color: Colors.blue),
-                      //       child: const Icon(
-                      //         LineAwesomeIcons.edit,
-                      //         color: Colors.black,
-                      //         size: 20,
-                      //       ),
-                      //     ),
-                      //   ),
-                      // ) else SizedBox(),
                     ],
                   ),
                   const SizedBox(height: 10),
@@ -248,7 +235,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  /// -- BUTTON EDIT -- Only when Member.
+                  /// -- BUTTON EDIT and Logout-- Only when Member.
                   controller.currentMember.value.email==widget.member.email?
                   SizedBox(
                     width: 200,
@@ -279,7 +266,6 @@ class _ProfilePageState extends State<ProfilePage> {
                   )
                       :SizedBox(),
                   SizedBox(height: 20,),
-                  /// email
                   SizedBox(
                     width: 200,
                     child: editModeOn?ElevatedButton(
@@ -301,9 +287,18 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: const Text('Logout'),
                   ):SizedBox(height: 5,)
                   ),
-                  const SizedBox(height: 30),
+                  /////////
                   const Divider(),
-                  const SizedBox(height: 10),
+                  /// Social Bar
+                  Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Center(child: SizedBox(
+                        width: 160,
+                        height: 40,
+                        child: SocialBar(linkedin:  widget.member.linkedin , instagram: widget.member.instagram, facebook: widget.member.facebook)
+                      )
+                    ),
+                  ),
                   /// Residence
                   editModeOn ?Padding(
                     padding: const EdgeInsets.only(bottom: 20.0, left :60),
@@ -334,11 +329,15 @@ class _ProfilePageState extends State<ProfilePage> {
                         enabled: editModeOn?true:false,
                       ),
                     ),
-                  ):ProfileMenuWidget(
-                      title: "Residence: ",
-                      icon: Icons.location_city_sharp,
-                      value: widget.member.residence,
-                      onPress: () {}
+                  ):Padding(
+                    padding: const EdgeInsets.only(bottom: 10.0),
+                    child: ProfileMenuWidget(
+                        title: "Residence: ",
+                        icon: Icons.location_city_sharp,
+                        value: widget.member.residence,
+                        type: 'text',
+                        onPress: () {}
+                    ),
                   ),
                   /// Mobile
                   editModeOn ?Padding(
@@ -390,11 +389,15 @@ class _ProfilePageState extends State<ProfilePage> {
                         ],
                       ),
                     ),
-                  ):ProfileMenuWidget(
-                      title: "Mobile: ",
-                      icon: Icons.phone,
-                      value: widget.member.mobileCountryCode+widget.member.mobile,
-                      onPress: () {}
+                  ):Padding(
+                    padding: const EdgeInsets.only(bottom: 10.0),
+                    child: ProfileMenuWidget(
+                        title: "Mobile: ",
+                        icon: Icons.phone,
+                        value: widget.member.mobileCountryCode+widget.member.mobile,
+                        type: 'text',
+                        onPress: () {},
+                    ),
                   ),
                   /// Email
                   editModeOn ?Padding(
@@ -419,11 +422,15 @@ class _ProfilePageState extends State<ProfilePage> {
                         style: TextStyle(fontSize: 20),
                       ),
                     ),
-                  ): ProfileMenuWidget(
-                      title: "Email: ",
-                      icon: Icons.mail,
-                      value: widget.member.email,
-                      onPress: () {}),
+                  ): Padding(
+                    padding: const EdgeInsets.only(bottom: 10.0),
+                    child: ProfileMenuWidget(
+                        title: "Email: ",
+                        icon: Icons.mail,
+                        value: widget.member.email,
+                        type: 'email',
+                        onPress: () {}),
+                  ),
                   /// Member Since
                   editModeOn ?Padding(
                     padding: const EdgeInsets.only(bottom: 16.0),
@@ -447,11 +454,15 @@ class _ProfilePageState extends State<ProfilePage> {
                         style: TextStyle(fontSize: 20),
                       ),
                     ),
-                  ):ProfileMenuWidget(
-                      title: "Member Since: ",
-                      icon: Icons.av_timer_rounded,
-                      value: widget.member.joinDate,
-                      onPress: () {}),
+                  ):Padding(
+                    padding: const EdgeInsets.only(bottom: 10.0),
+                    child: ProfileMenuWidget(
+                        title: "Member Since: ",
+                        icon: Icons.av_timer_rounded,
+                        value: widget.member.joinDate,
+                        type: 'text',
+                        onPress: () {}),
+                  ),
                   /// Forum
                   editModeOn?Padding(
                     padding: const EdgeInsets.only(bottom: 20.0, left :60),
@@ -482,17 +493,95 @@ class _ProfilePageState extends State<ProfilePage> {
                         enabled: editModeOn?true:false,
                       ),
                     ),
-                  ):ProfileMenuWidget(
-                      title: "Forum: ",
-                      icon: Icons.group,
-                      value: widget.member.forum.toString(),
-                      onPress: () {}),
+                  ):Padding(
+                    padding: const EdgeInsets.only(bottom: 10.0),
+                    child: ProfileMenuWidget(
+                        title: "Forum: ",
+                        icon: Icons.group,
+                        value: widget.member.forum.toString(),
+                        type : 'text',
+                        onPress: () {}),
+                  ),
+                  /// linkedin
+                  editModeOn ?Padding(
+                    padding: const EdgeInsets.only(bottom: 16.0),
+                    child: SizedBox(
+                      width: 300,
+                      child: TextField(
+                        decoration: InputDecoration(
+                            icon: Image.network('assets/images/linkedin.png' ,width: 50,height: 50,),
+                            label: Text('Linkedin:'),
+                            contentPadding: EdgeInsets.symmetric(
+                              vertical: 0.0,
+                              horizontal: 0.0,
+                            ),
+                            isDense: true,
+                            helperText: editModeOn?'Please add a link to your profile':'',
+                            border: editModeOn? OutlineInputBorder() :InputBorder.none
+                        ),
+                        textAlign: TextAlign.center,
+                        controller: linkedInCtrl,
+                        enabled: editModeOn?true:false,
+                        style: TextStyle(fontSize: 20),
+                      ),
+                    ),
+                  ):const SizedBox(width: 1,),
+                  /// instagram
+                  editModeOn ?Padding(
+                    padding: const EdgeInsets.only(bottom: 16.0),
+                    child: SizedBox(
+                      width: 300,
+                      child: TextField(
+                        decoration: InputDecoration(
+                            icon: Image.network('assets/images/instagram.png' ,width: 50,height: 50,),
+                            label: Text('Instagram:'),
+                            contentPadding: EdgeInsets.symmetric(
+                              vertical: 0.0,
+                              horizontal: 0.0,
+                            ),
+                            isDense: true,
+                            helperText: editModeOn?'Please add a link to your profile':'',
+                            border: editModeOn? OutlineInputBorder() :InputBorder.none
+                        ),
+                        textAlign: TextAlign.center,
+                        controller: instagramCtrl,
+                        enabled: editModeOn?true:false,
+                        style: TextStyle(fontSize: 20),
+                      ),
+                    ),
+                  ):const SizedBox(width: 1,),
+                  /// facebook
+                  editModeOn ?Padding(
+                    padding: const EdgeInsets.only(bottom: 16.0),
+                    child: SizedBox(
+                      width: 300,
+                      child: TextField(
+                        decoration: InputDecoration(
+                            icon: Image.network('assets/images/facebook.png' ,width: 50,height: 50,),
+                            label: Text('Facebook:'),
+                            contentPadding: EdgeInsets.symmetric(
+                              vertical: 0.0,
+                              horizontal: 0.0,
+                            ),
+                            isDense: true,
+                            helperText: editModeOn?'Please add a link to your profile':'',
+                            border: editModeOn? OutlineInputBorder() :InputBorder.none
+                        ),
+                        textAlign: TextAlign.center,
+                        controller: facebookCtrl,
+                        enabled: editModeOn?true:false,
+                        style: TextStyle(fontSize: 20),
+                      ),
+                    ),
+                  ):const SizedBox(width: 1,),
+
+
                   /// Filtered Tags
                   const Divider(),
                   const SizedBox(
                     child: Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Text('Filter Tags'),
+                      padding: EdgeInsets.only(top:8.0),
+                      child: Text('Filter Tags' , style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
                     ),
                   ),
                   Column(
@@ -500,7 +589,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         controller.filteredTagsList.length,
                         (index) => Padding(
                               padding: const EdgeInsets.only(
-                                  left: 30.0, right: 30.0, top: 10, bottom: 10),
+                                  left: 30.0, right: 30.0, top: 8, bottom: 10),
                               child: SizedBox(
                                 //height: 200,
                                 width: 800,
@@ -580,20 +669,17 @@ class _ProfilePageState extends State<ProfilePage> {
                       child: Text('Additional Information', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
                     ),
                   ),
-                  editModeOn?
-                      Column(
+                  editModeOn
+                      ? Column(
                         children: List.generate(controller.freeTextTagsList.length, (index) {
                          return Padding(
                            padding: const EdgeInsets.only(bottom: 20.0),
                            child: TextField(
+                             maxLines: controller.freeTextTagsList[index]['type']=='textbox'?3:1,
+                             minLines: controller.freeTextTagsList[index]['type']=='textbox'?3:1,
                              decoration: InputDecoration(
                                  icon: Icon(IconData(int.parse(controller.freeTextTagsList[index]['icon_code']),fontFamily: 'MaterialIcons')),
                                  label: Text(controller.freeTextTagsList[index]['label']),
-                                 contentPadding: EdgeInsets.symmetric(
-                                   vertical: 0.0,
-                                   horizontal: 0.0,
-                                 ),
-                                 isDense: true,
                                  helperText: controller.freeTextTagsList[index]['hint'],
                                  border: OutlineInputBorder()
                              ),
@@ -606,15 +692,22 @@ class _ProfilePageState extends State<ProfilePage> {
                          })
                       )
                       :widget.member.freeTextTags!.isNotEmpty
-                      ?Column(
-                      children: List.generate(
-                          widget.member.freeTextTags!.length, (index) {
-                        return ProfileMenuWidget(
-                            title: controller.getFreeTextTagLabel(widget.member.freeTextTags![index].keys.single) + ': ',
-                            icon: IconData(int.parse(controller.freeTextTagsList[index]['icon_code']),fontFamily: 'MaterialIcons'),
-                            value: widget.member.freeTextTags![index].values.single,
-                            onPress: () {});
-                      }))
+                      ?Padding(
+                        padding: const EdgeInsets.only(bottom: 50.0),
+                        child: Column(
+                        children: List.generate(
+                            widget.member.freeTextTags!.length, (index) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 20.0),
+                            child: ProfileMenuWidget(
+                                title: '${widget.member.freeTextTags![index]['label']}: ',
+                                icon: IconData(int.parse(widget.member.freeTextTags![index]['icon_code']),fontFamily: 'MaterialIcons'),
+                                value: widget.member.freeTextTags![index]['value']??'',
+                                type : widget.member.freeTextTags![index]['type'],
+                                onPress: () {}),
+                          );
+                        })),
+                      )
                       :Padding(
                         padding: const EdgeInsets.all(20.0),
                         child: const Text('You have not provided any extra information-Please Edit and Update!'),
@@ -628,40 +721,3 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 }
-
-
-/*
-TextField(
-                        decoration: InputDecoration(
-                          icon: Icon(Icons.location_city_sharp,),
-                          label: Text('Residence:'),
-                            contentPadding: EdgeInsets.symmetric(
-                              vertical: 0.0,
-                              horizontal: 0.0,
-                            ),
-                            isDense: true,
-                            helperText: editModeOn?'Please fill your current company or business.':'',
-                            border: editModeOn? OutlineInputBorder() :InputBorder.none
-                        ),
-                        textAlign: TextAlign.center,
-                        controller: residenceCtrl,
-                        enabled: editModeOn?true:false,
-                        style: TextStyle(fontSize: 20 , color: Colors.black),
-                      ),
-
-
-
-ChoiceChip(
-                                                   onSelected: (val) {
-                                                     setState(() {
-
-                                                     });
-                                                   },
-                                                   label: Text(controller
-                                                       .filteredTagsList[index]['tags_list'][tagIndex]),
-                                                   labelStyle: const TextStyle(
-                                                       fontWeight: FontWeight.bold, color: Colors.black),
-                                                   selected: widget.member.hasFilterTag(controller.filteredTagsList[index]['key'], controller.filteredTagsList[index]['tags_list'][tagIndex]
-                                                   )
-                                                 )
- */

@@ -20,7 +20,7 @@ version: 1.0.0+1
 
 environment:
   sdk: '>=3.3.1 <4.0.0'
-
+# sdk: '>=3.3.1 <4.0.0'
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
 # consider running `flutter pub upgrade --major-versions`. Alternatively,
@@ -52,6 +52,8 @@ dependencies:
   flutter_typeahead: ^5.2.0
   introduction_screen: ^3.1.14
   google_fonts: ^6.2.1
+  url_launcher: ^6.3.0
+  flutter_native_splash: ^2.4.0
 
 dev_dependencies:
   flutter_test:
@@ -95,6 +97,9 @@ flutter:
     - images/profile5.jpg
     - images/profile6.jpg
     - images/profile7.jpg
+    - images/linkedin.png
+    - images/instagram.png
+    - images/facebook.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

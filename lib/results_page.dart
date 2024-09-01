@@ -105,18 +105,16 @@ class _ResultsPageState extends State<ResultsPage> {
                     //width: 350,
                     child: Obx(() => controller.resultsLoading.value
                         ? ResultsLoading()
-                        : controller.filteredResults.isNotEmpty
-                            ? Column(
+                        : Column(
                               children: [
-                                controller.tags.isNotEmpty
-                                    ? SingleChildScrollView(
+                                controller.tags.isNotEmpty ? SingleChildScrollView(
                                   scrollDirection: Axis.horizontal,
                                       child: Row(
                                                                         children: [ChipsChoice<String>.multiple(
                                       value: controller.tags,
-                                      onChanged: (val) {
+                                      onChanged: (val) async {
                                         setState(() => controller.tags.value = val);
-                                        controller.fetchFilteredMembers(val);
+                                        await controller.fetchFilteredMembers(val);
                                       },
                                       choiceItems: C2Choice.listFrom<String, String>(
                                         source: controller.tags,
@@ -129,9 +127,8 @@ class _ResultsPageState extends State<ResultsPage> {
                                       wrapped: true,
                                                                         )],
                                                                       ),
-                                    )
-                                    :SizedBox(width: 1,),
-                                ListView(
+                                    ) :SizedBox(width: 1,),
+                                controller.filteredResults.isNotEmpty ? ListView(
                                                       physics: BouncingScrollPhysics(),
                                     padding: const EdgeInsets.all(10.0),
                                     shrinkWrap: true,
@@ -144,7 +141,7 @@ class _ResultsPageState extends State<ResultsPage> {
                                                   padding:
                                                       const EdgeInsets.all(0.0),
                                                   child: SizedBox(
-                                                    height: 180,
+                                                    height: 200,
                                                     child: GestureDetector(
                                                       child: ResultCard(controller
                                                           .filteredResults[index]),
@@ -160,42 +157,41 @@ class _ResultsPageState extends State<ResultsPage> {
                                                     ),
                                                   ),
                                                 ))).toList(),
+                                  ) :Padding(
+                                  padding: const EdgeInsets.all(20.0),
+                                  child: Column(
+                                    children: [
+                                      const Text('No results found.'),
+                                      Row(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.center,
+                                        children: [
+                                          const Text('Click to shuffle '),
+                                          IconButton(
+                                              onPressed: () => {
+                                                controller.loadRandomResults(
+                                                    controller
+                                                        .numberOfMembers)
+                                              },
+                                              icon: Icon(Icons.shuffle)),
+                                        ],
+                                      ),
+                                      const Row(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.center,
+                                        children: [
+                                          Text('You can use the filters below'),
+                                          Icon(Icons.filter_list_outlined)
+                                        ],
+                                      )
+                                    ],
                                   ),
-                              ],
-                            )
-                            : Padding(
-                                padding: const EdgeInsets.all(20.0),
-                                child: Column(
-                                  children: [
-                                    const Text('No results found.'),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        const Text('Click to shuffle '),
-                                        IconButton(
-                                            onPressed: () => {
-                                                  controller.loadRandomResults(
-                                                      controller
-                                                          .numberOfMembers)
-                                                },
-                                            icon: Icon(Icons.shuffle)),
-                                      ],
-                                    ),
-                                    const Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Text('You can use the filters below'),
-                                        Icon(Icons.filter_list_outlined)
-                                      ],
-                                    )
-                                  ],
                                 ),
-                              )),
+                              ]
+                      ),
                   ),
                 ),
-              ],
+                )],
             ),
           ),
         ));

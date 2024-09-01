@@ -15,11 +15,15 @@ class Member {
   String forum;
   String joinDate;
   String currentBusinessName;
-  Timestamp birthdate;
+  String? linkedin;
+  String? instagram;
+  String? facebook;
+  Timestamp? birthdate;
   late String? profileImage;
   List<Map<String, dynamic>>? freeTextTags;
   List<String>? filterTags;
   Map? onBoarding;
+  Map? settings;
 
   Member({
     required this.id,
@@ -34,12 +38,16 @@ class Member {
     required this.joinDate,
     required this.currentBusinessName,
     required this.birthdate,
-    this.profileImage,
-    this.freeTextTags,
+    this.linkedin ='',
+    this.instagram = '',
+    this.facebook = '',
+    this.profileImage = '',
+    this.freeTextTags = const [],
     this.filterTags = const [],
     this.onBoarding = const {
 
-    }
+    },
+    this.settings = const {}
   });
 
 
@@ -73,16 +81,12 @@ class Member {
   String getFreeTextTagValueByKey(key) {
     String value ='';
     freeTextTags?.forEach((element) {
-      var foundKey = element.containsKey(key);
-      if (foundKey) value = element[key];
+      var foundKey = element['key']==key;
+      if (foundKey) value = element['value'];
     });
-    //print('in model get free tags');
-    //print(freeTextTags);
-    //var freeTextTagsList = freeTextTags?.entries.map( (entry) => entry.value).toList();
-    //print(freeTextTagsList);
-    //return freeTextTagsList??[];
     return value;
   }
+
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -97,10 +101,14 @@ class Member {
       'forum' : forum,
       'join_date' : joinDate,
       'current_business_name' : currentBusinessName,
+      'linkedin' : linkedin,
+      'instagram' : instagram,
+      'facebook' : facebook,
       'birthdate' : birthdate,
       'free_text_tags' : freeTextTags,
       'filter_tags' : filterTags,
-      'onBoarding' : onBoarding
+      'onBoarding' : onBoarding,
+      'settings' : settings
     };
   }
 
@@ -109,7 +117,7 @@ class Member {
         firstName = doc["firstName"],
         lastName = doc["lastName"],
         currentTitle = doc["current_title"],
-        residence = doc["residence"]??'NA',
+        residence = doc["residence"].trim()??'NA',
         mobile = doc["mobile"],
         mobileCountryCode = doc['mobile_country_code'],
         email = doc["email"],
@@ -117,10 +125,14 @@ class Member {
         forum = doc["forum"]??'NA',
         joinDate = doc['join_date'],
         currentBusinessName = doc['current_business_name'],
+        linkedin = doc['linkedin']??'',
+        instagram = doc['instagram']??'',
+        facebook = doc['facebook']??'',
         birthdate = doc['birthdate'],
         freeTextTags = List<Map<String, dynamic>>.from(doc["free_text_tags"]),
         filterTags =  List<String>.from(doc["filter_tags"]),
-        onBoarding = doc["onBoarding"];
+        onBoarding = doc["onBoarding"],
+        settings = doc['settings'];
 }
 
 class ResultRecord {
