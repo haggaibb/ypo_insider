@@ -1,14 +1,192 @@
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:sheet/sheet.dart';
+import 'package:ypo_connect/main.dart';
+import 'package:ypo_connect/models.dart';
+import 'package:ypo_connect/profile_page.dart';
 import 'filters.dart';
-import 'ctx.dart';
+import 'main_controller.dart';
 import 'results_page.dart';
 import 'package:get/get.dart';
 import 'widgets.dart';
+import 'package:ypo_connect/members_controller.dart';
 import 'package:chips_choice/chips_choice.dart';
+import 'theme.dart';
+import 'package:get_storage/get_storage.dart';
 
+class Home extends StatefulWidget {
+  const Home({super.key, this.user});
+  final User? user;
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  List selectedFiltersList = [];
+  SheetController sheetController = SheetController();
+  final membersController = Get.put(MembersController());
+  final mainController = Get.put(MainController());
+  var minSheetPos = 20.0;
+  var maxSheetPos = 800.0;
+  var openSheetPos = 700.0;
+  var initSheetPos = 40.0;
+
+  void sheetJumpFunction() {
+
+    sheetController.offset <= initSheetPos
+        ? sheetController.animateTo(openSheetPos,
+            duration: const Duration(milliseconds: 500), curve: Curves.easeIn)
+        : sheetController.animateTo(initSheetPos,
+            duration: const Duration(milliseconds: 500), curve: Curves.easeIn);
+  }
+
+  @override
+  void initState()  {
+    print('init home');
+    super.initState();
+    membersController.setCurrentUser(widget.user);
+    mainController.loadRandomResults(membersController.numberOfMembers);
+    setState(() {
+      mainController.loadTags(membersController.allMembers);
+    });
+    print('init home end');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+    return Obx(() => GetMaterialApp(
+        title: 'YPO Israel Insider',
+        theme: InsiderTheme.lightThemeData(context),
+        darkTheme: InsiderTheme.darkThemeData(),
+        themeMode: membersController.themeMode.value,
+        home: Scaffold(
+            appBar: AppBar(
+              actions: [
+                Padding(
+                  padding: const EdgeInsets.all(0.0),
+                  child: Image.network('assets/images/logo.png'),
+                )
+              ],
+              //backgroundColor: Colors.white,
+              title: Column(
+                children: [
+                  const Text(
+                    'YPO Israel Insider',
+                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+                  ),
+                  Obx(() => !membersController.loading.value
+                      ? Text(
+                          '${membersController.numberOfMembers} registered members',
+                          style: const TextStyle(
+                              fontSize: 12, fontWeight: FontWeight.bold),
+                        )
+                      : const SizedBox(
+                          width: 1,
+                        )),
+                ],
+              ),
+            ),
+            drawer: SizedBox(
+              height: 500,
+              child: Drawer(
+                child: ListView(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 20.0),
+                      child: EndDrawerButton(
+                        onPressed: () {
+                          Get.back();
+                        },
+                        style: ButtonStyle(),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 8,
+                    ),
+                    //Image.network('assets/images/logo.png' ,width: 130, height: 130,),
+                    DrawerHeader(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(150),
+                        //color: Colors.blue.shade50,
+                      ),
+                      child: Obx(() => ProfileAppDrawer(
+                          membersController.currentMember.value)),
+                    ),
+                    ListTile(
+                      leading: const Icon(
+                        Icons.person,
+                      ),
+                      title: const Text('Profile'),
+                      onTap: () {
+                        Get.to(() =>
+                            ProfilePage(membersController.currentMember.value));
+                      },
+                    ),
+                    ExpansionTile(
+                      leading: const Icon(Icons.settings),
+                      trailing: membersController.themeMode.value.name == 'dark'
+                          ? const Icon(Icons.dark_mode)
+                          : Icon(Icons.light_mode),
+                      title: Text('Settings'),
+                      children: <Widget>[
+                        ChipsChoice<ThemeMode>.single(
+                          value: membersController.themeMode.value,
+                          onChanged: (val) {
+                            setState(() {
+                              membersController.saveThemeMode(val.name);
+                              membersController.themeMode.value = val;
+                              Get.changeTheme(val.name == 'dark'
+                                  ? ThemeData.dark()
+                                  : ThemeData.light());
+                            });
+                          },
+                          choiceItems: C2Choice.listFrom<ThemeMode,
+                              Map<dynamic, dynamic>>(
+                            source: [
+                              {'label': 'Light', 'mode': ThemeMode.light},
+                              {'label': 'Dark', 'mode': ThemeMode.dark},
+                            ],
+                            value: (index, item) => item['mode']!,
+                            label: (index, item) => item['label']!,
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              ),
+            ),
+            body: Stack(
+              children: [
+                ResultsPage(),
+                Obx(() => mainController.resultsLoading.value
+                    ? ResultsLoading()
+                    : Sheet(
+                        shape: ContinuousRectangleBorder(
+                          borderRadius: BorderRadius.circular(50),
+                        ),
+                        elevation: 0,
+                        backgroundColor: Colors.transparent,
+                        controller: sheetController,
+                        minExtent: minSheetPos,
+                        maxExtent: maxSheetPos,
+                        initialExtent: initSheetPos,
+                        fit: SheetFit.expand,
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 20, right: 20),
+                          child: Filters(() => sheetJumpFunction()),
+                        ),
+                      )),
+              ],
+            )
+            // This trailing comma makes auto-formatting nicer for build methods.
+
+            )));
+  }
+}
+
+/*
 
 class Home extends StatefulWidget {
   const Home({super.key, required this.title,this.user});
@@ -182,76 +360,5 @@ class _HomeState extends State<Home> {
   }
 }
 
-/*
-Directionality(
-      textDirection: TextDirection.ltr,
-      child: Scaffold(
-          appBar: AppBar(
-            actions: [Padding(
-              padding: const EdgeInsets.all(0.0),
-              child: Image.network('assets/images/logo.png'),
-            )],
-            backgroundColor: Colors.white,
-            title: Column(
-              children: [
-                const Text('YPO Israel Insider', style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),),
-                Obx(() =>!controller.loading.value
-                    ?Text('${controller.numberOfMembers} registered members', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.indigo),)
-                    :const SizedBox(width: 1,)
-                ),
-              ],
-            ),
-          ),
-          drawer: Drawer(
-            child: ListView(
-              children: [
-                DrawerHeader(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                  ),
-                  child: Obx(() => ProfileAppDrawer(controller.loading.value?controller.noUser:controller.currentMember.value)),
-                ),
-                ListTile(
-                  leading: const Icon(
-                    Icons.settings,
-                  ),
-                  title: const Text('settings'),
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(
-                    Icons.person,
-                  ),
-                  title: const Text('Profile'),
-                  onTap: () {
-                    Navigator.pushNamed(context, '/profile');
-                  },
-                )
-              ],
-            ),
-          ),
-          body: Obx(() =>
-          !controller.loading.value?
-          Stack(
-            children: [
-              ResultsPage(),
-              Sheet(
-                shape: ContinuousRectangleBorder(
-                  borderRadius: BorderRadius.circular(50),
-                ),
-                elevation: 10,
-                backgroundColor: Colors.black,
-                controller: sheetController,
-                minExtent: minSheetPos,
-                initialExtent: initSheetPos,
-                fit: SheetFit.expand,
-                child:  Filters(()=> sheetJumpFunction()),
-              ),
-            ],
-          ):MainLoading()
-            // This trailing comma makes auto-formatting nicer for build methods.
-          )),
-    )
+
  */

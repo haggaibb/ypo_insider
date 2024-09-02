@@ -194,17 +194,23 @@ class MainLoading extends StatelessWidget {
 }
 
 class ResultsLoading extends StatelessWidget {
-  const ResultsLoading({Key? key}) : super(key: key);
+  final String statusMsg;
+  const ResultsLoading({super.key, this.statusMsg=''});
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(80.0),
-        child: SpinKitThreeInOut(
-          color: Colors.blue,
-          size: 80.0,
-        ),
+      child: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.all(80.0),
+            child: SpinKitThreeInOut(
+              color: Colors.blue,
+              size: 80.0,
+            ),
+          ),
+          Text(statusMsg)
+        ],
       ),
     );
   }
@@ -351,7 +357,8 @@ class ProfileMenuWidget extends StatelessWidget {
                     ))
                 : type == 'email'
                     ? GestureDetector(
-                        onTap: () => _launchMailClient(value),
+                         onTap: () => {},
+                        //onTap: () => _launchMailClient(value),
                         child: Text(
                           value,
                           maxLines: 1,
@@ -369,5 +376,17 @@ class ProfileMenuWidget extends StatelessWidget {
               ))
           : SizedBox(width: 1),
     ]);
+  }
+}
+///
+class Goodbye extends StatelessWidget {
+
+  const Goodbye({super.key, });
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text('Goodbye'),
+    );
   }
 }

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'ctx.dart';
+import 'main_controller.dart';
+import 'members_controller.dart';
 import 'package:get/get.dart';
 import 'profile_page.dart';
 import 'widgets.dart';
@@ -19,19 +20,22 @@ class ResultsPage extends StatefulWidget {
 }
 
 class _ResultsPageState extends State<ResultsPage> {
-  final controller = Get.put(Controller());
+  final mainController = Get.put(MainController());
+  final membersController = Get.put(MembersController());
   List<String> activeSuggestionsList=[];
   bool memberSearchIsActive = true;
   bool companySearchIsActive = false;
-
   List<ResultRecord> filterResult(search) {
-    List<ResultRecord> res = controller.suggestionsList.where((element) => element.label.contains(search)).toList();
+    List<ResultRecord> res = mainController.suggestionsList.where((element) => element.label.contains(search)).toList();
     return res;
   }
 
   @override
   void initState() {
     super.initState();
+    setState(() {
+      //mainController.resultsLoading.value=true;
+    });
   }
 
   @override
@@ -41,7 +45,8 @@ class _ResultsPageState extends State<ResultsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
+    return Obx(() => !mainController.resultsLoading.value
+        ?Directionality(
         textDirection: TextDirection.ltr,
         child: SingleChildScrollView(
           physics: BouncingScrollPhysics(),
@@ -65,59 +70,35 @@ class _ResultsPageState extends State<ResultsPage> {
                   itemBuilder: (context, result) {
                     return ListTile(
                       title: Text(result.label),
-                      //subtitle: Text(result.country),
                     );
                   },
                   onSelected: (result) async {
-                    print('result picked');
-                    print(result);
-                    QueryDocumentSnapshot memberQuery = controller.allMembers.firstWhere((element) => element.id==result.id);
-                    var memberData = memberQuery.data() as Map<String, dynamic>;
-                    var memberEmail = memberData['email'];
-                    Member member = await controller.getMemberByEMail(memberEmail);
-                    //Member member = await controller.getMemberById(result.id);
+                    Member member = membersController.getMemberById(result.id);
                     Navigator.of(context).push<void>(
                       MaterialPageRoute(
                         builder: (context) => ProfilePage(member),
                       ),
                     );
-                    // Navigator.of(context).push<void>(
-                    //   MaterialPageRoute(
-                    //     builder: (context) => CityPage(city: city),
-                    //   ),
-                    // );
                   },
                 ),
                 Padding(
                   padding: const EdgeInsets.only(top: 20.0),
                   child: Container(
-                    // decoration: BoxDecoration(
-                    //   color: Colors.white,
-                    //   borderRadius: BorderRadius.circular(10.0),
-                    //   boxShadow: const [
-                    //     BoxShadow(
-                    //       color: Colors.black,
-                    //       offset: Offset(4, 4),
-                    //       blurRadius: 10,
-                    //     ),
-                    //   ],
-                    // ),
-                    //width: 350,
-                    child: Obx(() => controller.resultsLoading.value
-                        ? ResultsLoading()
+                    child: Obx(() => mainController.resultsLoading.value
+                        ? const ResultsLoading()
                         : Column(
                               children: [
-                                controller.tags.isNotEmpty ? SingleChildScrollView(
+                                mainController.tags.isNotEmpty ? SingleChildScrollView(
                                   scrollDirection: Axis.horizontal,
                                       child: Row(
                                                                         children: [ChipsChoice<String>.multiple(
-                                      value: controller.tags,
+                                      value: mainController.tags,
                                       onChanged: (val) async {
-                                        setState(() => controller.tags.value = val);
-                                        await controller.fetchFilteredMembers(val);
+                                        setState(() => mainController.tags.value = val);
+                                        await mainController.fetchFilteredMembers(val);
                                       },
                                       choiceItems: C2Choice.listFrom<String, String>(
-                                        source: controller.tags,
+                                        source: mainController.tags,
                                         value: (i, v) => v,
                                         label: (i, v) => v,
                                         tooltip: (i, v) => v,
@@ -128,7 +109,7 @@ class _ResultsPageState extends State<ResultsPage> {
                                                                         )],
                                                                       ),
                                     ) :SizedBox(width: 1,),
-                                controller.filteredResults.isNotEmpty ? ListView(
+                                mainController.filteredResults.isNotEmpty ? ListView(
                                                       physics: BouncingScrollPhysics(),
                                     padding: const EdgeInsets.all(10.0),
                                     shrinkWrap: true,
@@ -136,20 +117,20 @@ class _ResultsPageState extends State<ResultsPage> {
                                     children: ListTile.divideTiles(
                                         context: context,
                                         tiles: List.generate(
-                                            controller.filteredResults.length,
+                                            mainController.filteredResults.length,
                                             (index) => Padding(
                                                   padding:
-                                                      const EdgeInsets.all(0.0),
+                                                      const EdgeInsets.only(bottom: 6.0),
                                                   child: SizedBox(
                                                     height: 200,
                                                     child: GestureDetector(
-                                                      child: ResultCard(controller
+                                                      child: ResultCard(mainController
                                                           .filteredResults[index]),
                                                       onTap: () => {
                                                         Navigator.of(context).push(
                                                           MaterialPageRoute(
                                                               builder: (context) =>
-                                                                  ProfilePage(controller
+                                                                  ProfilePage(mainController
                                                                           .filteredResults[
                                                                       index])),
                                                         )
@@ -169,8 +150,8 @@ class _ResultsPageState extends State<ResultsPage> {
                                           const Text('Click to shuffle '),
                                           IconButton(
                                               onPressed: () => {
-                                                controller.loadRandomResults(
-                                                    controller
+                                                mainController.loadRandomResults(
+                                                    membersController
                                                         .numberOfMembers)
                                               },
                                               icon: Icon(Icons.shuffle)),
@@ -194,6 +175,6 @@ class _ResultsPageState extends State<ResultsPage> {
                 )],
             ),
           ),
-        ));
+        )):ResultsLoading());
   }
 }

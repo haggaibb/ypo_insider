@@ -7,6 +7,7 @@ class Member {
   final String id;
   final String firstName;
   final String lastName;
+  final String? uid;
   String currentTitle;
   String residence;
   String mobile;
@@ -29,6 +30,7 @@ class Member {
     required this.id,
     required this.firstName,
     required this.lastName,
+    this.uid,
     required this.currentTitle,
     required this.residence,
     required this.mobile,
@@ -92,6 +94,7 @@ class Member {
       'id': id,
       'firstName': firstName,
       'lastName': lastName,
+      'uid' : uid,
       'current_title': currentTitle,
       'residence': residence,
       'mobile' :mobile,
@@ -116,6 +119,7 @@ class Member {
         id = doc.id,
         firstName = doc["firstName"],
         lastName = doc["lastName"],
+        uid =  doc["uid"]??'',
         currentTitle = doc["current_title"],
         residence = doc["residence"].trim()??'NA',
         mobile = doc["mobile"],

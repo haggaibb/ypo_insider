@@ -2,7 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:chips_choice/chips_choice.dart';
 import 'package:flutter/widgets.dart';
-import 'ctx.dart';
+import 'package:ypo_connect/members_controller.dart';
+import 'main_controller.dart';
 import 'package:get/get.dart';
 
 class Filters extends StatefulWidget {
@@ -13,8 +14,7 @@ class Filters extends StatefulWidget {
   _FiltersState createState() => _FiltersState();
 }
 class _FiltersState extends State<Filters> {
-  final controller = Get.put(Controller());
-
+  final mainController = Get.put(MainController());
   // multiple choice value
   late List filtersCategory;
   List<String> tags =[];
@@ -24,7 +24,7 @@ class _FiltersState extends State<Filters> {
   @override
   void initState() {
     super.initState();
-    filtersCategory = controller.filteredTagsList;
+    filtersCategory = mainController.filteredTagsList;
   }
   @override
   void dispose() {
@@ -59,7 +59,7 @@ class _FiltersState extends State<Filters> {
                       child: IconButton(
                         onPressed: widget.jumpFunction,
                         icon : Icon(Icons.filter_list_outlined),
-                        //color: Colors.blueAccent,
+                        color: Colors.white,
                       ),
                     ),
                     Expanded(
@@ -78,18 +78,18 @@ class _FiltersState extends State<Filters> {
                                     child: Column(
                                       children: [
                                         ListTile(
-                                          title:  Text(filtersCategory[index]['label']),
+                                          title:  Text(filtersCategory[index]['label'] ,style: Theme.of(context).textTheme.titleLarge),
                                         ),
                                         Obx(() {
-                                          controller.tags.isNotEmpty;
+                                          mainController.tags.isNotEmpty;
                                           return ChipsChoice<String>.multiple(
-                                          value: controller.tags,
+                                          value: mainController.tags,
                                           onChanged: (val) {
-                                            setState(()  {tags = val;controller.tags.value=val;});
-                                            controller.fetchFilteredMembers(val);
+                                            setState(()  {tags = val;mainController.tags.value=val;});
+                                            mainController.fetchFilteredMembers(val);
                                           },
                                           choiceItems: C2Choice.listFrom<String, String>(
-                                            source: controller.getFilteredTagsFromCategory(filtersCategory[index]['key']),
+                                            source: mainController.getFilteredTagsFromCategory(filtersCategory[index]['key']),
                                             value: (i, v) => v,
                                             label: (i, v) => v,
                                             tooltip: (i, v) => v,

@@ -1,9 +1,14 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:js';
+
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+import 'package:ypo_connect/auth_screens.dart';
+import 'package:ypo_connect/main.dart';
+import 'package:ypo_connect/members_controller.dart';
 import 'package:ypo_connect/models.dart';
-import 'ctx.dart';
+import 'main_controller.dart';
+import 'members_controller.dart';
 import 'widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -19,7 +24,8 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  final controller = Get.put(Controller());
+  final memberController = Get.put(MembersController());
+  final mainController = Get.put(MainController());
   bool editModeOn = false;
   TextEditingController currentTitleCtrl = TextEditingController();
   TextEditingController  currentBusinessCtrl = TextEditingController();
@@ -50,14 +56,14 @@ class _ProfilePageState extends State<ProfilePage> {
       /// clear Filter Tags
       selectedTags=memberFilterTags;
       /// reset TextFiled Tags
-      for (var i=0; i<controller.freeTextTagsList.length ; i++) {
+      for (var i=0; i<mainController.freeTextTagsList.length ; i++) {
         //freeTextControls.add(TextEditingController());
         //init ctrl with member value if pre exists
-        freeTextControls[i].text = widget.member.getFreeTextTagValueByKey(controller.freeTextTagsList[i]['key']);
+        freeTextControls[i].text = widget.member.getFreeTextTagValueByKey(mainController.freeTextTagsList[i]['key']);
       }
       /// clear temp ProfilePic
-      if (tempProfilePicRef.name!='') controller.deleteTempProfilePic(tempProfilePicRef);
-      tempProfileImageUrl = controller.currentMember.value.profileImage??'';
+      if (tempProfilePicRef.name!='') memberController.deleteTempProfilePic(tempProfilePicRef);
+      tempProfileImageUrl = memberController.currentMember.value.profileImage??'';
 
       editModeOn = false;
     });
@@ -83,13 +89,13 @@ class _ProfilePageState extends State<ProfilePage> {
       editedMember.freeTextTags = [];
       for (var i=0; i< freeTextControls.length; i++) {
         if (freeTextControls[i].text!='') {
-          Map<String, dynamic> freeTextTag = controller.newFreeTextTag(controller.freeTextTagsList[i]['key']);
+          Map<String, dynamic> freeTextTag = mainController.newFreeTextTag(mainController.freeTextTagsList[i]['key']);
           freeTextTag['value'] = freeTextControls[i].text;
           editedMember.freeTextTags?.add(freeTextTag);
         }
       }
       /// Save to Db
-      await controller.updateMemberInfo(editedMember);
+      await memberController.updateMemberInfo(editedMember);
       tempProfilePicRef = storageRef.child("");
   }
 
@@ -114,10 +120,10 @@ class _ProfilePageState extends State<ProfilePage> {
     selectedTags = memberFilterTags;
     /// Free Text Tags
     /// // build controllers for edit mode
-    for (var i=0; i<controller.freeTextTagsList.length ; i++) {
+    for (var i=0; i<mainController.freeTextTagsList.length ; i++) {
       freeTextControls.add(TextEditingController());
       //init ctrl with member value if pre exists
-      freeTextControls[i].text = widget.member.getFreeTextTagValueByKey(controller.freeTextTagsList[i]['key']);
+      freeTextControls[i].text = widget.member.getFreeTextTagValueByKey(mainController.freeTextTagsList[i]['key']);
     }
     ///ProfileImage
     tempProfilePicRef = storageRef.child("");
@@ -140,7 +146,7 @@ class _ProfilePageState extends State<ProfilePage> {
           title: Column(
             children: [
               Text(widget.member.fullName(), style: Theme.of(context).textTheme.titleLarge),
-              Obx(() => controller.loading.value?LinearProgressIndicator(
+              Obx(() => memberController.loading.value?LinearProgressIndicator(
                 semanticsLabel: 'Linear progress indicator',
               ):SizedBox(height: 10,))
             ],
@@ -160,7 +166,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       SizedBox(
                         width: 120,
                         height: 120,
-                        child: controller.loadingProfileImage.value?ProfileImageLoading():ClipRRect(
+                        child: memberController.loadingProfileImage.value?ProfileImageLoading():ClipRRect(
                             borderRadius: BorderRadius.circular(100),
                             child: (widget.member.profileImage != null &&  widget.member.profileImage != '')
                                 ? Image.network(!editModeOn?widget.member.profileImage!:tempProfileImageUrl)
@@ -173,13 +179,13 @@ class _ProfilePageState extends State<ProfilePage> {
                           right: 0,
                           child: GestureDetector(
                               onTap: () async {
-                                controller.loadingProfileImage.value=true;
+                                memberController.loadingProfileImage.value=true;
                                 profileImage = await picker.pickImage(source: ImageSource.gallery);
                                 if (profileImage==null) return;
-                                String url = await controller.uploadProfileImage(profileImage!,widget.member.id);
+                                String url = await memberController.uploadProfileImage(profileImage!,widget.member.id);
                                 setState(() {
                                   if (url!='') tempProfileImageUrl = url;
-                                  controller.loadingProfileImage.value=false;
+                                  memberController.loadingProfileImage.value=false;
                                 });
                               },
                               child:  Container(
@@ -236,7 +242,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   const SizedBox(height: 20),
                   /// -- BUTTON EDIT and Logout-- Only when Member.
-                  controller.currentMember.value.email==widget.member.email?
+                  memberController.currentMember.value.email==widget.member.email?
                   SizedBox(
                     width: 200,
                     child: !editModeOn?ElevatedButton(
@@ -251,12 +257,12 @@ class _ProfilePageState extends State<ProfilePage> {
                     ):ElevatedButton(
                       onPressed: () async {
                         setState(() {
-                          controller.loading.value=true;
+                          memberController.loading.value=true;
                         });
                         await updateMemberInfo();
                         setState(() {
                           editModeOn = false;
-                          controller.loading.value=false;
+                          memberController.loading.value=false;
                         });
                       },
                       style: ElevatedButton.styleFrom(
@@ -275,12 +281,11 @@ class _ProfilePageState extends State<ProfilePage> {
                       style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blue, side: BorderSide.none, shape: const StadiumBorder()),
                       child: const Text('Cancel'),
-                    ):controller.currentMember.value.email==widget.member.email?ElevatedButton(
+                    ):memberController.currentMember.value.email==widget.member.email?ElevatedButton(
                     onPressed: () async {
                       print('logout');
-                      //await FirebaseAuth.instance.signOut();
-                      await controller.logout();
-                      Navigator.popUntil(context, ModalRoute.withName('/'));
+                      await memberController.logout();
+                      Get.to( () => const Goodbye());
                     },
                     style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue, side: BorderSide.none, shape: const StadiumBorder()),
@@ -308,13 +313,13 @@ class _ProfilePageState extends State<ProfilePage> {
                         leadingIcon: Icon(Icons.location_city_sharp),
                         label: Text('Residence'),
                         initialSelection: widget.member.residence,
-                        inputDecorationTheme: InputDecorationTheme(
+                        inputDecorationTheme: const InputDecorationTheme(
                           filled: false,
                           isDense: true,
                           border:  OutlineInputBorder(),
                           contentPadding: EdgeInsets.symmetric(vertical: 5.0),
                         ),
-                        dropdownMenuEntries: controller.residenceList
+                        dropdownMenuEntries: mainController.residenceList
                             .map<DropdownMenuEntry<String>>(
                                 (String city) {
                               return DropdownMenuEntry<String>(
@@ -478,7 +483,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           border:  OutlineInputBorder(),
                           contentPadding: EdgeInsets.symmetric(vertical: 5.0),
                         ),
-                        dropdownMenuEntries: controller.forumList
+                        dropdownMenuEntries: mainController.forumList
                             .map<DropdownMenuEntry<String>>(
                                 (String city) {
                               return DropdownMenuEntry<String>(
@@ -586,22 +591,22 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   Column(
                     children: List.generate(
-                        controller.filteredTagsList.length,
+                        mainController.filteredTagsList.length,
                         (index) => Padding(
                               padding: const EdgeInsets.only(
                                   left: 30.0, right: 30.0, top: 8, bottom: 10),
                               child: SizedBox(
                                 //height: 200,
                                 width: 800,
-                                child: (  controller.filteredTagsList[index]['key']!='residence' &&
-                                          controller.filteredTagsList[index]['key']!='forum'
+                                child: (  mainController.filteredTagsList[index]['key']!='residence' &&
+                                          mainController.filteredTagsList[index]['key']!='forum'
                                         )
                                     ?Card(
                                   elevation: 10,
                                   child: Column(
                                     children: [
                                       ListTile(
-                                        title: Text(controller
+                                        title: Text(mainController
                                             .filteredTagsList[index]['label'], style: TextStyle(fontWeight: FontWeight.bold),),
                                       ),
                                       Padding(
@@ -610,47 +615,46 @@ class _ProfilePageState extends State<ProfilePage> {
                                             runSpacing: 8,
                                             spacing: 10,
                                             children:
-                                             List.generate(controller
+                                             List.generate(mainController
                                                  .filteredTagsList[index]['tags_list'].length, (tagIndex) =>
                                                  editModeOn
                                                      ? ChoiceChip(
                                                      onSelected: (val) {
                                                        if (editModeOn) {
                                                          setState(() {
-                                                           if (selectedTags.contains(controller.filteredTagsList[index]['tags_list'][tagIndex])){
-                                                             selectedTags.remove(controller.filteredTagsList[index]['tags_list'][tagIndex]);
+                                                           if (selectedTags.contains(mainController.filteredTagsList[index]['tags_list'][tagIndex])){
+                                                             selectedTags.remove(mainController.filteredTagsList[index]['tags_list'][tagIndex]);
                                                            } else {
-                                                             selectedTags.add(controller.filteredTagsList[index]['tags_list'][tagIndex]);
+                                                             selectedTags.add(mainController.filteredTagsList[index]['tags_list'][tagIndex]);
                                                            }
 
                                                          });
                                                        }
                                                      },
-                                                     label: Text(controller
+                                                     label: Text(mainController
                                                          .filteredTagsList[index]['tags_list'][tagIndex]),
                                                      labelStyle: const TextStyle(
                                                          fontWeight: FontWeight.bold),
-                                                     selected: selectedTags.contains(controller.filteredTagsList[index]['tags_list'][tagIndex])
+                                                     selected: selectedTags.contains(mainController.filteredTagsList[index]['tags_list'][tagIndex])
                                                  )
-                                                     : selectedTags.contains(controller.filteredTagsList[index]['tags_list'][tagIndex])
+                                                     : selectedTags.contains(mainController.filteredTagsList[index]['tags_list'][tagIndex])
                                                        ? ChoiceChip(
                                                    onSelected: (val) {
                                                      if (editModeOn) {
                                                        setState(() {
-                                                         if (selectedTags.contains(controller.filteredTagsList[index]['tags_list'][tagIndex])){
-                                                           selectedTags.remove(controller.filteredTagsList[index]['tags_list'][tagIndex]);
+                                                         if (selectedTags.contains(mainController.filteredTagsList[index]['tags_list'][tagIndex])){
+                                                           selectedTags.remove(mainController.filteredTagsList[index]['tags_list'][tagIndex]);
                                                          } else {
-                                                           selectedTags.add(controller.filteredTagsList[index]['tags_list'][tagIndex]);
+                                                           selectedTags.add(mainController.filteredTagsList[index]['tags_list'][tagIndex]);
                                                          }
 
                                                        });
                                                      }
                                                    },
-                                                   label: Text(controller
-                                                       .filteredTagsList[index]['tags_list'][tagIndex]),
+                                                   label: Text(mainController.filteredTagsList[index]['tags_list'][tagIndex]),
                                                    labelStyle: const TextStyle(
                                                        fontWeight: FontWeight.bold),
-                                                   selected: selectedTags.contains(controller.filteredTagsList[index]['tags_list'][tagIndex])
+                                                   selected: selectedTags.contains(mainController.filteredTagsList[index]['tags_list'][tagIndex])
                                                    ):SizedBox(width: 1,)
                                                  )
                                              ),
@@ -671,16 +675,16 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   editModeOn
                       ? Column(
-                        children: List.generate(controller.freeTextTagsList.length, (index) {
+                        children: List.generate(mainController.freeTextTagsList.length, (index) {
                          return Padding(
                            padding: const EdgeInsets.only(bottom: 20.0),
                            child: TextField(
-                             maxLines: controller.freeTextTagsList[index]['type']=='textbox'?3:1,
-                             minLines: controller.freeTextTagsList[index]['type']=='textbox'?3:1,
+                             maxLines: mainController.freeTextTagsList[index]['type']=='textbox'?3:1,
+                             minLines: mainController.freeTextTagsList[index]['type']=='textbox'?3:1,
                              decoration: InputDecoration(
-                                 icon: Icon(IconData(int.parse(controller.freeTextTagsList[index]['icon_code']),fontFamily: 'MaterialIcons')),
-                                 label: Text(controller.freeTextTagsList[index]['label']),
-                                 helperText: controller.freeTextTagsList[index]['hint'],
+                                 icon: Icon(IconData(int.parse(mainController.freeTextTagsList[index]['icon_code']),fontFamily: 'MaterialIcons')),
+                                 label: Text(mainController.freeTextTagsList[index]['label']),
+                                 helperText: mainController.freeTextTagsList[index]['hint'],
                                  border: OutlineInputBorder()
                              ),
                              textAlign: TextAlign.center,

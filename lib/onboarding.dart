@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:get/get.dart';
-import 'package:ypo_connect/ctx.dart';
+import 'package:ypo_connect/old/ctx.dart';
+import 'package:ypo_connect/main_controller.dart';
+import 'package:ypo_connect/members_controller.dart';
 import 'home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -34,7 +36,7 @@ class OnBoardingPage extends StatefulWidget {
 
 class OnBoardingPageState extends State<OnBoardingPage> {
   final introKey = GlobalKey<IntroductionScreenState>();
-  final controller = Get.put(Controller());
+  final membersController = Get.put(MembersController());
   final user = FirebaseAuth.instance.currentUser;
 
 
@@ -48,9 +50,9 @@ class OnBoardingPageState extends State<OnBoardingPage> {
   }
 
   void _onIntroEnd(context) async  {
-    await controller.onBoardingFinished();
+    await membersController.onBoardingFinished(user!);
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const Home(title : 'YPO Israel Insider Home Page')),
+      MaterialPageRoute(builder: (_) => Home(user: user)),
     );
   }
   Widget _buildFullscreenImage() {
