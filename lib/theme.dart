@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-Color seedColor = Colors.blue.shade50;
+Color seedColor = Colors.red;
 
 class InsiderTheme {
   static ThemeData lightThemeData(BuildContext context) {
@@ -10,7 +10,9 @@ class InsiderTheme {
       fontFamily: GoogleFonts.openSans().fontFamily,
       colorScheme: ColorScheme.fromSeed(
           seedColor: seedColor,
-          background: Colors.white
+          background: Colors.white,
+          primary: seedColor,
+          primaryContainer: seedColor,
       ),
       //hoverColor:  Colors.green.shade200,
       dividerColor: Colors.indigoAccent,
@@ -36,7 +38,7 @@ class InsiderTheme {
         //surfaceTintColor: Colors.blue,
         shape: ContinuousRectangleBorder(
           borderRadius: BorderRadius.circular(150),
-          side: BorderSide(color: Colors.indigo, width: 5)
+          side: BorderSide(color: seedColor, width: 5)
         )
       ),
       /// Card Theme
@@ -137,7 +139,6 @@ class InsiderTheme {
         },
         ),
       ),
-
       dropdownMenuTheme: const DropdownMenuThemeData(
           textStyle: TextStyle(fontWeight: FontWeight.w100)
       ),

@@ -253,21 +253,21 @@ class _ProfilePageState extends State<ProfilePage> {
                       },
                       style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blue, side: BorderSide.none, shape: const StadiumBorder()),
-                      child: const Text('Edit'),
+                      child: const Text('Edit', style: TextStyle(fontWeight: FontWeight.bold)),
                     ):ElevatedButton(
                       onPressed: () async {
-                        setState(() {
-                          memberController.loading.value=true;
-                        });
+                        // setState(() {
+                        //   memberController.loading.value=true;
+                        // });
                         await updateMemberInfo();
-                        setState(() {
-                          editModeOn = false;
-                          memberController.loading.value=false;
-                        });
+                         setState(() {
+                           editModeOn = false;
+                        //   memberController.loading.value=false;
+                         });
                       },
                       style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blue, side: BorderSide.none, shape: const StadiumBorder()),
-                      child: const Text('Save'),
+                      child: const Text('Save', style: TextStyle(fontWeight: FontWeight.bold)),
                     ),
                   )
                       :SizedBox(),
@@ -280,7 +280,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       },
                       style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blue, side: BorderSide.none, shape: const StadiumBorder()),
-                      child: const Text('Cancel'),
+                      child: const Text('Cancel' , style: TextStyle(fontWeight: FontWeight.bold),),
                     ):memberController.currentMember.value.email==widget.member.email?ElevatedButton(
                     onPressed: () async {
                       print('logout');
@@ -289,7 +289,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     },
                     style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue, side: BorderSide.none, shape: const StadiumBorder()),
-                    child: const Text('Logout'),
+                    child: const Text('Logout', style: TextStyle(fontWeight: FontWeight.bold)),
                   ):SizedBox(height: 5,)
                   ),
                   /////////
@@ -712,9 +712,9 @@ class _ProfilePageState extends State<ProfilePage> {
                           );
                         })),
                       )
-                      :Padding(
-                        padding: const EdgeInsets.all(20.0),
-                        child: const Text('You have not provided any extra information-Please Edit and Update!'),
+                      :const Padding(
+                        padding: EdgeInsets.all(20.0),
+                        child: Text('You have not provided any extra information-Please Edit and Update!'),
                       )
                 ],
               )),

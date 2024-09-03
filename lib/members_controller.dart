@@ -29,13 +29,12 @@ class MembersController extends GetxController {
   final box = GetStorage();
   /// AUTH
   final user = FirebaseAuth.instance.currentUser;
-  setCurrentUser(User? user) {
+  setCurrentByUid(User? user) {
     if (user!=null) currentMember.value = getMemberByUid(user.uid);
     themeMode.value = currentMember.value.settings?['theme_mode']=='light'?ThemeMode.light:ThemeMode.dark;
   }
-  refreshCurrentUser() {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user!=null) currentMember.value = getMemberByUid(user.uid);
+  setCurrentByMember(Member member) {
+    currentMember.value=member;
   }
   validateMemberEmail(String email) async {
     CollectionReference membersRef = db.collection('Members');
@@ -51,7 +50,7 @@ class MembersController extends GetxController {
     var memberData = memberSnapshot.docs.first.data() as Map<String, dynamic>;
     var displayName = memberData['firstName']+" "+memberData['lastName'];
     await FirebaseAuth.instance.currentUser!.updateDisplayName(displayName);
-    membersRef.doc(memberId).update(
+    await membersRef.doc(memberId).update(
         {
           'id' : memberId,
           'uid' : user.uid,
@@ -65,9 +64,12 @@ class MembersController extends GetxController {
           'onBoarding.boarded' : false,
           'filtered_tags' : [memberData['residence'],memberData['forum']],
           'free_text_tags' : [],
-          'settings' : {'themeMode' : 'light'},
+          'settings' : {'theme_mode' : 'light'},
         }
     );
+    DocumentSnapshot refreshedMember = await membersRef.doc(memberId).get();
+    currentMember.value = Member.DocumentSnapshot(refreshedMember);
+    print('Registration done - member is ${currentMember.value.fullName()}');
     return (memberSnapshot.docs.isNotEmpty);
   }
   onVerify(User user) async {
@@ -75,8 +77,6 @@ class MembersController extends GetxController {
     print('update his profile');
     CollectionReference membersRef = db.collection('Members');
     var memberId = currentMember.value.id;
-    // QuerySnapshot memberSnapshot = await membersRef.where('email', isEqualTo: user.email).get();
-    // var memberId = memberSnapshot.docs.first.id;
     await membersRef.doc(memberId).update(
         {
           'onBoarding.verified' : true
@@ -84,9 +84,10 @@ class MembersController extends GetxController {
     );
   }
   onBoardingFinished(User user) async {
+    loading.value=true;
     print('finished onboarding');
     print('update full name to Auth User, this must be done as it acts as a flag for onboarding');
-    setCurrentUser(user);
+    print(currentMember.value.fullName());
     await FirebaseAuth.instance.currentUser!.updateDisplayName(currentMember.value.fullName());
     var memberId = currentMember.value.id;
     print(memberId);
@@ -98,6 +99,7 @@ class MembersController extends GetxController {
           'onBoarding.boarded' : true
         }
     );
+    loading.value=false;
   }
   // getMemberData(String? email) async {
   //   if (email==null) return noUser;
@@ -126,18 +128,12 @@ class MembersController extends GetxController {
   //   return Member.DocumentSnapshot(membersSnapshot.docs.first);
   // }
   getMemberById(String id) {
-    if (id=='') return noUser;
     Member foundMember = allMembers.firstWhere((element) => element.id==id, orElse: () => noUser);
-    if (foundMember.id!='NA')
-    {
-      print('no member found for ${user?.email}');
-      return noUser;
-    }
     return foundMember;
   }
   getMemberByUid(String uid) {
-    if (uid=='') return noUser;
     Member foundMember = allMembers.firstWhere((element) => element.uid==uid, orElse: () => noUser);
+    print(foundMember.firstName);
     return foundMember;
   }
   // Future<Member> getMemberByIdd(String id) async {
@@ -211,11 +207,6 @@ class MembersController extends GetxController {
     final membersSnapshot = membersQuery.docs;
     for (var member in membersSnapshot) {
       allMembers.add(Member.DocumentSnapshot(member));
-      Member memberObj = Member.DocumentSnapshot(member);
-      /// TODO Move Logic to search controller
-      //suggestionsList.add(ResultRecord(label: memberObj.fullName(), id: memberObj.id));
-      // if (memberObj.currentBusinessName!='') suggestionsList.add(ResultRecord(label: memberObj.currentBusinessName, id: memberObj.id));
-      // suggestionsList.sort((a, b) => a.label. compareTo(b.label));
     }
     numberOfMembers = membersSnapshot.length;
   }
@@ -230,15 +221,28 @@ class MembersController extends GetxController {
   @override
   onInit() async {
     // //     /// for debugging
+    /// Warning!!! use with caution!!!
     // var membersSnapshot = await db.collection('Members').get();
     // for (var element in membersSnapshot.docs) {
-    //   await db.collection('Members').doc(element.id).update({
-    //     'uid' : '',
-    //     // 'instagram' : '',
-    //     //S3zQJjBzSyNAUXlFm1uh2rtEgwz1
-    //     // 'facebook' : '',
-    //     // 'free_text_tags': [],
-    //   });
+    //   var data = element.data();
+    //   List dirty = element['filter_tags'];
+    //   if ( dirty[0].contains("\n") ) {
+    //     var forum = dirty[1];
+    //     print(element.id);
+    //     var clean =  dirty[0].replaceAll("\n", "");
+    //     dirty.removeAt(0);
+    //     dirty.add(clean);
+    //     print(clean);
+    //     print(forum);
+    //     await db.collection('Members').doc(element.id).update({
+    //       'filter_tags' : [clean,forum],
+    //       'residence' : clean,
+    //       // 'instagram' : '',
+    //       //S3zQJjBzSyNAUXlFm1uh2rtEgwz1
+    //       // 'facebook' : '',
+    //       // 'free_text_tags': [],
+    //     });
+    //   };
     // }
     // print('Done!!!!!!!!!!!');
     // return;
@@ -249,8 +253,10 @@ class MembersController extends GetxController {
     tempProfilePicRef =storageRef.child("");
     print('load members DB');
     await loadAllMembers();
-    if (user!=null) setCurrentUser(user);
+    print('get current member by user uid ${user?.uid}');
+    if (user!=null) setCurrentByUid(user);
     print('finished loading members DB');
+    print('current member init in home is ${currentMember.value.fullName()}');
     loading.value = false;
     update();
     print('end - init Members Controller');

@@ -117,7 +117,8 @@ class EmailSignInForm extends StatelessWidget {
                           ),
                           SizedBox(
                             width: 350,
-                            child: ElevatedButton(
+                            height: 50,
+                            child: TextButton(
                               ///TODO fix err because of theme effects text?
                               onPressed: () async {
                                 await signIn(context);
@@ -170,7 +171,7 @@ class EmailRegisterForm extends StatelessWidget {
             actions: [
               EmailVerifiedAction(() {
                 controller.onVerify(credentials.user!);
-                Get.to(OnBoardingPage());
+                Get.to(OnBoardingPage(user: authController.auth.currentUser!));
               }),
               AuthCancelledAction((context) {
                 FirebaseUIAuth.signOut(context: context);
@@ -293,6 +294,7 @@ class EmailRegisterForm extends StatelessWidget {
 
 class VerificationPage extends StatelessWidget {
   final User user;
+  final controller = Get.put(MembersController());
   VerificationPage({super.key, required this.user});
   @override
   Widget build(BuildContext context) {
@@ -301,7 +303,7 @@ class VerificationPage extends StatelessWidget {
             actions: [
               EmailVerifiedAction(() {
                 controller.onVerify(user);
-                Get.to(OnBoardingPage());
+                Get.to(OnBoardingPage(user: user));
                 //Navigator.pushReplacementNamed(context, '/onboarding');
               }),
               AuthCancelledAction((context) {

@@ -21,11 +21,11 @@ final emailLinkProviderConfig = EmailLinkAuthProvider(
 );
 
 Future<void> main() async {
-  runApp(MainLoading());
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   print('@@@@@@@@@@@@@@@@@@');
-  print('Front Gate');
+  print('main');
+  WidgetsFlutterBinding.ensureInitialized();
+  //runApp(MainLoading());
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   final user = FirebaseAuth.instance.currentUser;
   print(user);
   if (user!=null && user.emailVerified) {

@@ -3,14 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:get/get.dart';
-import 'package:ypo_connect/old/ctx.dart';
-import 'package:ypo_connect/main_controller.dart';
 import 'package:ypo_connect/members_controller.dart';
 import 'home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class MainOnBoarding extends StatelessWidget {
-  const MainOnBoarding({super.key});
+  final User user;
+  const MainOnBoarding({required this.user, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -22,13 +21,14 @@ class MainOnBoarding extends StatelessWidget {
       title: 'Introduction screen',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.blue, useMaterial3: true),
-      home: const OnBoardingPage(),
+      home: OnBoardingPage(user: user),
     );
   }
 }
 
 class OnBoardingPage extends StatefulWidget {
-  const OnBoardingPage({super.key});
+  final User user;
+  const OnBoardingPage({required this.user, super.key});
 
   @override
   OnBoardingPageState createState() => OnBoardingPageState();
@@ -47,13 +47,17 @@ class OnBoardingPageState extends State<OnBoardingPage> {
       print('Invalid access to OnBoarding page, user is NULL');
       Navigator.of(context).pop;
     }
+    print('check member in onboarding');
+    //membersController.setCurrentUser(user);
+    print(membersController.currentMember.value.email);
   }
 
   void _onIntroEnd(context) async  {
     await membersController.onBoardingFinished(user!);
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => Home(user: user)),
-    );
+    //Get.toNamed('/home', arguments: {'user': user});
+    //Get.offAllNamed('/home');
+    Get.to(()=> Home(user: user));
+
   }
   Widget _buildFullscreenImage() {
     return Image.asset(
@@ -71,7 +75,6 @@ class OnBoardingPageState extends State<OnBoardingPage> {
   @override
   Widget build(BuildContext context) {
     const bodyStyle = TextStyle(fontSize: 19.0);
-
     const pageDecoration = PageDecoration(
       titleTextStyle: TextStyle(fontSize: 28.0, fontWeight: FontWeight.w700),
       bodyTextStyle: bodyStyle,
