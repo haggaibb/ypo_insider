@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-Color seedColor = Colors.red;
+//Color seedColor = Color(4294703871);
+Color seedColor = Colors.blue.shade600;
+
 
 class InsiderTheme {
   static ThemeData lightThemeData(BuildContext context) {
@@ -31,18 +33,24 @@ class InsiderTheme {
           grade: 0 // (For light and dart themes) To make strokes heavier and more emphasized, use positive value grade, such as when representing an active icon state.
       ),
       drawerTheme: DrawerThemeData(
-        backgroundColor: Colors.blue.shade50,
+        backgroundColor: Colors.blue.shade100,
         //scrimColor: Colors.transparent,
         shadowColor: Colors.black,
-        elevation: 20,
+        elevation: 5,
         //surfaceTintColor: Colors.blue,
         shape: ContinuousRectangleBorder(
           borderRadius: BorderRadius.circular(150),
-          side: BorderSide(color: seedColor, width: 5)
+          side: BorderSide(color: Colors.blue.shade900, width: 5)
         )
       ),
       /// Card Theme
-      cardTheme: CardTheme(color: Colors.white ?? Colors.green.shade50, margin: const EdgeInsets.all(16), shadowColor: Colors.indigo, elevation: 5, surfaceTintColor: Colors.indigoAccent),
+      cardTheme: CardTheme(
+          color: Colors.white,
+          margin: EdgeInsets.all(16),
+          shadowColor: seedColor,
+          elevation: 5,
+          surfaceTintColor: Colors.indigoAccent
+      ),
       //listTileTheme: ListTileThemeData(tileColor: Colors.red),
       /// Text Theme data
       textTheme: TextTheme(
@@ -142,7 +150,6 @@ class InsiderTheme {
       dropdownMenuTheme: const DropdownMenuThemeData(
           textStyle: TextStyle(fontWeight: FontWeight.w100)
       ),
-
       useMaterial3: true,
     );
   }

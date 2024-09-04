@@ -27,8 +27,8 @@ class MainOnBoarding extends StatelessWidget {
 }
 
 class OnBoardingPage extends StatefulWidget {
-  final User user;
-  const OnBoardingPage({required this.user, super.key});
+  final User? user;
+  const OnBoardingPage({this.user, super.key});
 
   @override
   OnBoardingPageState createState() => OnBoardingPageState();
@@ -94,7 +94,13 @@ class OnBoardingPageState extends State<OnBoardingPage> {
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.only(top: 16, right: 16),
-            child: _buildImage('logo-insider.png', 350),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _buildImage('logo.png', 100),
+                _buildImage('logo-insider.png', 150),
+              ],
+            ),
           ),
         ),
       ),
@@ -105,9 +111,10 @@ class OnBoardingPageState extends State<OnBoardingPage> {
           "Propelling members engagement.\n\n""Please invest 5 minutes of your time to update your profile.\n\n""We hope you enjoy the journey to discover members",
           image: _buildFullscreenImage(),
           decoration: pageDecoration.copyWith(
+            bodyAlignment: Alignment.topCenter,
             contentMargin: const EdgeInsets.symmetric(horizontal: 16),
             fullScreen: true,
-            bodyFlex: 2,
+            bodyFlex: 8,
             imageFlex: 3,
             safeArea: 100,
           ),
@@ -151,8 +158,7 @@ class OnBoardingPageState extends State<OnBoardingPage> {
           bodyWidget: const Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text("You can view all of your information in the profile page.", style: bodyStyle),
-              Text("Access other members profile.", style: bodyStyle),
+              Text("You can view all of your information in the profile page, or access other profiles", style: bodyStyle),
             ],
           ),
           decoration: pageDecoration.copyWith(
@@ -165,7 +171,7 @@ class OnBoardingPageState extends State<OnBoardingPage> {
           reverse: true,
         ),
         PageViewModel(
-          title: "Edit Your Profile Page",
+          title: "Edit Your Profile",
           bodyWidget: const Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -184,39 +190,20 @@ class OnBoardingPageState extends State<OnBoardingPage> {
         PageViewModel(
           title: "select filter tags to be found by",
           bodyWidget: const Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            //mainAxisAlignment: MainAxisAlignment.start,
+            //crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Select multiple Tags.", style: bodyStyle),
-              Text("Fill additional information so members can know you better.", style: bodyStyle),
+              Text("Select multiple Tags. Fill additional information so members can know you better.", style: bodyStyle),
             ],
           ),
           decoration: pageDecoration.copyWith(
             bodyFlex: 2,
-            imageFlex: 4,
+            imageFlex: 3,
             bodyAlignment: Alignment.bottomCenter,
-            imageAlignment: Alignment.topCenter,
+            imageAlignment: Alignment.bottomCenter,
           ),
           image: _buildImage('onboarding-edit2.jpg'),
-          reverse: false,
-          // footer: Padding(
-          //   padding: const EdgeInsets.only(top:20.0,right: 50,left: 50),
-          //   child: ElevatedButton(
-          //     onPressed: () {
-          //       Navigator.pushNamed(context, '/');
-          //     },
-          //     style: ElevatedButton.styleFrom(
-          //       backgroundColor: Colors.lightBlue,
-          //       shape: RoundedRectangleBorder(
-          //         borderRadius: BorderRadius.circular(8.0),
-          //       ),
-          //     ),
-          //     child: const Text(
-          //       'Go To Your Profile Page Now!',
-          //       style: TextStyle(color: Colors.white),
-          //     ),
-          //   ),
-          // ),
+          reverse: true,
         ),
       ],
       onDone: () => _onIntroEnd(context),

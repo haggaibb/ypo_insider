@@ -166,8 +166,8 @@ class _ProfilePageState extends State<ProfilePage> {
                       SizedBox(
                         width: 120,
                         height: 120,
-                        child: memberController.loadingProfileImage.value?ProfileImageLoading():ClipRRect(
-                            borderRadius: BorderRadius.circular(100),
+                        child: memberController.loadingProfileImage.value?ProfileImageLoading():ClipRRect(borderRadius: BorderRadius.circular(100),
+                            /// TODO fix logic , this creates a big first load
                             child: (widget.member.profileImage != null &&  widget.member.profileImage != '')
                                 ? Image.network(!editModeOn?widget.member.profileImage!:tempProfileImageUrl)
                                 : const Image(
@@ -175,8 +175,10 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       if (editModeOn)
                         Positioned(
+                          //top: 0,
                           bottom: 0,
                           right: 0,
+                          //left : 0,
                           child: GestureDetector(
                               onTap: () async {
                                 memberController.loadingProfileImage.value=true;
@@ -185,6 +187,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                 String url = await memberController.uploadProfileImage(profileImage!,widget.member.id);
                                 setState(() {
                                   if (url!='') tempProfileImageUrl = url;
+                                  print('new tempprofile:');
+                                  print(tempProfileImageUrl);
                                   memberController.loadingProfileImage.value=false;
                                 });
                               },
@@ -192,10 +196,10 @@ class _ProfilePageState extends State<ProfilePage> {
                             width: 35,
                             height: 35,
                             decoration: BoxDecoration(borderRadius: BorderRadius.circular(100)),
-                            child: const Icon(
+                            child: Icon(
                               LineAwesomeIcons.edit,
-                              //color: Colors.black,
-                              size: 20,
+                              color: Colors.blue.shade900,
+                              size: 30,
                             ),
                           ),
                         ),
@@ -214,7 +218,9 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                         isDense: true,
                           helperText: editModeOn?'Please fill your current title.':'',
-                          border: editModeOn? OutlineInputBorder() :InputBorder.none
+                          border: editModeOn? OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.blue.shade900,width: 4)
+                          ) :InputBorder.none
                       ),
                       textAlign: TextAlign.center,
                       controller: currentTitleCtrl,
@@ -252,8 +258,8 @@ class _ProfilePageState extends State<ProfilePage> {
                         });
                       },
                       style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue, side: BorderSide.none, shape: const StadiumBorder()),
-                      child: const Text('Edit', style: TextStyle(fontWeight: FontWeight.bold)),
+                          backgroundColor: Colors.blue.shade900, side: BorderSide.none, shape: const StadiumBorder()),
+                      child: const Text('Edit', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                     ):ElevatedButton(
                       onPressed: () async {
                         // setState(() {
@@ -266,8 +272,8 @@ class _ProfilePageState extends State<ProfilePage> {
                          });
                       },
                       style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue, side: BorderSide.none, shape: const StadiumBorder()),
-                      child: const Text('Save', style: TextStyle(fontWeight: FontWeight.bold)),
+                          backgroundColor: Colors.blue.shade900, side: BorderSide.none, shape: const StadiumBorder()),
+                      child: const Text('Save', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                     ),
                   )
                       :SizedBox(),
@@ -279,8 +285,8 @@ class _ProfilePageState extends State<ProfilePage> {
                         cancelEdit();
                       },
                       style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue, side: BorderSide.none, shape: const StadiumBorder()),
-                      child: const Text('Cancel' , style: TextStyle(fontWeight: FontWeight.bold),),
+                          backgroundColor: Colors.blue.shade900, side: BorderSide.none, shape: const StadiumBorder()),
+                      child: const Text('Cancel' , style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
                     ):memberController.currentMember.value.email==widget.member.email?ElevatedButton(
                     onPressed: () async {
                       print('logout');
@@ -288,8 +294,8 @@ class _ProfilePageState extends State<ProfilePage> {
                       Get.to( () => const Goodbye());
                     },
                     style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue, side: BorderSide.none, shape: const StadiumBorder()),
-                    child: const Text('Logout', style: TextStyle(fontWeight: FontWeight.bold)),
+                        backgroundColor: Colors.blue.shade900, side: BorderSide.none, shape: const StadiumBorder()),
+                    child: const Text('Logout', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                   ):SizedBox(height: 5,)
                   ),
                   /////////
@@ -310,14 +316,17 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: SizedBox(
                       width: 300,
                       child: DropdownMenu(
-                        leadingIcon: Icon(Icons.location_city_sharp),
+                        leadingIcon: Icon(color: Colors.blue.shade900, Icons.location_city_sharp),
                         label: Text('Residence'),
                         initialSelection: widget.member.residence,
                         inputDecorationTheme: const InputDecorationTheme(
                           filled: false,
                           isDense: true,
-                          border:  OutlineInputBorder(),
+                          border:  OutlineInputBorder(
+                            //borderSide: BorderSide(color:  Colors.blue),
+                          ),
                           contentPadding: EdgeInsets.symmetric(vertical: 5.0),
+                          //outlineBorder: BorderSide(color:  Colors.blue),
                         ),
                         dropdownMenuEntries: mainController.residenceList
                             .map<DropdownMenuEntry<String>>(
@@ -356,6 +365,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             width: 85,
                             child: TextField(
                               decoration: InputDecoration(
+                                iconColor: Colors.blue.shade900,
                                   icon: Icon(Icons.phone,),
                                   label: Text('Code:'),
                                   contentPadding: EdgeInsets.symmetric(
@@ -376,6 +386,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             width: 205,
                             child: TextField(
                               decoration: InputDecoration(
+                                  iconColor: Colors.blue.shade900,
                                   label: Text('Mobile:'),
                                   contentPadding: EdgeInsets.symmetric(
                                     vertical: 0.0,
@@ -398,7 +409,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     padding: const EdgeInsets.only(bottom: 10.0),
                     child: ProfileMenuWidget(
                         title: "Mobile: ",
-                        icon: Icons.phone,
+                        icon:  Icons.phone,
                         value: widget.member.mobileCountryCode+widget.member.mobile,
                         type: 'text',
                         onPress: () {},
@@ -411,7 +422,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       width: 300,
                       child: TextField(
                         decoration: InputDecoration(
-                            icon: Icon(Icons.mail,),
+                            icon: Icon(Icons.mail, color : Colors.blue.shade900),
                             label: Text('Email:'),
                             contentPadding: EdgeInsets.symmetric(
                               vertical: 0.0,
@@ -443,7 +454,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       width: 300,
                       child: TextField(
                         decoration: InputDecoration(
-                            icon: Icon(Icons.mail,),
+                            icon: Icon(Icons.mail, color: Colors.blue.shade900,),
                             label: Text('Member Since:'),
                             contentPadding: EdgeInsets.symmetric(
                               vertical: 0.0,
@@ -682,7 +693,7 @@ class _ProfilePageState extends State<ProfilePage> {
                              maxLines: mainController.freeTextTagsList[index]['type']=='textbox'?3:1,
                              minLines: mainController.freeTextTagsList[index]['type']=='textbox'?3:1,
                              decoration: InputDecoration(
-                                 icon: Icon(IconData(int.parse(mainController.freeTextTagsList[index]['icon_code']),fontFamily: 'MaterialIcons')),
+                                 icon: Icon(color: Colors.blue.shade900, IconData(int.parse(mainController.freeTextTagsList[index]['icon_code']),fontFamily: 'MaterialIcons')),
                                  label: Text(mainController.freeTextTagsList[index]['label']),
                                  helperText: mainController.freeTextTagsList[index]['hint'],
                                  border: OutlineInputBorder()
@@ -699,6 +710,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ?Padding(
                         padding: const EdgeInsets.only(bottom: 50.0),
                         child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: List.generate(
                             widget.member.freeTextTags!.length, (index) {
                           return Padding(

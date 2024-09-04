@@ -1,9 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:sheet/sheet.dart';
-import 'package:ypo_connect/main.dart';
-import 'package:ypo_connect/models.dart';
-import 'package:ypo_connect/onboarding.dart';
 import 'package:ypo_connect/profile_page.dart';
 import 'filters.dart';
 import 'main_controller.dart';
@@ -13,7 +10,6 @@ import 'widgets.dart';
 import 'package:ypo_connect/members_controller.dart';
 import 'package:chips_choice/chips_choice.dart';
 import 'theme.dart';
-import 'package:get_storage/get_storage.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key, this.user});
@@ -45,10 +41,13 @@ class _HomeState extends State<Home> {
     print('init home');
     super.initState();
     print(membersController.currentMember.value.firstName);
-    print(widget.user);
-    if (membersController.currentMember.value.id=='NA') membersController.setCurrentByUid(widget.user);
+    //print(widget.user);
+    if (membersController.currentMember.value.id == 'NA')
+      membersController.setCurrentByUid(widget.user);
     mainController.loadRandomResults(membersController.numberOfMembers);
     setState(() {
+      //isDark = membersController.themeMode.value.name == 'dark';
+      //isDark = membersController.themeMode.value.name == 'dark';
       mainController.loadTags(membersController.allMembers);
     });
     print('init home end');
@@ -58,7 +57,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Obx(() => !membersController.loading.value
         ? GetMaterialApp(
-            title: 'YPO Israel Insider',
+            title: 'Insider',
             theme: InsiderTheme.lightThemeData(context),
             darkTheme: InsiderTheme.darkThemeData(),
             themeMode: membersController.themeMode.value,
@@ -67,32 +66,49 @@ class _HomeState extends State<Home> {
                   actions: [
                     Padding(
                       padding: const EdgeInsets.all(0.0),
-                      child: Image.network('assets/images/logo.png'),
+                      child: membersController.themeMode.value.name == 'dark'
+                          ? SizedBox(width:1)// TODO replace with logo white
+                          : Image.network('assets/images/logo.png'),
                     )
                   ],
                   //backgroundColor: Colors.white,
                   title: Column(
                     children: [
-                      const Text(
-                        'YPO Israel Insider',
-                        style: TextStyle(
-                            fontSize: 26, fontWeight: FontWeight.bold),
-                      ),
-                      Obx(() => !membersController.loading.value
-                          ? Text(
-                              '${membersController.numberOfMembers} registered members',
-                              style: const TextStyle(
-                                  fontSize: 12, fontWeight: FontWeight.bold),
-                            )
-                          : const SizedBox(
-                              width: 1,
-                            )),
+                      Image.network(
+                          color:
+                              membersController.themeMode.value.name == 'dark'
+                                  ? Colors.white
+                                  : Colors.blue.shade900,
+                          colorBlendMode:
+                              membersController.themeMode.value.name == 'dark'
+                                  ? BlendMode.srcIn
+                                  : null,
+                          scale: 2,
+                          'assets/images/logo-insider.png'),
+                      // const Text(
+                      //   'Insider',
+                      //   style: TextStyle(
+                      //       fontSize: 26, fontWeight: FontWeight.bold),
+                      // ),
+                      // Obx(() => !membersController.loading.value
+                      //     ? Text(
+                      //         '${membersController.numberOfMembers} registered members',
+                      //         style: const TextStyle(
+                      //             fontSize: 12, fontWeight: FontWeight.bold),
+                      //       )
+                      //     : const SizedBox(
+                      //         width: 1,
+                      //       )),
                     ],
                   ),
                 ),
                 drawer: SizedBox(
                   height: 500,
                   child: Drawer(
+                    shape: ContinuousRectangleBorder(
+                        borderRadius: BorderRadius.circular(75),
+                        side:
+                            BorderSide(color: Colors.blue.shade900, width: 5)),
                     child: ListView(
                       children: [
                         Padding(
@@ -101,7 +117,10 @@ class _HomeState extends State<Home> {
                             onPressed: () {
                               Get.back();
                             },
-                            style: ButtonStyle(),
+                            style: ButtonStyle(
+                                foregroundColor:
+                                    MaterialStatePropertyAll<Color>(
+                                        Colors.white)),
                           ),
                         ),
                         SizedBox(
@@ -127,6 +146,8 @@ class _HomeState extends State<Home> {
                           },
                         ),
                         ExpansionTile(
+                          //textColor: Colors.blue.shade900,
+                          //iconColor: Colors.blue.shade900,
                           leading: const Icon(Icons.settings),
                           trailing:
                               membersController.themeMode.value.name == 'dark'
@@ -135,6 +156,7 @@ class _HomeState extends State<Home> {
                           title: Text('Settings'),
                           children: <Widget>[
                             ChipsChoice<ThemeMode>.single(
+                              //placeholderStyle: TextStyle(color: Colors.blue.shade900),
                               value: membersController.themeMode.value,
                               onChanged: (val) {
                                 setState(() {
@@ -157,7 +179,7 @@ class _HomeState extends State<Home> {
                               ),
                             ),
                           ],
-                        )
+                        ),
                       ],
                     ),
                   ),

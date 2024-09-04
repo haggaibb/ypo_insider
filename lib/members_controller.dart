@@ -35,6 +35,8 @@ class MembersController extends GetxController {
   }
   setCurrentByMember(Member member) {
     currentMember.value=member;
+    themeMode.value = currentMember.value.settings?['theme_mode']=='light'?ThemeMode.light:ThemeMode.dark;
+
   }
   validateMemberEmail(String email) async {
     CollectionReference membersRef = db.collection('Members');
@@ -68,7 +70,7 @@ class MembersController extends GetxController {
         }
     );
     DocumentSnapshot refreshedMember = await membersRef.doc(memberId).get();
-    currentMember.value = Member.DocumentSnapshot(refreshedMember);
+    setCurrentByMember(Member.DocumentSnapshot(refreshedMember));
     print('Registration done - member is ${currentMember.value.fullName()}');
     return (memberSnapshot.docs.isNotEmpty);
   }
@@ -133,7 +135,6 @@ class MembersController extends GetxController {
   }
   getMemberByUid(String uid) {
     Member foundMember = allMembers.firstWhere((element) => element.uid==uid, orElse: () => noUser);
-    print(foundMember.firstName);
     return foundMember;
   }
   // Future<Member> getMemberByIdd(String id) async {

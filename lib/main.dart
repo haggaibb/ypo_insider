@@ -21,13 +21,13 @@ final emailLinkProviderConfig = EmailLinkAuthProvider(
 );
 
 Future<void> main() async {
+  runApp(MainLoading());
   print('@@@@@@@@@@@@@@@@@@');
   print('main');
   WidgetsFlutterBinding.ensureInitialized();
   //runApp(MainLoading());
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   final user = FirebaseAuth.instance.currentUser;
-  print(user);
   if (user!=null && user.emailVerified) {
     print('root check - user verified, go to home....');
     runApp(Home(user: user,));

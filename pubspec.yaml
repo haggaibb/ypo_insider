@@ -80,9 +80,9 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - images/logo.jpg
     - images/logo.png
     - images/logo-insider.png
+    - images/logo-landscape.png
     - images/welcome.png
     - images/onboarding-search.jpg
     - images/onboarding-filters.jpg
@@ -91,13 +91,6 @@ flutter:
     - images/onboarding-edit2.jpg
     - images/new.png
     - images/profile0.jpg
-    - images/profile1.jpg
-    - images/profile2.jpg
-    - images/profile3.jpg
-    - images/profile4.jpg
-    - images/profile5.jpg
-    - images/profile6.jpg
-    - images/profile7.jpg
     - images/linkedin.png
     - images/instagram.png
     - images/facebook.png

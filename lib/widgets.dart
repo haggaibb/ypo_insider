@@ -32,6 +32,7 @@ class _ResultCardState extends State<ResultCard> {
   @override
   Widget build(BuildContext context) {
     return Card(
+      surfaceTintColor: Colors.blue.shade900,
       //color : Colors.white,
       elevation: 10,
       child: Column(
@@ -185,9 +186,18 @@ class MainLoading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: SpinKitRotatingCircle(
-        color: Colors.blue,
-        size: 80.0,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 30.0),
+            child: Image.network('assets/images/logo.png', width: 200, height: 200,),
+          ),
+          SpinKitRotatingCircle(
+            color: Colors.blue.shade900,
+            size: 80.0,
+          ),
+        ],
       ),
     );
   }
@@ -205,7 +215,7 @@ class ResultsLoading extends StatelessWidget {
           Padding(
             padding: EdgeInsets.all(80.0),
             child: SpinKitThreeInOut(
-              color: Colors.blue,
+              color: Colors.blue.shade900,
               size: 80.0,
             ),
           ),
@@ -225,7 +235,7 @@ class ProfileImageLoading extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: SpinKitThreeInOut(
-          color: Colors.blue,
+          color: Colors.blue.shade900,
           size: 30.0,
         ),
       ),
@@ -328,21 +338,22 @@ class ProfileMenuWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     var isDark = MediaQuery.of(context).platformBrightness == Brightness.dark;
     var iconColor = isDark ? Colors.blue : Colors.greenAccent;
-    return Column(children: [
+    return Column(
+        children: [
       Row(children: [
-        Icon(icon, color: iconColor),
+        Icon(icon, color: Colors.blue.shade900,),
         Padding(
           padding: const EdgeInsets.only(left: 8.0, right: 4),
           child: Text(
             title,
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
         ),
         type == 'text'
             ? Text(
                 value,
                 maxLines: 1,
-                 style: TextStyle(fontSize: 20),
+                 style: TextStyle(fontSize: 18),
               )
             : type == 'link'
                 ? GestureDetector(
@@ -362,17 +373,17 @@ class ProfileMenuWidget extends StatelessWidget {
                         child: Text(
                           value,
                           maxLines: 1,
-                          style: TextStyle(fontSize: 20),
+                          style: TextStyle(fontSize: 18),
                         ))
                     : const SizedBox(width: 1),
       ]),
       type == 'textbox'
           ? SizedBox(
-              height: (value.length / 50 * 30),
+              height: (value.length / 50 * 40)>50?(value.length / 50 * 40):50,
               width: 350,
               child: Text(
                 value,
-                maxLines: 3,
+                maxLines: 3, style: TextStyle(fontSize: 18)
               ))
           : SizedBox(width: 1),
     ]);
