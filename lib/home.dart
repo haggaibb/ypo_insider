@@ -63,6 +63,7 @@ class _HomeState extends State<Home> {
             themeMode: membersController.themeMode.value,
             home: Scaffold(
                 appBar: AppBar(
+                  centerTitle: true,
                   actions: [
                     Padding(
                       padding: const EdgeInsets.all(0.0),
@@ -119,8 +120,10 @@ class _HomeState extends State<Home> {
                             },
                             style: ButtonStyle(
                                 foregroundColor:
-                                    MaterialStatePropertyAll<Color>(
-                                        Colors.white)),
+                                membersController.themeMode.value.name == 'dark'
+                                    ? MaterialStatePropertyAll<Color>(Colors.white)
+                                    : MaterialStatePropertyAll<Color>(Colors.blue.shade700)
+                            ),
                           ),
                         ),
                         SizedBox(

@@ -13,6 +13,7 @@ import 'package:get_storage/get_storage.dart';
 class MembersController extends GetxController {
   var db = FirebaseFirestore.instance;
   RxBool loading = true.obs;
+  RxBool saving = false.obs;
   RxBool loadingProfileImage = false.obs;
   RxList<Member> allMembers = RxList<Member>();
   int numberOfMembers =1;
@@ -31,6 +32,8 @@ class MembersController extends GetxController {
   final user = FirebaseAuth.instance.currentUser;
   setCurrentByUid(User? user) {
     if (user!=null) currentMember.value = getMemberByUid(user.uid);
+    print('set member');
+    print( currentMember.value.children);
     themeMode.value = currentMember.value.settings?['theme_mode']=='light'?ThemeMode.light:ThemeMode.dark;
   }
   setCurrentByMember(Member member) {
@@ -56,17 +59,9 @@ class MembersController extends GetxController {
         {
           'id' : memberId,
           'uid' : user.uid,
-          'profileImage' : '',
-          'banner' : false,
-          'linkedin' : '',
-          'instagram' : '',
-          'facebook' : '',
           'onBoarding.registered' : true,
           'onBoarding.verified' : false,
-          'onBoarding.boarded' : false,
-          'filtered_tags' : [memberData['residence'],memberData['forum']],
-          'free_text_tags' : [],
-          'settings' : {'theme_mode' : 'light'},
+          'profileImage' : '/assets/images/profile0.jpg'
         }
     );
     DocumentSnapshot refreshedMember = await membersRef.doc(memberId).get();
@@ -199,8 +194,11 @@ class MembersController extends GetxController {
     await ref.delete();
   }
   updateMemberInfo(Member member) async {
+    saving.value=true;
     CollectionReference membersRef = db.collection('Members');
+    //await membersRef.doc(member.id).set(member.toMap(), SetOptions(merge: true));
     await membersRef.doc(member.id).update(member.toMap());
+    saving.value=false;
   }
   loadAllMembers() async {
     final membersRef = db.collection("Members");
@@ -223,27 +221,50 @@ class MembersController extends GetxController {
   onInit() async {
     // //     /// for debugging
     /// Warning!!! use with caution!!!
+    // await  db.collection('Members').doc('dHH4COYXO0GGubvPIVua').set(
+    //     {
+    //       'id' : 'dHH4COYXO0GGubvPIVua',
+    //       'uid' : '',
+    //       'firstName' : 'Haggai',
+    //       'lastName' : 'Barel',
+    //       'email' : 'haggaibb@gmail.com',
+    //       'birthdate' : Timestamp.now(),
+    //       'current_business_name' : 'DEEP IT',
+    //       'current_title' : 'Founder & CEO',
+    //       'filter_tags' : ['Herzliya','5'],
+    //       'forum' : '5',
+    //       'join_date' : '2009',
+    //       'mobile_country_code' : '972',
+    //       'mobile' : '544510999',
+    //       'residence' : 'Herzliya',
+    //       'profileImage' : '',
+    //       'banner' : false,
+    //       'linkedin' : '',
+    //       'instagram' : '',
+    //       'facebook' : '',
+    //       'onBoarding' : {
+    //         'registered': false,
+    //         'verified': false,
+    //         'boarded': false,
+    //       },
+    //       'free_text_tags' : [],
+    //       'settings' : {'theme_mode' : 'light'},
+    //     }
+    // );
+    // print('Done!!!!!!!!!!!');
+    // return;
     // var membersSnapshot = await db.collection('Members').get();
     // for (var element in membersSnapshot.docs) {
-    //   var data = element.data();
-    //   List dirty = element['filter_tags'];
-    //   if ( dirty[0].contains("\n") ) {
-    //     var forum = dirty[1];
-    //     print(element.id);
-    //     var clean =  dirty[0].replaceAll("\n", "");
-    //     dirty.removeAt(0);
-    //     dirty.add(clean);
-    //     print(clean);
-    //     print(forum);
+    //   //var data = element.data();
     //     await db.collection('Members').doc(element.id).update({
-    //       'filter_tags' : [clean,forum],
-    //       'residence' : clean,
+    //       'children': []
+    //       //'profileImage' : 'https://firebasestorage.googleapis.com/v0/b/ypodex.appspot.com/o/profile_images%2Fprofile0.jpg?alt=media'
+    //       //'residence' : clean,
     //       // 'instagram' : '',
     //       //S3zQJjBzSyNAUXlFm1uh2rtEgwz1
     //       // 'facebook' : '',
     //       // 'free_text_tags': [],
     //     });
-    //   };
     // }
     // print('Done!!!!!!!!!!!');
     // return;

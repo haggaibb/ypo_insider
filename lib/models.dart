@@ -16,6 +16,7 @@ class Member {
   String forum;
   String joinDate;
   String currentBusinessName;
+  List<Map<String, dynamic>>? children;
   String? linkedin;
   String? instagram;
   String? facebook;
@@ -40,6 +41,7 @@ class Member {
     required this.joinDate,
     required this.currentBusinessName,
     required this.birthdate,
+    this.children = const [],
     this.linkedin ='',
     this.instagram = '',
     this.facebook = '',
@@ -104,6 +106,7 @@ class Member {
       'forum' : forum,
       'join_date' : joinDate,
       'current_business_name' : currentBusinessName,
+      'children' : children,
       'linkedin' : linkedin,
       'instagram' : instagram,
       'facebook' : facebook,
@@ -129,6 +132,7 @@ class Member {
         forum = doc["forum"]??'NA',
         joinDate = doc['join_date'],
         currentBusinessName = doc['current_business_name'],
+        children = List<Map<String, dynamic>>.from(doc["children"]),
         linkedin = doc['linkedin']??'',
         instagram = doc['instagram']??'',
         facebook = doc['facebook']??'',

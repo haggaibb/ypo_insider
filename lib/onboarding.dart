@@ -7,6 +7,7 @@ import 'package:ypo_connect/members_controller.dart';
 import 'home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+
 class MainOnBoarding extends StatelessWidget {
   final User user;
   const MainOnBoarding({required this.user, super.key});
@@ -56,7 +57,8 @@ class OnBoardingPageState extends State<OnBoardingPage> {
     await membersController.onBoardingFinished(user!);
     //Get.toNamed('/home', arguments: {'user': user});
     //Get.offAllNamed('/home');
-    Get.to(()=> Home(user: user));
+    runApp(Home(user: user));
+    //Get.to(()=> Home(user: user));
 
   }
   Widget _buildFullscreenImage() {

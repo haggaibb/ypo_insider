@@ -1,8 +1,10 @@
+import 'dart:convert';
 import 'dart:js';
 
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+import 'package:ypo_connect/RayBarFields.dart';
 import 'package:ypo_connect/auth_screens.dart';
 import 'package:ypo_connect/main.dart';
 import 'package:ypo_connect/members_controller.dart';
@@ -12,6 +14,7 @@ import 'members_controller.dart';
 import 'widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+
 
 
 
@@ -35,6 +38,7 @@ class _ProfilePageState extends State<ProfilePage> {
   TextEditingController emailCtrl = TextEditingController();
   TextEditingController memberSinceCtrl = TextEditingController();
   TextEditingController forumCtrl = TextEditingController();
+  List<Map<String,dynamic>> childrenCtrl = [];
   TextEditingController linkedInCtrl = TextEditingController();
   TextEditingController instagramCtrl = TextEditingController();
   TextEditingController facebookCtrl = TextEditingController();
@@ -69,6 +73,8 @@ class _ProfilePageState extends State<ProfilePage> {
     });
   }
   updateMemberInfo() async {
+    print('in update memebr');
+    print(childrenCtrl);
       editedMember.currentTitle = currentTitleCtrl.text;
       editedMember.currentBusinessName = currentBusinessCtrl.text;
       editedMember.residence = residenceCtrl.text;
@@ -85,7 +91,13 @@ class _ProfilePageState extends State<ProfilePage> {
       editedMember.linkedin = linkedInCtrl.text;
       editedMember.instagram = instagramCtrl.text;
       editedMember.facebook = facebookCtrl.text;
-      /// FreeTextTags
+      ///
+      editedMember.children = childrenCtrl;
+      // for(var entry in childrenCtrl) {
+      //   editedMember.children!.add(entry);
+      // };
+      print(editedMember.children);
+    /// FreeTextTags
       editedMember.freeTextTags = [];
       for (var i=0; i< freeTextControls.length; i++) {
         if (freeTextControls[i].text!='') {
@@ -112,6 +124,7 @@ class _ProfilePageState extends State<ProfilePage> {
     emailCtrl.text = widget.member.email;
     memberSinceCtrl.text = widget.member.joinDate;
     forumCtrl.text = widget.member.forum;
+    childrenCtrl = widget.member.children??[];
     linkedInCtrl.text = widget.member.linkedin??'';
     instagramCtrl.text = widget.member.instagram??'';
     facebookCtrl.text = widget.member.facebook??'';
@@ -127,7 +140,7 @@ class _ProfilePageState extends State<ProfilePage> {
     }
     ///ProfileImage
     tempProfilePicRef = storageRef.child("");
-    tempProfileImageUrl = widget.member.profileImage??'';
+    tempProfileImageUrl = widget.member.profileImage??'/assets/images/profile0.jpg';
   }
 
 
@@ -136,6 +149,7 @@ class _ProfilePageState extends State<ProfilePage> {
     return Directionality(
       textDirection: TextDirection.ltr,
       child: Scaffold(
+        backgroundColor: memberController.themeMode.value.name=='dark'?Colors.black:Colors.blueGrey.shade50,
         appBar: AppBar(
           leading: editModeOn?SizedBox(width: 5,):IconButton(
               onPressed: () {
@@ -146,9 +160,10 @@ class _ProfilePageState extends State<ProfilePage> {
           title: Column(
             children: [
               Text(widget.member.fullName(), style: Theme.of(context).textTheme.titleLarge),
-              Obx(() => memberController.loading.value?LinearProgressIndicator(
-                semanticsLabel: 'Linear progress indicator',
-              ):SizedBox(height: 10,))
+              Obx(() => memberController.saving.value
+                  ?LinearProgressIndicator(color: Colors.blue.shade900)
+                  :SizedBox(height: 10,)
+              )
             ],
           ),
           //actions: [IconButton(onPressed: () {}, icon: Icon(isDark ? Icons.light_mode : Icons.dark_mode))],
@@ -167,11 +182,12 @@ class _ProfilePageState extends State<ProfilePage> {
                         width: 120,
                         height: 120,
                         child: memberController.loadingProfileImage.value?ProfileImageLoading():ClipRRect(borderRadius: BorderRadius.circular(100),
-                            /// TODO fix logic , this creates a big first load
-                            child: (widget.member.profileImage != null &&  widget.member.profileImage != '')
-                                ? Image.network(!editModeOn?widget.member.profileImage!:tempProfileImageUrl)
-                                : const Image(
-                                    image: AssetImage('images/profile0.jpg'))),
+                                child: Image.network(
+                                     editModeOn
+                                        ? tempProfileImageUrl
+                                        : widget.member.profileImage??'https://firebasestorage.googleapis.com/v0/b/ypodex.appspot.com/o/profile_images%2Fprofile0.jpg?alt=media'
+                                ),
+                               ),
                       ),
                       if (editModeOn)
                         Positioned(
@@ -222,7 +238,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             borderSide: BorderSide(color: Colors.blue.shade900,width: 4)
                           ) :InputBorder.none
                       ),
-                      textAlign: TextAlign.center,
+                      textAlign: editModeOn?TextAlign.start:TextAlign.center,
                       controller: currentTitleCtrl,
                       enabled: editModeOn?true:false,
                       style: Theme.of(context).textTheme.titleLarge!,
@@ -240,7 +256,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           helperText: editModeOn?'Please fill your current company or business.':'',
                           border: editModeOn? OutlineInputBorder() :InputBorder.none
                       ),
-                      textAlign: TextAlign.center,
+                      textAlign: editModeOn?TextAlign.start:TextAlign.center,
                       controller: currentBusinessCtrl,
                       enabled: editModeOn?true:false,
                       style: Theme.of(context).textTheme.titleLarge!,
@@ -376,9 +392,10 @@ class _ProfilePageState extends State<ProfilePage> {
                                   helperText: editModeOn?'e.g.+972':'',
                                   border: editModeOn? OutlineInputBorder() :InputBorder.none
                               ),
-                              textAlign: TextAlign.center,
+                              textAlign: TextAlign.start,
                               controller: mobileCountryCodeCtrl,
                               enabled: editModeOn?true:false,
+
                               style: TextStyle(fontSize: 20 ),
                             ),
                           ),
@@ -396,10 +413,17 @@ class _ProfilePageState extends State<ProfilePage> {
                                   helperText: editModeOn?'Please fill your mobile number.':'',
                                   border: editModeOn? OutlineInputBorder() :InputBorder.none
                               ),
-                              textAlign: TextAlign.center,
+                              textAlign: TextAlign.start,
                               controller: mobileCtrl,
                               enabled: editModeOn?true:false,
                               style: TextStyle(fontSize: 20 ,),
+                              onChanged: (s) => {
+                                if (GetUtils.isPhoneNumber(s)) {
+                                  print('legal phone')
+                                } else {
+                                  print('illegal phone')
+                                }
+                              },
                             ),
                           ),
                         ],
@@ -415,6 +439,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         onPress: () {},
                     ),
                   ),
+
                   /// Email
                   editModeOn ?Padding(
                     padding: const EdgeInsets.only(bottom: 16.0),
@@ -432,7 +457,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             helperText: editModeOn?'Please fill your current email.':'',
                             border: editModeOn? OutlineInputBorder() :InputBorder.none
                         ),
-                        textAlign: TextAlign.center,
+                        textAlign: TextAlign.start,
                         controller: emailCtrl,
                         enabled: editModeOn?true:false,
                         style: TextStyle(fontSize: 20),
@@ -464,7 +489,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             helperText: editModeOn?'Please fill in the year you joined. (e.g. 2021)':'',
                             border: editModeOn? OutlineInputBorder() :InputBorder.none
                         ),
-                        textAlign: TextAlign.center,
+                        textAlign: TextAlign.start,
                         controller: memberSinceCtrl,
                         enabled: editModeOn?true:false,
                         style: TextStyle(fontSize: 20),
@@ -532,10 +557,10 @@ class _ProfilePageState extends State<ProfilePage> {
                               horizontal: 0.0,
                             ),
                             isDense: true,
-                            helperText: editModeOn?'Please add a link to your profile':'',
+                            helperText: editModeOn?'use full link (e.g. http://....)':'',
                             border: editModeOn? OutlineInputBorder() :InputBorder.none
                         ),
-                        textAlign: TextAlign.center,
+                        textAlign: TextAlign.start,
                         controller: linkedInCtrl,
                         enabled: editModeOn?true:false,
                         style: TextStyle(fontSize: 20),
@@ -556,10 +581,10 @@ class _ProfilePageState extends State<ProfilePage> {
                               horizontal: 0.0,
                             ),
                             isDense: true,
-                            helperText: editModeOn?'Please add a link to your profile':'',
+                            helperText: editModeOn?'use full link (e.g. http://....)':'',
                             border: editModeOn? OutlineInputBorder() :InputBorder.none
                         ),
-                        textAlign: TextAlign.center,
+                        textAlign: TextAlign.start,
                         controller: instagramCtrl,
                         enabled: editModeOn?true:false,
                         style: TextStyle(fontSize: 20),
@@ -580,18 +605,37 @@ class _ProfilePageState extends State<ProfilePage> {
                               horizontal: 0.0,
                             ),
                             isDense: true,
-                            helperText: editModeOn?'Please add a link to your profile':'',
+                            helperText: editModeOn?'use full link (e.g. http://....)':'',
                             border: editModeOn? OutlineInputBorder() :InputBorder.none
                         ),
-                        textAlign: TextAlign.center,
+                        textAlign: TextAlign.start,
                         controller: facebookCtrl,
                         enabled: editModeOn?true:false,
                         style: TextStyle(fontSize: 20),
                       ),
                     ),
                   ):const SizedBox(width: 1,),
-
-
+                  /// Children
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 16.0),
+                    child: RayBarMultiField(
+                      keysPerEntry: ['Name','Year of Birth'],
+                      entries: childrenCtrl,
+                      label: 'Children',
+                      editMode: editModeOn,
+                      icon: Icons.family_restroom_rounded,
+                      iconColor: Colors.blue.shade900,
+                      onChangeMultiFieldCallback: (updatedChildrenData) {
+                        childrenCtrl = [];
+                        // Convert to List<Map<String, dynamic>>
+                        List list = updatedChildrenData['children'];
+                        List<Map<String, dynamic>> mapList = list
+                            .map((e) => Map<String, dynamic>.from(e))
+                            .toList();
+                        childrenCtrl=mapList;
+                      }
+                    ),
+                  ),
                   /// Filtered Tags
                   const Divider(),
                   const SizedBox(
@@ -698,7 +742,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                  helperText: mainController.freeTextTagsList[index]['hint'],
                                  border: OutlineInputBorder()
                              ),
-                             textAlign: TextAlign.center,
+                             textAlign: TextAlign.start,
                              controller: freeTextControls[index],
                              enabled: true,
                              style: TextStyle(fontSize: 20 ),

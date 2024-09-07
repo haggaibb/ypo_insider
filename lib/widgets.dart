@@ -5,6 +5,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'dart:html' as html;
+import 'RayBarFields.dart';
 
 class ResultCard extends StatefulWidget {
   final Member member;
@@ -397,7 +398,167 @@ class Goodbye extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Text('Goodbye'),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.network('assets/images/logo-insider.png'),
+          Text('Goodbye', style : TextStyle(fontSize: 24, color: Colors.blue.shade900)),
+        ],
+      ),
     );
+  }
+}
+
+
+
+class TestPage extends StatefulWidget {
+  TestPage({super.key, });
+
+  @override
+  State<TestPage> createState() => _TestPageState();
+}
+
+class _TestPageState extends State<TestPage> {
+  final TextEditingController controller = TextEditingController();
+
+  final TextEditingController textBoxController = TextEditingController();
+
+  final TextEditingController dropController = TextEditingController();
+
+  bool editMode = true;
+
+  @override
+  Widget build(BuildContext context) {
+    dropController.text='Tel Aviv';
+    controller.text = 'http://www.google.com';
+    textBoxController.text = 'Ther is a way to do this this is not the way, I think this is long, not sure, Ther is a way to do this this is not the way, I think this is long, not sure';
+    return MaterialApp(
+      home: Directionality(
+        textDirection: TextDirection.ltr,
+        child: Scaffold(
+          body: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: SingleChildScrollView(
+                child: Column(
+                  //mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(height: 20,),
+                    ElevatedButton(
+                        onPressed:() {
+                          setState(() {
+                            editMode=!editMode;
+                          });
+                        },
+                        child: Text('Toggle')
+                    ),
+                    SizedBox(height: 20,),
+                    RayBarTextField(
+                      //padding: EdgeInsets.only(bottom: 20),
+                      controller: controller,
+                      label: 'Residence',
+                      lines: Lines.single,
+                      enableIcon: true,
+                      icon:  Icons.house_outlined,
+                      editMode: editMode,
+                      type: FieldType.link,
+                      helperText: 'This is a helper text line.',
+                      hintText: 'http://...',
+                      fieldWidth: 250,
+                    ),
+                    RayBarTextField(
+                      //padding: EdgeInsets.only(bottom: 20),
+                      controller: textBoxController,
+                      label: 'Overview',
+                      lines: Lines.multi,
+                      maxLines: 3,
+                      editMode: editMode,
+                      helperText: 'please feel a few lines...',
+                      hintText: 'Enter free text',
+                      fieldWidth: 250,
+                      enableIcon: true,
+                      icon:  Icons.text_snippet_outlined,
+                    ),
+                    // RayBarMultiChipMenu(
+                    //     tags: ['Tel Aviv','Herzliya','Ramat Hasharon'],
+                    //     label: 'Residence:',
+                    //     selectedTags: [],
+                    //     editMode: editMode
+                    // ),
+                    RayBarTextField(
+                      //padding: EdgeInsets.only(bottom: 20),
+                      controller: controller,
+                      label: 'Residence',
+                      lines: Lines.single,
+                      enableIcon: true,
+                      icon:  Icons.house_outlined,
+                      editMode: editMode,
+                      type: FieldType.text,
+                      fieldWidth: 250,
+
+                    ),
+                    RayBarTextField(
+                      //padding: EdgeInsets.only(bottom: 20),
+                      controller: controller,
+                      label: 'Residence',
+                      lines: Lines.single,
+                      enableIcon: true,
+                      icon:  Icons.house_outlined,
+                      editMode: editMode,
+                      type: FieldType.text,
+                      fieldWidth: 250,
+
+
+
+                    ),
+                    RayBarDropdownMenu(
+                      //padding: EdgeInsets.only(bottom: 20),
+                      controller: dropController,
+                      label: 'Residence',
+                      enableIcon: true,
+                      icon:  Icons.house_outlined,
+                      editMode: editMode,
+                      type: FieldType.text,
+                      //fieldWidth: 250,
+                      dropdownMenuEntries: [
+                        DropdownMenuEntry(value: 'Tel Aviv', label: 'Tel Aviv'),
+                        DropdownMenuEntry(value: 'Ramat Hashron', label: 'Ramat Hashron'),
+                        DropdownMenuEntry(value: 'Herzlia', label: 'Herzlia'),
+                      ],
+
+                    ),
+                    RayBarMultiChipMenu(
+                        tags: ['Tel Aviv','Herzliya','Ramat Hasharon'],
+                        label: 'Residence:',
+                        selectedTags: ['Tel Aviv','Herzliya','Ramat Hasharon'],
+                        editMode: editMode,
+                      onChange: (selected) {
+                          print(selected);
+                      },
+                    ),
+                    RayBarMultiField(
+                      keysPerEntry: ['Child Name','Year of Birth'],
+                      label: 'Children',
+                      editMode: editMode,
+                      fieldWidth: 100,
+                      icon : Icons.family_restroom_sharp,
+                      iconColor : Colors.blue.shade900,
+                      onChangeMultiFieldCallback: (data) {
+                        print('callback:');
+                        print(data);
+                      }
+
+
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      )
+    );
+
+
   }
 }

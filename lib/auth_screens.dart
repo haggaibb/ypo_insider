@@ -152,7 +152,6 @@ class EmailSignInForm extends StatelessWidget {
                                 width: 350,
                                 height: 50,
                                 child: TextButton(
-                                  ///TODO fix err because of theme effects text?
                                   onPressed: () async {
                                     await signIn(context);
                                   },
@@ -173,15 +172,26 @@ class EmailSignInForm extends StatelessWidget {
   }
 }
 
-class EmailRegisterForm extends StatelessWidget {
-  final controller = Get.put(MembersController());
+class EmailRegisterForm extends StatefulWidget {
   final EmailAuthController authController;
   EmailRegisterForm({required this.authController, super.key});
 
+  @override
+  State<EmailRegisterForm> createState() => _EmailRegisterFormState();
+}
+
+class _EmailRegisterFormState extends State<EmailRegisterForm> {
+  final controller = Get.put(MembersController());
+
   final emailCtrl = TextEditingController();
+
   final passwordCtrl = TextEditingController();
+
   final passwordCtrl2 = TextEditingController();
+
   final passNotifier = ValueNotifier<PasswordStrength?>(null);
+
+  String errMsg ='';
 
   validateMembersEmail(String email) async {
     bool validated = await controller.validateMemberEmail(email);
@@ -194,26 +204,33 @@ class EmailRegisterForm extends StatelessWidget {
     if (emailValidated) {
       if ((passwordCtrl.text == passwordCtrl2.text) &&
           (passwordCtrl.text != '')) {
-        var credentials = await FirebaseAuth.instance
-            .createUserWithEmailAndPassword(
-                email: emailCtrl.text, password: passwordCtrl.text);
-        if (credentials.user != null) {
-          await controller.onRegister(credentials.user!);
-          controller.loading.value = false;
-          Get.to(EmailVerificationScreen(
-            actions: [
-              EmailVerifiedAction(() {
-                controller.onVerify(credentials.user!);
-                Get.to(OnBoardingPage(user: authController.auth.currentUser!));
-              }),
-              AuthCancelledAction((context) {
-                FirebaseUIAuth.signOut(context: context);
-                Navigator.pushReplacementNamed(context, '/');
-              }),
-            ],
-          ));
-          //Navigator.pushNamedAndRemoveUntil(context,'/verify-email' , ModalRoute. withName('/'));
+        try {
+          var credentials = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+              email: emailCtrl.text, password: passwordCtrl.text);
+          if (credentials.user != null) {
+            await controller.onRegister(credentials.user!);
+            controller.loading.value = false;
+            Get.to(EmailVerificationScreen(
+              actions: [
+                EmailVerifiedAction(() {
+                  controller.onVerify(credentials.user!);
+                  Get.to(OnBoardingPage(user: widget.authController.auth.currentUser!));
+                }),
+                AuthCancelledAction((context) {
+                  FirebaseUIAuth.signOut(context: context);
+                  Navigator.pushReplacementNamed(context, '/');
+                }),
+              ],
+            ));
+          }
+        } on FirebaseAuthException catch  (e) {
+          setState(() {
+            controller.loading.value = false;
+            controller.authErrMsg.value = e.message??'error code#0';
+            errMsg = e.message??'error code#0';
+          });
         }
+
       } else {
         controller.loading.value = false;
         controller.authErrMsg.value =
@@ -225,6 +242,13 @@ class EmailRegisterForm extends StatelessWidget {
           'This email is not recognized by YPO Israel!';
       print('not a valid email');
     }
+  }
+
+  @override
+  void initState() {
+    print('init reg');
+
+    print('init reg end');
   }
 
   @override
@@ -322,7 +346,7 @@ class EmailRegisterForm extends StatelessWidget {
                               )
                             : SizedBox(
                                 height: 10,
-                              ))
+                              )),
                       ],
                     ),
                   ),
