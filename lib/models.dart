@@ -75,11 +75,6 @@ class Member {
     return tags;
   }
   List<dynamic> getMemberFreeTextTags() {
-    //print('in model get free tags');
-    //print(freeTextTags);
-    //var freeTextTagsList = freeTextTags?.entries.map( (entry) => entry.value).toList();
-    //print(freeTextTagsList);
-    //return freeTextTagsList??[];
     return freeTextTags??[];
   }
   String getFreeTextTagValueByKey(key) {
@@ -118,29 +113,40 @@ class Member {
     };
   }
 
-  Member.DocumentSnapshot(DocumentSnapshot<Object?> doc):
-        id = doc.id,
-        firstName = doc["firstName"],
-        lastName = doc["lastName"],
-        uid =  doc["uid"]??'',
-        currentTitle = doc["current_title"],
-        residence = doc["residence"].trim()??'NA',
-        mobile = doc["mobile"],
-        mobileCountryCode = doc['mobile_country_code'],
-        email = doc["email"],
-        profileImage = doc["profileImage"]??'',
-        forum = doc["forum"]??'NA',
-        joinDate = doc['join_date'],
-        currentBusinessName = doc['current_business_name'],
-        children = List<Map<String, dynamic>>.from(doc["children"]),
-        linkedin = doc['linkedin']??'',
-        instagram = doc['instagram']??'',
-        facebook = doc['facebook']??'',
-        birthdate = doc['birthdate'],
-        freeTextTags = List<Map<String, dynamic>>.from(doc["free_text_tags"]),
-        filterTags =  List<String>.from(doc["filter_tags"]),
-        onBoarding = doc["onBoarding"],
-        settings = doc['settings'];
+  factory Member.fromDocumentSnapshot(DocumentSnapshot<Object?> doc){
+    Map<String, dynamic>? data = doc.data() as Map<String, dynamic>?;
+    print(data);
+    if (data == null ) {
+      throw Exception("Required fields are missing");
+    }
+    return Member(
+        id: doc.id, // Required field, no null check
+        firstName : data.containsKey('firstName') ? data['firstName'] as String : '',
+        lastName : data.containsKey('lastName') ? data['lastName'] as String : '',
+        uid :   data.containsKey('uid') ? data['uid'] as String : '',
+        currentTitle :  data.containsKey('current_title') ? data['current_title'] as String : '',
+        residence :  data.containsKey('residence') ? data['residence'] as String : '',
+        mobile :  data.containsKey('mobile') ? data['mobile'] as String : '',
+        mobileCountryCode :data.containsKey('mobile_country_code') ? data['mobile_country_code'] as String : '',
+        email :data.containsKey('email') ? data['email'] as String : '',
+        profileImage : data.containsKey('profileImage') ? data['profileImage'] as String : '',
+        forum : data.containsKey('forum') ? data['forum'] as String : '',
+        joinDate : data.containsKey('join_date') ? data['join_date'] as String : '',
+        currentBusinessName :  data.containsKey('current_business_name') ? data['current_business_name'] as String : '',
+        children : data.containsKey('children') ? (data['children'] as List<dynamic>).map((e) => Map<String, dynamic>.from(e)).toList() : [],
+        linkedin : data.containsKey('linkedin') ? data['linkedin'] as String : '',
+        instagram : data.containsKey('instagram') ? data['instagram'] as String : '',
+        facebook : data.containsKey('facebook') ? data['facebook'] as String : '',
+        birthdate : data.containsKey('birthdate') ? data['birthdate'] as Timestamp : null,
+        freeTextTags : data.containsKey('free_text_tags') ? (data['free_text_tags'] as List<dynamic>).map((e) => Map<String, dynamic>.from(e)).toList() : [],
+        filterTags :  data.containsKey('filter_tags') ? List<String>.from(data["filter_tags"]) as List<String> : [],
+        onBoarding : data.containsKey('onBoarding') ? data['onBoarding'] as Map<String,dynamic> : {},
+        settings : data.containsKey('settings') ? data['settings'] as Map<String,dynamic> : {},
+    );
+
+
+        }
+
 }
 
 class ResultRecord {

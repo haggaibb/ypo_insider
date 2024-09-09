@@ -65,7 +65,7 @@ class MembersController extends GetxController {
         }
     );
     DocumentSnapshot refreshedMember = await membersRef.doc(memberId).get();
-    setCurrentByMember(Member.DocumentSnapshot(refreshedMember));
+    setCurrentByMember(Member.fromDocumentSnapshot(refreshedMember));
     print('Registration done - member is ${currentMember.value.fullName()}');
     return (memberSnapshot.docs.isNotEmpty);
   }
@@ -205,7 +205,7 @@ class MembersController extends GetxController {
     final membersQuery = await membersRef.get();
     final membersSnapshot = membersQuery.docs;
     for (var member in membersSnapshot) {
-      allMembers.add(Member.DocumentSnapshot(member));
+      allMembers.add(Member.fromDocumentSnapshot(member));
     }
     numberOfMembers = membersSnapshot.length;
   }

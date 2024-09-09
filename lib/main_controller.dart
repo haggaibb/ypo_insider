@@ -32,7 +32,7 @@ class MainController extends GetxController {
     final membersDocs = membersQuery.docs;
     filteredResults.value =[];
     for (var member in membersDocs) {
-      filteredResults.add(Member.DocumentSnapshot(member));
+      filteredResults.add(Member.fromDocumentSnapshot(member));
     }
     resultsLoading.value = false;
     update();
@@ -64,7 +64,7 @@ class MainController extends GetxController {
     List<QueryDocumentSnapshot> membersDocs = membersSnapshot.docs;
     filteredResults.value =[];
     for (var index in randomArr) {
-      filteredResults.add(Member.DocumentSnapshot(membersDocs[index]));
+      filteredResults.add(Member.fromDocumentSnapshot(membersDocs[index]));
     }
     //resultsLoading.value = false;
   }

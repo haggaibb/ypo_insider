@@ -10,7 +10,9 @@ class RayBarTextField extends StatelessWidget {
   final TextEditingController controller;
   final Lines lines;
   final String label;
+  final TextStyle? displayLabelStyle;
   final IconData? icon;
+  final Widget? imageIcon;
   final bool? enableIcon;
   final FieldType? type;
   final double? fieldWidth;
@@ -27,7 +29,9 @@ class RayBarTextField extends StatelessWidget {
     required this.controller,
     required this.lines,
     required this.label,
+    this.displayLabelStyle = const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
     this.icon,
+    this.imageIcon,
     this.enableIcon = false,
     this.type = FieldType.text,
     this.fieldWidth = 200,
@@ -47,13 +51,15 @@ class RayBarTextField extends StatelessWidget {
       case Lines.single:
         return Padding(
           padding: padding ??
-              const EdgeInsets.only(left: 8, right: 0, bottom: 8, top: 0),
+              const EdgeInsets.only(left: 0, right: 0, bottom: 8, top: 0),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               RayBarCustomFieldLabel(
+                labelStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 label: label,
                 icon: icon,
+                imageIcon: imageIcon,
                 enableIcon: enableIcon,
                 editMode: editMode,
               ),
@@ -71,6 +77,7 @@ class RayBarTextField extends StatelessWidget {
                       controller: controller,
                       enabled: editMode,
                       label: label,
+                      labelStyle: TextStyle(fontWeight: FontWeight.bold),
                       style: TextStyle(
                           color: type == FieldType.link
                               ? Colors.blue
@@ -128,11 +135,14 @@ class RayBarDropdownMenu extends StatelessWidget {
   final EdgeInsets? padding;
   final IconData? icon;
   final bool? enableIcon;
+  final Widget? imageIcon;
   final double? fieldWidth;
   final bool editMode;
   final FieldType? type;
   final String? helperText;
   final String? hintText;
+  final TextStyle? displayLabelStyle;
+  final Function(dynamic) onSelected;
 
   ///
   const RayBarDropdownMenu({
@@ -145,10 +155,13 @@ class RayBarDropdownMenu extends StatelessWidget {
     this.padding,
     this.icon,
     this.enableIcon = false,
+    this.imageIcon,
     this.fieldWidth = 200,
     this.type = FieldType.text,
     this.helperText,
     this.hintText,
+    this.displayLabelStyle,
+    required this.onSelected,
     super.key,
   });
 
@@ -162,6 +175,7 @@ class RayBarDropdownMenu extends StatelessWidget {
         children: [
           RayBarCustomFieldLabel(
             label: label,
+            labelStyle: displayLabelStyle,
             icon: icon,
             enableIcon: enableIcon,
             editMode: editMode,
@@ -169,31 +183,25 @@ class RayBarDropdownMenu extends StatelessWidget {
           SizedBox(
             width: editMode ? fieldWidth : fieldWidth! * 0.5,
             height: editMode ? 10 : 0,
-            child: GestureDetector(
-              onTap: () {
-                (type == FieldType.link && !editMode)
-                    ? html.window.open(controller.text, 'new tab')
-                    : null;
-              },
-              child: Padding(
-                padding: editMode
-                    ? EdgeInsets.only(left: 40, bottom: 0)
-                    : EdgeInsets.only(),
-                child: RayBarCustomDropdownMenu(
-                    width: fieldWidth,
-                    controller: controller,
-                    dropdownMenuEntries: dropdownMenuEntries,
-                    enabled: editMode,
-                    label: label,
-                    leadingIcon: icon,
-                    style: TextStyle(
-                        color: type == FieldType.link
-                            ? Colors.blue
-                            : Colors.black),
-                    helperText: helperText,
-                    //leadingIcon: enableIcon!?icon!:null,
-                    hintText: hintText),
-              ),
+            child: Padding(
+              padding: editMode
+                  ? EdgeInsets.only(left: 40, bottom: 0)
+                  : EdgeInsets.only(),
+              child: RayBarCustomDropdownMenu(
+                onSelected: onSelected,
+                  width: fieldWidth,
+                  controller: controller,
+                  dropdownMenuEntries: dropdownMenuEntries,
+                  editMode: editMode,
+                  label: label,
+                  leadingIcon: icon,
+                  style: TextStyle(
+                      color: type == FieldType.link
+                          ? Colors.blue
+                          : Colors.black),
+                  helperText: helperText,
+                  //leadingIcon: enableIcon!?icon!:null,
+                  hintText: hintText),
             ),
           )
         ],
@@ -339,9 +347,11 @@ class RayBarCustomTextField extends TextField {
       int super.minLines = 1,
       String? helperText,
       TextStyle? style = const TextStyle(color: Colors.black),
+      TextStyle? labelStyle,
       TextAlign? textAlign,
       String? hintText,
       IconData? icon,
+        bool? editMode,
       super.enabled,
       super.textDirection,
       BorderRadius? borderRadius})
@@ -358,6 +368,7 @@ class RayBarCustomTextField extends TextField {
                     : EdgeInsets.only(left: 0, right: 0, top: 0, bottom: 0.0),
             isCollapsed: true,
             labelText: enabled ? label : '',
+            labelStyle: labelStyle,
             helperText: enabled ? helperText : null,
             hintText: hintText,
             floatingLabelBehavior: enabled
@@ -376,7 +387,7 @@ class RayBarCustomDropdownMenu extends DropdownMenu {
   RayBarCustomDropdownMenu(
       {super.key,
       required TextEditingController super.controller,
-      required super.dropdownMenuEntries,
+      required List<DropdownMenuEntry> dropdownMenuEntries,
       FieldType type = FieldType.text,
       String? label,
       String? helperText,
@@ -384,30 +395,33 @@ class RayBarCustomDropdownMenu extends DropdownMenu {
       TextAlign? textAlign,
       String? hintText,
       IconData? leadingIcon,
-      Function(dynamic)? super.onSelected,
-      super.enabled,
+        required editMode,
+      Function(dynamic)? onSelected,
       double? width,
       BorderRadius? borderRadius})
       : super(
             width: width,
+            dropdownMenuEntries: dropdownMenuEntries,
+            onSelected: onSelected,
             textStyle: style,
+            enabled: editMode,
             initialSelection: controller.text,
-            label: enabled ? Text(label ?? '') : null,
-            trailingIcon: enabled ? Icon(Icons.arrow_drop_down) : null,
-            leadingIcon: enabled ? Icon(leadingIcon) : null,
+            label: editMode ? Text(label ?? '') : null,
+            trailingIcon: editMode? Icon(Icons.arrow_drop_down) : null,
+            leadingIcon: editMode ? Icon(leadingIcon) : null,
             inputDecorationTheme: InputDecorationTheme(
               filled: false,
               isDense: true,
-              constraints: enabled
+              constraints: editMode
                   ? null
                   : BoxConstraints.tight(const Size.fromHeight(22)),
               disabledBorder: InputBorder.none,
-              suffixIconColor: enabled ? Colors.black : Colors.transparent,
+              suffixIconColor: editMode ? Colors.black : Colors.transparent,
               border: OutlineInputBorder(
                 borderSide: BorderSide(),
                 borderRadius: borderRadius = BorderRadius.circular(5.0),
               ),
-              contentPadding: enabled
+              contentPadding: editMode
                   ? EdgeInsets.symmetric(vertical: 5.0)
                   : EdgeInsets.only(right: 0, left: 0, top: 0, bottom: 0),
               //outlineBorder: BorderSide(color:  Colors.blue),
@@ -419,6 +433,7 @@ class RayBarCustomDropdownMenu extends DropdownMenu {
 class RayBarCustomFieldLabel extends StatelessWidget {
   final String label;
   final IconData? icon;
+  final Widget? imageIcon;
   final bool? enableIcon;
   final bool editMode;
   final TextStyle? labelStyle;
@@ -427,6 +442,7 @@ class RayBarCustomFieldLabel extends StatelessWidget {
       {super.key,
       required this.label,
       this.icon,
+        this.imageIcon,
       required this.editMode,
       this.labelStyle = const TextStyle(color: Colors.black, fontSize: 16),
       this.enableIcon = false});
@@ -440,10 +456,7 @@ class RayBarCustomFieldLabel extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(right: 8.0),
                 child: enableIcon!
-                    ? Icon(
-                        icon,
-                        color: Colors.blue.shade900,
-                      )
+                    ? imageIcon!=null?imageIcon:Icon(icon, color: Colors.blue.shade900,)
                     : const SizedBox(),
               ),
               Padding(

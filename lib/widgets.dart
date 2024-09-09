@@ -512,6 +512,7 @@ class _TestPageState extends State<TestPage> {
 
                     ),
                     RayBarDropdownMenu(
+                      onSelected: (val) => {},
                       //padding: EdgeInsets.only(bottom: 20),
                       controller: dropController,
                       label: 'Residence',
