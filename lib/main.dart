@@ -8,6 +8,7 @@ import 'home.dart';
 import 'firebase_options.dart';
 import 'widgets.dart';
 import 'auth_screens.dart';
+import 'admin_pages.dart';
 
 final actionCodeSettings = ActionCodeSettings(
   url: 'https://ypodex.web.app/',
@@ -23,6 +24,7 @@ final emailLinkProviderConfig = EmailLinkAuthProvider(
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   //runApp(TestPage());
+  //runApp(AddNewMember());
   //return;
   print('@@@@@@@@@@@@@@@@@@');
   print('main');

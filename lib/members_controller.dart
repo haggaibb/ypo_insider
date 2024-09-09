@@ -9,164 +9,161 @@ import 'package:get/get.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get_storage/get_storage.dart';
 
-
 class MembersController extends GetxController {
   var db = FirebaseFirestore.instance;
+  List<String> admins = [];
   RxBool loading = true.obs;
   RxBool saving = false.obs;
+  RxBool isAdmin = false.obs;
   RxBool loadingProfileImage = false.obs;
   RxList<Member> allMembers = RxList<Member>();
-  int numberOfMembers =1;
+  int numberOfMembers = 1;
   RxString currentUserUid = ''.obs;
-  Rx<Member> currentMember = Member(forum: 'NA', id: 'NA', firstName: 'NAA', lastName: 'NA', residence: 'NA', mobile: 'NA', email: 'NA', birthdate: Timestamp.now(), currentTitle: 'NA', currentBusinessName: 'NA', mobileCountryCode: 'NA',joinDate: 'NA').obs;
-  Member noUser = Member(forum: 'NA', id: 'NA', firstName: 'NA', lastName: 'NA', residence: 'NA', mobile: 'NA', email: 'NA' , birthdate: Timestamp.now(), currentTitle: 'NA', currentBusinessName: 'NA', mobileCountryCode: 'NA',joinDate: 'NA');
+  Rx<Member> currentMember = Member(
+          forum: 'NA',
+          id: 'NA',
+          firstName: 'NAA',
+          lastName: 'NA',
+          residence: 'NA',
+          mobile: 'NA',
+          email: 'NA',
+          birthdate: Timestamp.now(),
+          currentTitle: 'NA',
+          currentBusinessName: 'NA',
+          mobileCountryCode: 'NA',
+          joinDate: 'NA').obs;
+  Member noUser = Member(
+      forum: 'NA',
+      id: 'NA',
+      firstName: 'NA',
+      lastName: 'NA',
+      residence: 'NA',
+      mobile: 'NA',
+      email: 'NA',
+      birthdate: Timestamp.now(),
+      currentTitle: 'NA',
+      currentBusinessName: 'NA',
+      mobileCountryCode: 'NA',
+      joinDate: 'NA');
   Rx<String> authErrMsg = ''.obs;
   /// storage for profile pics
   Reference storageRef = FirebaseStorage.instance.ref();
-  late Reference tempProfilePicRef ;
+  late Reference tempProfilePicRef;
   //final box = GetStorage();
   /// settings
   Rx<ThemeMode> themeMode = ThemeMode.system.obs;
   final box = GetStorage();
   /// AUTH
   final user = FirebaseAuth.instance.currentUser;
-  setCurrentByUid(User? user) {
-    if (user!=null) currentMember.value = getMemberByUid(user.uid);
+  setCurrentByUid(User? user) async {
+    if (user != null) currentMember.value = await getMemberByUid(user.uid);
     print('set member');
-    print( currentMember.value.children);
-    themeMode.value = currentMember.value.settings?['theme_mode']=='light'?ThemeMode.light:ThemeMode.dark;
+    print(currentMember.value.children);
+    themeMode.value = currentMember.value.settings?['theme_mode'] == 'light'
+        ? ThemeMode.light
+        : ThemeMode.dark;
   }
-  setCurrentByMember(Member member) {
-    currentMember.value=member;
-    themeMode.value = currentMember.value.settings?['theme_mode']=='light'?ThemeMode.light:ThemeMode.dark;
 
+  setCurrentByMember(Member member) {
+    currentMember.value = member;
+    themeMode.value = currentMember.value.settings?['theme_mode'] == 'light'
+        ? ThemeMode.light
+        : ThemeMode.dark;
   }
+
   validateMemberEmail(String email) async {
     CollectionReference membersRef = db.collection('Members');
-    QuerySnapshot memberSnapshot = await membersRef.where('email', isEqualTo: email).get();
+    QuerySnapshot memberSnapshot =
+        await membersRef.where('email', isEqualTo: email).get();
     return (memberSnapshot.docs.isNotEmpty);
   }
+
   onRegister(User user) async {
     print('Registration');
     print('for User ${user.email} uid is ${user.uid}');
     CollectionReference membersRef = db.collection('Members');
-    QuerySnapshot memberSnapshot = await membersRef.where('email', isEqualTo: user.email).get();
+    QuerySnapshot memberSnapshot =
+        await membersRef.where('email', isEqualTo: user.email).get();
     var memberId = memberSnapshot.docs.first.id;
     var memberData = memberSnapshot.docs.first.data() as Map<String, dynamic>;
-    var displayName = memberData['firstName']+" "+memberData['lastName'];
+    var displayName = memberData['firstName'] + " " + memberData['lastName'];
     await FirebaseAuth.instance.currentUser!.updateDisplayName(displayName);
-    await membersRef.doc(memberId).update(
-        {
-          'id' : memberId,
-          'uid' : user.uid,
-          'onBoarding.registered' : true,
-          'onBoarding.verified' : false,
-          'profileImage' : '/assets/images/profile0.jpg'
-        }
-    );
+    await membersRef.doc(memberId).update({
+      'id': memberId,
+      'uid': user.uid,
+      'onBoarding.registered': true,
+      'onBoarding.verified': false,
+    });
     DocumentSnapshot refreshedMember = await membersRef.doc(memberId).get();
     setCurrentByMember(Member.fromDocumentSnapshot(refreshedMember));
     print('Registration done - member is ${currentMember.value.fullName()}');
     return (memberSnapshot.docs.isNotEmpty);
   }
+
   onVerify(User user) async {
     print('user has just verified his email');
     print('update his profile');
     CollectionReference membersRef = db.collection('Members');
     var memberId = currentMember.value.id;
-    await membersRef.doc(memberId).update(
-        {
-          'onBoarding.verified' : true
-        }
-    );
+    await membersRef.doc(memberId).update({'onBoarding.verified': true});
   }
+
   onBoardingFinished(User user) async {
-    loading.value=true;
+    loading.value = true;
     print('finished onboarding');
-    print('update full name to Auth User, this must be done as it acts as a flag for onboarding');
+    print(
+        'update full name to Auth User, this must be done as it acts as a flag for onboarding');
     print(currentMember.value.fullName());
-    await FirebaseAuth.instance.currentUser!.updateDisplayName(currentMember.value.fullName());
+    await FirebaseAuth.instance.currentUser!
+        .updateDisplayName(currentMember.value.fullName());
     var memberId = currentMember.value.id;
     print(memberId);
     CollectionReference membersRef = db.collection('Members');
     //QuerySnapshot memberSnapshot = await membersRef.where('email', isEqualTo: currentMember.value.email).get();
     //var memberId = memberSnapshot.docs.first.id;
-    await membersRef.doc(memberId).update(
-        {
-          'onBoarding.boarded' : true
-        }
-    );
-    loading.value=false;
+    await membersRef.doc(memberId).update({'onBoarding.boarded': true});
+    loading.value = false;
   }
-  // getMemberData(String? email) async {
-  //   if (email==null) return noUser;
-  //   CollectionReference membersRef = db.collection('Members');
-  //   QuerySnapshot membersSnapshot = await membersRef.where('email', isEqualTo: email).get();
-  //   if (membersSnapshot.docs.isEmpty)
-  //   {
-  //     print('no member found for ${user?.email}');
-  //     return noUser;
-  //   }
-  //   print('Got here');
-  //   print(membersSnapshot.docs.first.data());
-  //   return Member.DocumentSnapshot(membersSnapshot.docs.first);
-  // }
-  // getMemberInfo(String? email) async {
-  //   if (email==null) return noUser;
-  //   CollectionReference membersRef = db.collection('Members');
-  //   QuerySnapshot membersSnapshot = await membersRef.where('email', isEqualTo: email).get();
-  //   if (membersSnapshot.docs.isEmpty)
-  //   {
-  //     print('no member found for ${user?.email}');
-  //     return noUser;
-  //   }
-  //   print('Got here');
-  //   print(membersSnapshot.docs.first.data());
-  //   return Member.DocumentSnapshot(membersSnapshot.docs.first);
-  // }
-  getMemberById(String id) {
-    Member foundMember = allMembers.firstWhere((element) => element.id==id, orElse: () => noUser);
-    return foundMember;
+
+  addNewMember(String firstName,String lastName,String email) async {
+    CollectionReference membersRef = db.collection('Members');
+    await membersRef.add({
+      'firstName' : firstName,
+      'lastName' : lastName,
+      'email' : email
+    });
   }
-  getMemberByUid(String uid) {
-    Member foundMember = allMembers.firstWhere((element) => element.uid==uid, orElse: () => noUser);
-    return foundMember;
+
+  getMemberById(String id) async {
+    CollectionReference membersRef = db.collection('Members');
+    DocumentSnapshot res = await membersRef.doc(id).get();
+    if (res.exists) {
+      return Member.fromDocumentSnapshot(res);
+    } else {
+      noUser;
+    }
+    // Member foundMember = allMembers.firstWhere((element) => element.id == id,
+    //     orElse: () => noUser);
+    // return foundMember;
   }
-  // Future<Member> getMemberByIdd(String id) async {
-  //   if (id=='') return noUser;
-  //   CollectionReference membersRef = db.collection('Members');
-  //   QuerySnapshot membersSnapshot = await membersRef.where('id', isEqualTo: id).get();
-  //   if (membersSnapshot.docs.isEmpty)
-  //   {
-  //     print('no member found for ${user?.email}');
-  //     return noUser;
-  //   }
-  //   return Member.DocumentSnapshot(membersSnapshot.docs.first);
-  // }
-  // Future<Member> getMemberByEMail(String email) async {
-  //   if (email=='') return noUser;
-  //   CollectionReference membersRef = db.collection('Members');
-  //   QuerySnapshot membersSnapshot = await membersRef.where('email', isEqualTo: email).get();
-  //   if (membersSnapshot.docs.isEmpty)
-  //   {
-  //     print('no member found for ${user?.email}');
-  //     return noUser;
-  //   }
-  //   return Member.DocumentSnapshot(membersSnapshot.docs.first);
-  // }
-  // Future<Member> loadMemberByUid(String uid) async {
-  //   if (uid=='') return noUser;
-  //   CollectionReference membersRef = db.collection('Members');
-  //   QuerySnapshot membersSnapshot = await membersRef.where('uid', isEqualTo: uid).get();
-  //   if (membersSnapshot.docs.isEmpty)
-  //   {
-  //     print('no member found for ${user?.email}');
-  //     return noUser;
-  //   }
-  //   return Member.DocumentSnapshot(membersSnapshot.docs.first);
-  // }
+
+  getMemberByUid(String uid) async {
+    CollectionReference membersRef = db.collection('Members');
+    QuerySnapshot res = await membersRef.where("uid" , isEqualTo: uid).get();
+    if (res.docs.isNotEmpty) {
+      return Member.fromJson(res.docs.first.data() as Map<String,dynamic>);
+    } else {
+      return noUser;
+    }
+    // Member foundMember = allMembers.firstWhere((element) => element.uid == uid,
+    //     orElse: () => noUser);
+    // return foundMember;
+  }
+
   logout() async {
-    print('logout'); /// TODO does not work,
+    print('logout');
+
+    /// TODO does not work,
     await FirebaseAuth.instance.signOut();
     return;
     // Remove any route in the stack
@@ -175,31 +172,37 @@ class MembersController extends GetxController {
     //Get.to(FrontGate());
     //Get.to(Email);
   }
+
   Future<String> uploadProfileImage(XFile img, String id) async {
     loadingProfileImage.value = true;
     final fileBytes = await img.readAsBytes();
     final reference = FirebaseStorage.instance.ref();
     final now = DateTime.now();
-    final imageRef = reference.child('profile_images/${img.name+now.millisecondsSinceEpoch.toString()}');
+    final imageRef = reference.child(
+        'profile_images/${img.name + now.millisecondsSinceEpoch.toString()}');
     final metadata = SettableMetadata(contentType: img.mimeType);
-    final uploadTask = await imageRef.putData(fileBytes,metadata);
+    final uploadTask = await imageRef.putData(fileBytes, metadata);
     String url = await uploadTask.ref.getDownloadURL();
-    tempProfilePicRef  = imageRef;
+    tempProfilePicRef = imageRef;
+
     /// TODO move to save  //await saveProfileImage(url, id);
     update();
     loadingProfileImage.value = false;
     return url;
   }
+
   deleteTempProfilePic(Reference ref) async {
     await ref.delete();
   }
+
   updateMemberInfo(Member member) async {
-    saving.value=true;
+    saving.value = true;
     CollectionReference membersRef = db.collection('Members');
     //await membersRef.doc(member.id).set(member.toMap(), SetOptions(merge: true));
     await membersRef.doc(member.id).update(member.toMap());
-    saving.value=false;
+    saving.value = false;
   }
+
   loadAllMembers() async {
     final membersRef = db.collection("Members");
     final membersQuery = await membersRef.get();
@@ -209,12 +212,26 @@ class MembersController extends GetxController {
     }
     numberOfMembers = membersSnapshot.length;
   }
+
+  loadAdmins() async {
+    DocumentReference settingsRef = db.collection('Settings').doc('Admins');
+    settingsRef.get().then(
+      (DocumentSnapshot doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        admins = data.containsKey('admins')
+            ? List<String>.from(data["admins"]) as List<String>
+            : [];
+        isAdmin.value = admins.contains(currentMember.value.id);
+        print('current user is Admin, enable Admin UX');
+      },
+      onError: (e) => print("Error getting document: $e"),
+    );
+  }
+
   saveThemeMode(themeMode) {
     box.write('themeMode', themeMode);
     var id = currentMember.value.id;
-    db.collection("Members").doc(id).update({
-      'settings.theme_mode' : themeMode
-    });
+    db.collection("Members").doc(id).update({'settings.theme_mode': themeMode});
   }
 
   @override
@@ -269,24 +286,20 @@ class MembersController extends GetxController {
     // print('Done!!!!!!!!!!!');
     // return;
     await GetStorage.init();
-    Get.changeTheme(box.read('themeMode')=='dark'?ThemeData.dark():ThemeData.light());
+    Get.changeTheme(
+        box.read('themeMode') == 'dark' ? ThemeData.dark() : ThemeData.light());
     super.onInit();
     print('init - Members Controller...');
-    tempProfilePicRef =storageRef.child("");
+    tempProfilePicRef = storageRef.child("");
     print('load members DB');
-    await loadAllMembers();
+    //await loadAllMembers();
     print('get current member by user uid ${user?.uid}');
-    if (user!=null) setCurrentByUid(user);
+    if (user != null) setCurrentByUid(user);
+    await loadAdmins();
     print('finished loading members DB');
     print('current member init in home is ${currentMember.value.fullName()}');
     loading.value = false;
     update();
     print('end - init Members Controller');
   }
-
 }
-
-
-
-
-

@@ -17,7 +17,7 @@ class EmailSignInForm extends StatelessWidget {
   EmailSignInForm({required this.authController, super.key, this.errMsg = ''});
   final emailCtrl = TextEditingController();
   final passwordCtrl = TextEditingController();
-  final controller = Get.put(MembersController());
+  //final controller = Get.put(MembersController());
 
   signIn(BuildContext context) async {
     print('sign-in');
@@ -362,7 +362,7 @@ class _EmailRegisterFormState extends State<EmailRegisterForm> {
 
 class VerificationPage extends StatelessWidget {
   final User user;
-  final controller = Get.put(MembersController());
+  //final controller = Get.put(MembersController());
   VerificationPage({super.key, required this.user});
   @override
   Widget build(BuildContext context) {

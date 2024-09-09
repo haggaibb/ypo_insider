@@ -21,8 +21,7 @@ class MainController extends GetxController {
 
   fetchFilteredMembers(List<String> selectedFilters) async {
     if (selectedFilters.isEmpty) {
-      //print('no selected tags');
-      filteredResults.value = []; /// TODO add ref to def res
+      filteredResults.value = []; /// TODO add ref to def result list if we wish
       resultsLoading.value = false;
       return;
     }
@@ -45,7 +44,6 @@ class MainController extends GetxController {
       list.add(tag);
     }
     if (category!='forum') list.sort((a, b) => a.compareTo(b));
-
     return list;
   }
   Map<String, dynamic> newFreeTextTag(key){
@@ -72,7 +70,6 @@ class MainController extends GetxController {
     resultsLoading.value = true;
     print('load tags');
     ///load free text tags
-    //resultsLoading.value = true;
     CollectionReference freeTextTagsRef = db.collection('FreeTextTags');
     QuerySnapshot freeTextTagsSnapshot = await freeTextTagsRef.get();
     List<QueryDocumentSnapshot>  freeTextTagsDocList =  freeTextTagsSnapshot.docs;
@@ -115,6 +112,23 @@ class MainController extends GetxController {
     update();
     print('tags loaded');
   }
+  addNewResidence(String newResidence) async {
+    CollectionReference filtersRef = db.collection('FilterTags');
+    final filtersQuery = await filtersRef.where("key", isEqualTo: 'residence' ).get();
+    var id = filtersQuery.docs.first.id;
+    filtersRef.doc(id).update({
+      "tags_list": FieldValue.arrayUnion([newResidence]),
+    });
+  }
+  addNewForum(String newForum) async {
+    CollectionReference filtersRef = db.collection('FilterTags');
+    final filtersQuery = await filtersRef.where("key", isEqualTo: 'forum' ).get();
+    var id = filtersQuery.docs.first.id;
+    filtersRef.doc(id).update({
+      "tags_list": FieldValue.arrayUnion([newForum]),
+    });
+  }
+
 
   @override
   onInit() async {

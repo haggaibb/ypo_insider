@@ -10,6 +10,7 @@ import 'widgets.dart';
 import 'package:ypo_connect/members_controller.dart';
 import 'package:chips_choice/chips_choice.dart';
 import 'theme.dart';
+import 'admin_pages.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key, this.user});
@@ -40,14 +41,9 @@ class _HomeState extends State<Home> {
   void initState() {
     print('init home');
     super.initState();
-    print(membersController.currentMember.value.firstName);
-    //print(widget.user);
-    if (membersController.currentMember.value.id == 'NA')
-      membersController.setCurrentByUid(widget.user);
+    if (membersController.currentMember.value.id == 'NA') membersController.setCurrentByUid(widget.user);
     mainController.loadRandomResults(membersController.numberOfMembers);
     setState(() {
-      //isDark = membersController.themeMode.value.name == 'dark';
-      //isDark = membersController.themeMode.value.name == 'dark';
       mainController.loadTags(membersController.allMembers);
     });
     print('init home end');
@@ -129,7 +125,6 @@ class _HomeState extends State<Home> {
                         SizedBox(
                           height: 8,
                         ),
-                        //Image.network('assets/images/logo.png' ,width: 130, height: 130,),
                         DrawerHeader(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(150),
@@ -182,6 +177,40 @@ class _HomeState extends State<Home> {
                               ),
                             ),
                           ],
+                        ),
+                        Divider(),
+                        /// new member
+                        ListTile(
+                          leading: const Icon(
+                            Icons.person,
+                          ),
+                          title: const Text('Add a new Member'),
+                          onTap: () {
+                            Get.to(() => const AddNewMember()
+                            );
+                          },
+                        ),
+                        /// new residence
+                        ListTile(
+                          leading: const Icon(
+                            Icons.house_outlined,
+                          ),
+                          title: const Text('Add a new Residence'),
+                          onTap: () {
+                            Get.to(() => const AddNewResidence()
+                            );
+                          },
+                        ),
+                        /// new forum
+                        ListTile(
+                          leading: const Icon(
+                            Icons.group_add,
+                          ),
+                          title: const Text('Add a new Forum'),
+                          onTap: () {
+                            Get.to(() => const AddNewForum()
+                            );
+                          },
                         ),
                       ],
                     ),

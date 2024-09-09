@@ -147,6 +147,55 @@ class Member {
 
         }
 
+
+  factory Member.fromJson(Map<String, dynamic> json) {
+    return Member(
+      id: json['id'],
+      uid: json.containsKey('uid') ? json['uid'] as String : '',
+      firstName: json.containsKey('firstName') ? json['firstName'] as String : '',
+      lastName: json.containsKey('lastName') ? json['lastName'] as String : '',
+      currentTitle: json.containsKey('current_title') ? json['current_title'] as String : '',
+      residence: json.containsKey('residence') ? json['residence'] as String : '',
+      mobile: json.containsKey('mobile') ? json['mobile'] as String : '',
+      mobileCountryCode: json.containsKey('mobile_country_code') ? json['mobile_country_code'] as String : '',
+      email: json.containsKey('email') ? json['email'] as String : '',
+      forum: json.containsKey('forum') ? json['forum'] as String : '',
+      joinDate: json.containsKey('join_date') ? json['join_date'] as String : '',
+      currentBusinessName: json.containsKey('current_business_name') ? json['current_business_name'] as String : '',
+      birthdate: json.containsKey('birthdate') ? json['birthdate'] as Timestamp : null,
+
+      // Correctly handle List<Map<String, dynamic>> fields
+      children: json.containsKey('children') && json['children'] != null
+          ? (json['children'] as List).map((e) => Map<String, dynamic>.from(e)).toList()
+          : [],
+
+      // Correctly check the key for each field, not 'currentBusinessName'
+      linkedin: json.containsKey('linkedin') ? json['linkedin'] as String : '',
+      instagram: json.containsKey('instagram') ? json['instagram'] as String : '',
+      facebook: json.containsKey('facebook') ? json['facebook'] as String : '',
+      profileImage: json.containsKey('profileImage') ? json['profileImage'] as String : '',
+
+      // Handle List<Map<String, dynamic>> fields
+      freeTextTags: json.containsKey('free_text_tags') && json['free_text_tags'] != null
+          ? (json['free_text_tags'] as List).map((e) => Map<String, dynamic>.from(e)).toList()
+          : [],
+
+      // Handle List<String> fields
+      filterTags: json.containsKey('filter_tags') && json['filter_tags'] != null
+          ? List<String>.from(json['filter_tags'])
+          : [],
+
+      // Handle Map<String, dynamic> fields
+      onBoarding: json.containsKey('onBoarding') && json['onBoarding'] != null
+          ? Map<String, dynamic>.from(json['onBoarding'])
+          : {},
+
+      settings: json.containsKey('settings') && json['settings'] != null
+          ? Map<String, dynamic>.from(json['settings'])
+          : {},
+    );
+  }
+
 }
 
 class ResultRecord {
