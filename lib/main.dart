@@ -4,11 +4,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:firebase_ui_localizations/firebase_ui_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:ypo_connect/onboarding.dart';
 import 'home.dart';
 import 'firebase_options.dart';
 import 'widgets.dart';
 import 'auth_screens.dart';
-import 'admin_pages.dart';
 
 final actionCodeSettings = ActionCodeSettings(
   url: 'https://ypodex.web.app/',
@@ -24,7 +24,7 @@ final emailLinkProviderConfig = EmailLinkAuthProvider(
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   //runApp(TestPage());
-  //runApp(AddNewMember());
+  //runApp(OnBoardingPage());
   //return;
   print('@@@@@@@@@@@@@@@@@@');
   print('main');
@@ -32,8 +32,13 @@ Future<void> main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   final user = FirebaseAuth.instance.currentUser;
   if (user!=null && user.emailVerified) {
-    print('root check - user verified, go to home....');
-    runApp(Home(user: user,));
+    print('root check - user verified....');
+    print(user.displayName);
+    if (user.displayName!=null || user.displayName!='') {
+      runApp(Home(user: user,));
+    } else {
+      OnBoardingPage(user: user,);
+    }
   }
   else {
     print('root check - user either null or not verified');

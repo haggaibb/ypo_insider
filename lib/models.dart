@@ -85,6 +85,16 @@ class Member {
     });
     return value;
   }
+  bool isVerified() {
+    if(onBoarding!=null) {
+      return (onBoarding!.containsKey(onBoarding!['verified']) == true);
+    } else {
+      return false;
+    }
+  }
+  bool isBoarded() {
+    return onBoarding!['boarded'];
+  }
 
   Map<String, dynamic> toMap() {
     return {

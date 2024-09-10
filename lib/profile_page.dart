@@ -107,7 +107,7 @@ class _ProfilePageState extends State<ProfilePage> {
     }
 
     /// Save to Db
-    //await memberController.updateMemberInfo(editedMember);
+    await memberController.updateMemberInfo(editedMember);
     tempProfilePicRef = storageRef.child("");
   }
 
@@ -145,7 +145,9 @@ class _ProfilePageState extends State<ProfilePage> {
     tempProfilePicRef = storageRef.child("");
     tempProfileImageUrl =
         widget.member.profileImage ?? '/assets/images/profile0.jpg';
+
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -762,7 +764,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
                       /// Children
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 16.0),
+                        padding: EdgeInsets.only(left: editModeOn?50:0,bottom: 16.0),
                         child: RayBarMultiField(
                             keysPerEntry: ['Name', 'Year of Birth'],
                             entries: childrenCtrl,
@@ -813,6 +815,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                         index]['key'] !=
                                                     'forum')
                                             ? Card(
+                                          color: Colors.blue.shade900,
                                                 elevation: 10,
                                                 child: Column(
                                                   children: [
@@ -821,7 +824,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                                         mainController
                                                                 .filteredTagsList[
                                                             index]['label'],
-                                                        style: TextStyle(
+                                                        style: const TextStyle(
+                                                          color: Colors.white,
                                                             fontWeight:
                                                                 FontWeight
                                                                     .bold),
@@ -855,6 +859,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                                       selected: selectedTags.contains(mainController.filteredTagsList[index]['tags_list'][tagIndex]))
                                                                   : selectedTags.contains(mainController.filteredTagsList[index]['tags_list'][tagIndex])
                                                                       ? ChoiceChip(
+                                                                          //selectedColor: Colors.blueGrey,
                                                                           onSelected: (val) {
                                                                             if (editModeOn) {
                                                                               setState(() {
@@ -869,15 +874,14 @@ class _ProfilePageState extends State<ProfilePage> {
                                                                           label: Text(mainController.filteredTagsList[index]['tags_list'][tagIndex]),
                                                                           labelStyle: const TextStyle(fontWeight: FontWeight.bold),
                                                                           selected: selectedTags.contains(mainController.filteredTagsList[index]['tags_list'][tagIndex]))
-                                                                      : SizedBox(
-                                                                          width:
-                                                                              1,
-                                                                        ))),
+                                                                      : const SizedBox(
+                                                                          width: 1,))
+                                                      ),
                                                     ),
                                                   ],
                                                 ),
                                               )
-                                            : SizedBox(
+                                            : const SizedBox(
                                                 height: 10,
                                               ),
                                   ),
@@ -970,7 +974,27 @@ class _ProfilePageState extends State<ProfilePage> {
                                   padding: EdgeInsets.all(20.0),
                                   child: Text(
                                       'You have not provided any extra information-Please Edit and Update!'),
-                                )
+                                ),
+                      editModeOn?Column(
+                        children: [
+                          ElevatedButton(
+                            onPressed: () async {
+                              await updateMemberInfo();
+                              setState(() {
+                                editModeOn = false;
+                              });
+                            },
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blue.shade900,
+                                side: BorderSide.none,
+                                shape: const StadiumBorder()),
+                            child: const Text('Save',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold)),
+                          ),
+                        ],
+                      ):SizedBox(height: 20,)
                     ],
                   )),
             ),

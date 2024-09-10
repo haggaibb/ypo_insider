@@ -18,7 +18,9 @@ class MainController extends GetxController {
   RxList<String> tags = <String>[].obs;
   List<String> activeFilters = <String>[].obs;
   RxList<Member> filteredResults = RxList<Member>();
-  RxBool resultsLoading = false.obs;
+  RxBool resultsLoading = true.obs;
+  RxBool mainLoading = false.obs;
+  RxBool isAnd = true.obs;
   int numberOfMembers = 1;
 
 
@@ -29,15 +31,30 @@ class MainController extends GetxController {
       return;
     }
     resultsLoading.value = true;
+    List<QueryDocumentSnapshot> filteredMembers;
     final membersRef = db.collection("Members");
-    final membersQuery = await membersRef.where("filter_tags", arrayContainsAny: selectedFilters).get();
-    final membersDocs = membersQuery.docs;
+    final QuerySnapshot membersQuery = await membersRef.where("filter_tags", arrayContainsAny: selectedFilters).get();
+    if (isAnd.value) {
+      filteredMembers = membersQuery.docs.where((doc) {
+        // Safely cast the 'filter_tags' array to List<String>
+        List<String> filterTags = List<String>.from(doc['filter_tags'] as List<dynamic>);
+
+        // Check if all the selectedTags are in filterTags
+        return selectedFilters.every((tag) => filterTags.contains(tag));
+      }).toList();
+    } else {
+      filteredMembers = membersQuery.docs;
+    }
     filteredResults.value =[];
-    for (var member in membersDocs) {
+    for (var member in filteredMembers) {
       filteredResults.add(Member.fromDocumentSnapshot(member));
     }
     resultsLoading.value = false;
     update();
+  }
+  switchAndOrFilter(List<String> selectedFilters) async {
+    isAnd.value = !isAnd.value;
+    await fetchFilteredMembers(selectedFilters);
   }
   List<String> getFilteredTagsFromCategory(category) {
     List<String> list = [];
@@ -53,7 +70,7 @@ class MainController extends GetxController {
     return freeTextTagsList.firstWhere((element) => element['key']==key);
   }
   loadRandomResults(size) async {
-    //resultsLoading.value = true;
+    resultsLoading.value = true;
     List randomArr =[];
     final Random _random = Random();
     for (int i=0; i<15;i++) {
@@ -67,10 +84,11 @@ class MainController extends GetxController {
     for (var index in randomArr) {
       filteredResults.add(Member.fromDocumentSnapshot(membersDocs[index]));
     }
-    //resultsLoading.value = false;
+    resultsLoading.value = false;
   }
   loadTags() async {
     print('load tags');
+    //filtersLoading.value=true;
     ///load free text tags
     CollectionReference freeTextTagsRef = db.collection('FreeTextTags');
     QuerySnapshot freeTextTagsSnapshot = await freeTextTagsRef.get();
@@ -109,12 +127,17 @@ class MainController extends GetxController {
     final membersQuery = await membersRef.get();
     final membersSnapshot = membersQuery.docs;
     numberOfMembers = membersSnapshot.length;
-
     for (var member in membersSnapshot) {
+      Map<String, dynamic>? data = member.data() as Map<String, dynamic>?;
       suggestionsList.add(ResultRecord(label: member['firstName']+' '+member['lastName'] , id: member.id));
-      if (member['current_business_name']!='') suggestionsList.add(ResultRecord(label: member['current_business_name'], id: member.id));
+      var bizName;
+      if (data!=null) {
+        bizName = data.containsKey('current_business_name') ? data['current_business_name'] as String : null;
+      }
+      (bizName!=null && bizName!='')?suggestionsList.add(ResultRecord(label: bizName, id: member.id)):null;
       suggestionsList.sort((a, b) => a.label. compareTo(b.label));
     }
+    //filtersLoading.value=false;
     update();
     print('tags loaded');
   }
@@ -140,11 +163,11 @@ class MainController extends GetxController {
   onInit() async {
     super.onInit();
     print('init - main Controller...');
-    resultsLoading.value = true;
+    mainLoading.value = true;
     /// loadTags() should be first, it also gets the number of members data
     await loadTags();
     await loadRandomResults(numberOfMembers);
-    resultsLoading.value = false;
+    mainLoading.value = false;
     update();
     print('end - init main Controller');
   }

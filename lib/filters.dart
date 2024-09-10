@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:chips_choice/chips_choice.dart';
 import 'package:flutter/widgets.dart';
-import 'package:ypo_connect/members_controller.dart';
+import 'package:toggle_switch/toggle_switch.dart';
 import 'main_controller.dart';
 import 'package:get/get.dart';
 
@@ -19,7 +19,6 @@ class _FiltersState extends State<Filters> {
   late List filtersCategory;
   List<String> tags =[];
 
-  // list of string options
 
   @override
   void initState() {
@@ -55,11 +54,29 @@ class _FiltersState extends State<Filters> {
                   //mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(bottom: 30.0),
+                      padding: const EdgeInsets.only(bottom: 0.0),
                       child: IconButton(
                         onPressed: widget.jumpFunction,
                         icon : Icon(Icons.filter_list_outlined),
                         color: Colors.white,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 15.0),
+                      child: ToggleSwitch(
+                        minWidth: 50.0,
+                        initialLabelIndex: 0,
+                        cornerRadius: 20.0,
+                        activeFgColor: Colors.black,
+                        inactiveBgColor: Colors.grey,
+                        inactiveFgColor: Colors.white,
+                        totalSwitches: 2,
+                        labels: ['And', 'Or'],
+                        //icons: [Icons.add, Icons.safety_divider],
+                        activeBgColors: [[Colors.green],[Colors.green]],
+                        onToggle: (index) async {
+                          await mainController.switchAndOrFilter(tags);
+                        },
                       ),
                     ),
                     Expanded(
@@ -79,13 +96,17 @@ class _FiltersState extends State<Filters> {
                                       children: [
                                         ListTile(
                                           title:  Text(filtersCategory[index]['label'] ,style: Theme.of(context).textTheme.titleLarge),
+                                          subtitle: Text((filtersCategory[index]['label']=='Forum' || filtersCategory[index]['label'] == 'Residence')?'Single Choice':'Multiple Choices' ,style: Theme.of(context).textTheme.titleSmall),
                                         ),
                                         Obx(() {
                                           mainController.tags.isNotEmpty;
                                           return ChipsChoice<String>.multiple(
                                           value: mainController.tags,
                                           onChanged: (val) {
-                                            setState(()  {tags = val;mainController.tags.value=val;});
+                                            setState(()  {
+                                              tags = val;
+                                              mainController.tags.value=val;
+                                            });
                                             mainController.fetchFilteredMembers(val);
                                           },
                                           choiceItems: C2Choice.listFrom<String, String>(

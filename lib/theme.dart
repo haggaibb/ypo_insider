@@ -100,7 +100,7 @@ class InsiderTheme {
                   return Colors.white;
                 }
               }))),
-      textButtonTheme: TextButtonThemeData(style: ButtonStyle(shadowColor: MaterialStateProperty.all<Color>(Colors.lightGreenAccent), foregroundColor: MaterialStateProperty.all(Colors.white))),
+      textButtonTheme: TextButtonThemeData(style: ButtonStyle(shadowColor: MaterialStateProperty.all<Color>(Colors.lightGreenAccent), foregroundColor: MaterialStateProperty.all(Colors.black))),
       navigationRailTheme: NavigationRailThemeData(
         elevation: 5,
         useIndicator: true,

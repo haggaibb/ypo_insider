@@ -25,8 +25,13 @@ class _ResultsPageState extends State<ResultsPage> {
   List<String> activeSuggestionsList=[];
   bool memberSearchIsActive = true;
   bool companySearchIsActive = false;
-  List<ResultRecord> filterResult(search) {
-    List<ResultRecord> res = mainController.suggestionsList.where((element) => element.label.contains(search)).toList();
+  List<ResultRecord> filterResult(String search) {
+
+    List<ResultRecord> res = mainController.suggestionsList.where((element) {
+      var lowerCaseLabel = element.label.toLowerCase();
+      var lowerCaseSearch = search.toLowerCase();
+      return lowerCaseLabel.contains(lowerCaseSearch);
+    }).toList();
     return res;
   }
 
@@ -73,7 +78,7 @@ class _ResultsPageState extends State<ResultsPage> {
                     );
                   },
                   onSelected: (result) async {
-                    Member member = membersController.getMemberById(result.id);
+                    Member member = await membersController.getMemberById(result.id);
                     Navigator.of(context).push<void>(
                       MaterialPageRoute(
                         builder: (context) => ProfilePage(member),

@@ -28,8 +28,8 @@ class EmailSignInForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-        theme: InsiderTheme.lightThemeData(context),
-        darkTheme: InsiderTheme.darkThemeData(),
+        //theme: InsiderTheme.lightThemeData(context),
+        //darkTheme: InsiderTheme.darkThemeData(),
         themeMode: ThemeMode.light,
         home: Directionality(
           textDirection: TextDirection.ltr,
@@ -37,13 +37,10 @@ class EmailSignInForm extends StatelessWidget {
             body: Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.all(30.0),
-                  child: Image.network('assets/images/logo-landscape.png'),
+                  padding: const EdgeInsets.all(0.0),
+                  child: Image.network('assets/images/logo-landscape.png', width: 300,),
                 ),
-                Image.network(scale: 2, 'assets/images/logo-insider.png'),
-                SizedBox(
-                  height: 55,
-                ),
+                Image.network(scale: 2, 'assets/images/logo-insider.png', width: 150,),
                 Container(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -59,7 +56,7 @@ class EmailSignInForm extends StatelessWidget {
                         padding: EdgeInsets.only(
                             left: 18.0, right: 18.0, top: 8.0, bottom: 0),
                         child: Text(
-                          'Welcome to YPO Israel Insdier! Please sign in to continue..',
+                          'Welcome to YPO Israel Insdier! sign in to continue..',
                           style: TextStyle(fontSize: 14),
                         ),
                       ),
@@ -121,10 +118,12 @@ class EmailSignInForm extends StatelessWidget {
                                       style: TextStyle(color: Colors.blueGrey),
                                     ),
                                     onTap: () {
-                                      Navigator.of(context)
-                                          .pushNamedAndRemoveUntil(
-                                              '/forgot-password',
-                                              ModalRoute.withName('/'));
+                                      Get.to(
+                                          ForgotPasswordScreen(
+                                          auth: authController.auth,
+                                            email: emailCtrl.text,
+                                            resizeToAvoidBottomInset: true,
+                                          ));
                                     },
                                   ),
                                 ],
@@ -254,107 +253,127 @@ class _EmailRegisterFormState extends State<EmailRegisterForm> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(30.0),
-            child: Image.network('assets/images/logo-landscape.png'),
-          ),
-          Image.network(scale: 2, 'assets/images/logo-insider.png'),
-          SizedBox(
-            height: 55,
-          ),
-          Container(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(18.0),
-                  child: Text(
-                    'Register',
-                    style: TextStyle(fontSize: 28),
-                  ),
-                ),
-                Center(
-                  child: Container(
-                    width: 350,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: TextField(
-                            controller: emailCtrl,
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(),
-                              hintText: 'Enter your email',
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: TextField(
-                            onChanged: (text) {
-                              passNotifier.value =
-                                  PasswordStrength.calculate(text: text);
-                            },
-                            obscureText: true,
-                            controller: passwordCtrl,
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(),
-                              hintText: 'Password',
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: TextField(
-                            obscureText: true,
-                            controller: passwordCtrl2,
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(),
-                              hintText: 'Confirm Password',
-                            ),
-                          ),
-                        ),
-                        PasswordStrengthChecker(
-                          strength: passNotifier,
-                          //configuration: PasswordStrengthCheckerConfiguration(),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Obx(() => Text(
-                                controller.authErrMsg.value,
-                                style: TextStyle(color: Colors.red),
-                              )),
-                        ),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        SizedBox(
-                          width: 350,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              sendRegistration(context);
-                            },
-                            child: const Text('Register'),
-                          ),
-                        ),
-                        Obx(() => controller.loading.value
-                            ? LinearProgressIndicator(
-                                semanticsLabel: 'Linear progress indicator',
-                              )
-                            : SizedBox(
-                                height: 10,
-                              )),
-                      ],
+      resizeToAvoidBottomInset: true,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(0.0),
+              child: Image.network('assets/images/logo-landscape.png', width: 300,),
+            ),
+            Image.network('assets/images/logo-insider.png', width: 150,),
+            Container(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(left: 10, top: 0),
+                    child: Text(
+                      'Register',
+                      style: TextStyle(fontSize: 28),
                     ),
                   ),
-                )
-              ],
+                  const Padding(
+                    padding: EdgeInsets.only(
+                        left: 18.0, right: 18.0, top: 8.0, bottom: 0),
+                    child: Text(
+                      'Please register using the email address associated with your YPO account. Password should be at least 6 characters long, an indicator will show you the strength of your password, you can submit weak passwords although that is not recommended!',
+                      style: TextStyle(fontSize: 14),
+                    ),
+                  ),
+                  Center(
+                    child: Container(
+                      width: 350,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TextField(
+                              controller: emailCtrl,
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                hintText: 'Enter your email',
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TextField(
+                              onChanged: (text) {
+                                passNotifier.value =
+                                    PasswordStrength.calculate(text: text);
+                              },
+                              obscureText: true,
+                              controller: passwordCtrl,
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                hintText: 'Password',
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TextField(
+                              obscureText: true,
+                              controller: passwordCtrl2,
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                hintText: 'Confirm Password',
+                              ),
+                            ),
+                          ),
+                          PasswordStrengthChecker(
+                            strength: passNotifier,
+                            //configuration: PasswordStrengthCheckerConfiguration(),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Obx(() => Text(
+                                  controller.authErrMsg.value,
+                                  style: TextStyle(color: Colors.red),
+                                )),
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          SizedBox(
+                            width: 350,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                sendRegistration(context);
+                              },
+                              child: const Text('Register'),
+                            ),
+                          ),
+                          Obx(() => controller.loading.value
+                              ? LinearProgressIndicator(
+                                  semanticsLabel: 'Linear progress indicator',
+                                )
+                              : SizedBox(
+                                  height: 10,
+                                )),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 18.0),
+                            child: SizedBox(
+                              width: 350,
+                              child: TextButton(
+                                onPressed: () {
+                                  Get.back();
+                                },
+                                child: const Text('Go Back'),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -370,8 +389,8 @@ class VerificationPage extends StatelessWidget {
     return EmailVerificationScreen(
       actions: [
         EmailVerifiedAction(() {
-          controller.onVerify(user);
           Get.to(OnBoardingPage(user: user));
+          controller.onVerify(user);
           //Navigator.pushReplacementNamed(context, '/onboarding');
         }),
         AuthCancelledAction((context) {

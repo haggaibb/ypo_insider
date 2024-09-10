@@ -61,13 +61,6 @@ class MembersController extends GetxController {
         : ThemeMode.dark;
   }
 
-  setCurrentByMember(Member member) {
-    currentMember.value = member;
-    themeMode.value = currentMember.value.settings?['theme_mode'] == 'light'
-        ? ThemeMode.light
-        : ThemeMode.dark;
-  }
-
   validateMemberEmail(String email) async {
     CollectionReference membersRef = db.collection('Members');
     QuerySnapshot memberSnapshot =
@@ -84,12 +77,14 @@ class MembersController extends GetxController {
     var memberId = memberSnapshot.docs.first.id;
     var memberData = memberSnapshot.docs.first.data() as Map<String, dynamic>;
     var displayName = memberData['firstName'] + " " + memberData['lastName'];
-    await FirebaseAuth.instance.currentUser!.updateDisplayName(displayName);
+    /// we want this updated only after onboarding this way we use it as a flag in the root to init onboarding
+    //await FirebaseAuth.instance.currentUser!.updateDisplayName(displayName);
     await membersRef.doc(memberId).update({
       'id': memberId,
       'uid': user.uid,
       'onBoarding.registered': true,
       'onBoarding.verified': false,
+      'onBoarding.boarded': false,
     });
     DocumentSnapshot refreshedMember = await membersRef.doc(memberId).get();
     setCurrentByMember(Member.fromDocumentSnapshot(refreshedMember));
@@ -111,14 +106,14 @@ class MembersController extends GetxController {
     print(
         'update full name to Auth User, this must be done as it acts as a flag for onboarding');
     print(currentMember.value.fullName());
-    await FirebaseAuth.instance.currentUser!
-        .updateDisplayName(currentMember.value.fullName());
+    await FirebaseAuth.instance.currentUser!.updateDisplayName(currentMember.value.fullName());
     var memberId = currentMember.value.id;
     print(memberId);
     CollectionReference membersRef = db.collection('Members');
     //QuerySnapshot memberSnapshot = await membersRef.where('email', isEqualTo: currentMember.value.email).get();
     //var memberId = memberSnapshot.docs.first.id;
-    await membersRef.doc(memberId).update({'onBoarding.boarded': true});
+    membersRef.doc(memberId).update({'onBoarding.boarded': true});
+    currentMember.value.onBoarding!['boarded']=true;
     loading.value = false;
   }
 
@@ -137,6 +132,7 @@ class MembersController extends GetxController {
     if (res.exists) {
       return Member.fromDocumentSnapshot(res);
     } else {
+      print('get by id - no user found');
       noUser;
     }
     // Member foundMember = allMembers.firstWhere((element) => element.id == id,
@@ -155,6 +151,20 @@ class MembersController extends GetxController {
     // Member foundMember = allMembers.firstWhere((element) => element.uid == uid,
     //     orElse: () => noUser);
     // return foundMember;
+  }
+
+  setCurrentByMember(Member member) async {
+    currentMember.value = member;
+    var memberId = currentMember.value.id;
+    /// check for mail verification
+    print('verification check');
+    if (user!.emailVerified) {
+      await db.collection('Members').doc(memberId).update({'onBoarding.verified': true});
+      print('update email verification for user ${member.fullName()} to ${user?.emailVerified}');
+    }
+    themeMode.value = currentMember.value.settings?['theme_mode'] == 'light'
+        ? ThemeMode.light
+        : ThemeMode.dark;
   }
 
   logout() async {
@@ -224,8 +234,9 @@ class MembersController extends GetxController {
         admins = data.containsKey('admins')
             ? List<String>.from(data["admins"]) as List<String>
             : [];
-        isAdmin.value = admins.contains(currentMember.value.id);
-        print('current user is Admin, enable Admin UX');
+        bool res = ((admins.firstWhere((element) => element==currentMember.value.id, orElse: () =>'') !=''));
+        print('Member is ${res} for AdminUx');
+        isAdmin.value=res;
       },
       onError: (e) => print("Error getting document: $e"),
     );
@@ -297,8 +308,8 @@ class MembersController extends GetxController {
     print('load members DB needed info');
     //await loadAllMembers();
     print('get current member by user uid ${user?.uid}');
-    if (user != null) setCurrentByUid(user);
     await loadAdmins();
+    if (user != null) setCurrentByUid(user);
     print('finished loading members DB');
     print('current member init in home is ${currentMember.value.fullName()}');
     loading.value = false;
