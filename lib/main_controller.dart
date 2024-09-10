@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:get_storage/get_storage.dart';
 import 'models.dart';
 import 'package:get/get.dart';
 import 'dart:math';
@@ -18,6 +19,8 @@ class MainController extends GetxController {
   List<String> activeFilters = <String>[].obs;
   RxList<Member> filteredResults = RxList<Member>();
   RxBool resultsLoading = false.obs;
+  int numberOfMembers = 1;
+
 
   fetchFilteredMembers(List<String> selectedFilters) async {
     if (selectedFilters.isEmpty) {
@@ -66,8 +69,7 @@ class MainController extends GetxController {
     }
     //resultsLoading.value = false;
   }
-  loadTags(List<Member> members) async {
-    resultsLoading.value = true;
+  loadTags() async {
     print('load tags');
     ///load free text tags
     CollectionReference freeTextTagsRef = db.collection('FreeTextTags');
@@ -103,12 +105,16 @@ class MainController extends GetxController {
       }
     }
     /// App filter tags and free text
-    for (var member in members) {
-      suggestionsList.add(ResultRecord(label: member.fullName(), id: member.id));
-      if (member.currentBusinessName!='') suggestionsList.add(ResultRecord(label: member.currentBusinessName, id: member.id));
+    final membersRef = db.collection("Members");
+    final membersQuery = await membersRef.get();
+    final membersSnapshot = membersQuery.docs;
+    numberOfMembers = membersSnapshot.length;
+
+    for (var member in membersSnapshot) {
+      suggestionsList.add(ResultRecord(label: member['firstName']+' '+member['lastName'] , id: member.id));
+      if (member['current_business_name']!='') suggestionsList.add(ResultRecord(label: member['current_business_name'], id: member.id));
       suggestionsList.sort((a, b) => a.label. compareTo(b.label));
     }
-    resultsLoading.value = false;
     update();
     print('tags loaded');
   }
@@ -134,6 +140,11 @@ class MainController extends GetxController {
   onInit() async {
     super.onInit();
     print('init - main Controller...');
+    resultsLoading.value = true;
+    /// loadTags() should be first, it also gets the number of members data
+    await loadTags();
+    await loadRandomResults(numberOfMembers);
+    resultsLoading.value = false;
     update();
     print('end - init main Controller');
   }

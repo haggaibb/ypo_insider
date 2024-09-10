@@ -42,16 +42,15 @@ class _HomeState extends State<Home> {
     print('init home');
     super.initState();
     if (membersController.currentMember.value.id == 'NA') membersController.setCurrentByUid(widget.user);
-    mainController.loadRandomResults(membersController.numberOfMembers);
     setState(() {
-      mainController.loadTags(membersController.allMembers);
+
     });
     print('init home end');
   }
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() => !membersController.loading.value
+    return Obx(() => !mainController.resultsLoading.value
         ? GetMaterialApp(
             title: 'Insider',
             theme: InsiderTheme.lightThemeData(context),

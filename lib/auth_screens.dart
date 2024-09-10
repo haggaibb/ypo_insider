@@ -52,11 +52,11 @@ class EmailSignInForm extends StatelessWidget {
                         padding: const EdgeInsets.all(18.0),
                         child: Text(
                           'Sign in',
-                          style: TextStyle(fontSize: 28),
+                          style:  TextStyle(fontSize: 28),
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(
+                      const Padding(
+                        padding: EdgeInsets.only(
                             left: 18.0, right: 18.0, top: 8.0, bottom: 0),
                         child: Text(
                           'Welcome to YPO Israel Insdier! Please sign in to continue..',
@@ -151,11 +151,11 @@ class EmailSignInForm extends StatelessWidget {
                               SizedBox(
                                 width: 350,
                                 height: 50,
-                                child: TextButton(
+                                child: ElevatedButton(
                                   onPressed: () async {
                                     await signIn(context);
                                   },
-                                  child: Text('Sign in'),
+                                  child: Text('Sign in', style: TextStyle(fontSize: 18, color: Get.isDarkMode? Colors.blue: Colors.black),),
                                 ),
                               )
                             ],

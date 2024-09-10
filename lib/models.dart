@@ -115,7 +115,6 @@ class Member {
 
   factory Member.fromDocumentSnapshot(DocumentSnapshot<Object?> doc){
     Map<String, dynamic>? data = doc.data() as Map<String, dynamic>?;
-    print(data);
     if (data == null ) {
       throw Exception("Required fields are missing");
     }

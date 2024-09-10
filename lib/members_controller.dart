@@ -17,7 +17,6 @@ class MembersController extends GetxController {
   RxBool isAdmin = false.obs;
   RxBool loadingProfileImage = false.obs;
   RxList<Member> allMembers = RxList<Member>();
-  int numberOfMembers = 1;
   RxString currentUserUid = ''.obs;
   Rx<Member> currentMember = Member(
           forum: 'NA',
@@ -57,8 +56,6 @@ class MembersController extends GetxController {
   final user = FirebaseAuth.instance.currentUser;
   setCurrentByUid(User? user) async {
     if (user != null) currentMember.value = await getMemberByUid(user.uid);
-    print('set member');
-    print(currentMember.value.children);
     themeMode.value = currentMember.value.settings?['theme_mode'] == 'light'
         ? ThemeMode.light
         : ThemeMode.dark;
@@ -203,15 +200,21 @@ class MembersController extends GetxController {
     saving.value = false;
   }
 
-  loadAllMembers() async {
-    final membersRef = db.collection("Members");
-    final membersQuery = await membersRef.get();
-    final membersSnapshot = membersQuery.docs;
-    for (var member in membersSnapshot) {
-      allMembers.add(Member.fromDocumentSnapshot(member));
-    }
-    numberOfMembers = membersSnapshot.length;
-  }
+  // loadAllMembers() async {
+  //   final membersRef = db.collection("Members");
+  //   final membersQuery = await membersRef.get();
+  //   final membersSnapshot = membersQuery.docs;
+  //   for (var member in membersSnapshot) {
+  //     allMembers.add(Member.fromDocumentSnapshot(member));
+  //   }
+  // }
+
+  // getMembersCount() async {
+  //   final membersRef = db.collection("Members");
+  //   final membersQuery = await membersRef.count().get();
+  //   if (membersQuery.count!=null)  numberOfMembers=membersQuery.count!;
+  //   print(numberOfMembers);
+  // }
 
   loadAdmins() async {
     DocumentReference settingsRef = db.collection('Settings').doc('Admins');
@@ -291,7 +294,7 @@ class MembersController extends GetxController {
     super.onInit();
     print('init - Members Controller...');
     tempProfilePicRef = storageRef.child("");
-    print('load members DB');
+    print('load members DB needed info');
     //await loadAllMembers();
     print('get current member by user uid ${user?.uid}');
     if (user != null) setCurrentByUid(user);

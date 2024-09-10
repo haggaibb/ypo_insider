@@ -151,7 +151,7 @@ class _ResultsPageState extends State<ResultsPage> {
                                           IconButton(
                                               onPressed: () => {
                                                 mainController.loadRandomResults(
-                                                    membersController
+                                                    mainController
                                                         .numberOfMembers)
                                               },
                                               icon: Icon(Icons.shuffle)),
