@@ -108,12 +108,10 @@ class MembersController extends GetxController {
     print(currentMember.value.fullName());
     await FirebaseAuth.instance.currentUser!.updateDisplayName(currentMember.value.fullName());
     var memberId = currentMember.value.id;
-    print(memberId);
     CollectionReference membersRef = db.collection('Members');
-    //QuerySnapshot memberSnapshot = await membersRef.where('email', isEqualTo: currentMember.value.email).get();
-    //var memberId = memberSnapshot.docs.first.id;
     membersRef.doc(memberId).update({'onBoarding.boarded': true});
     currentMember.value.onBoarding!['boarded']=true;
+    print('{$currentMember.value.fullName()} has on Boarded' );
     loading.value = false;
   }
 

@@ -24,8 +24,10 @@ final emailLinkProviderConfig = EmailLinkAuthProvider(
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   //runApp(TestPage());
-  //runApp(OnBoardingPage());
-  //return;
+  //await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  //final user = FirebaseAuth.instance.currentUser;
+  // runApp(OnBoardingPage(user: user,));
+  // return;
   print('@@@@@@@@@@@@@@@@@@');
   print('main');
   runApp(MainLoading());
@@ -33,11 +35,11 @@ Future<void> main() async {
   final user = FirebaseAuth.instance.currentUser;
   if (user!=null && user.emailVerified) {
     print('root check - user verified....');
-    print(user.displayName);
-    if (user.displayName!=null || user.displayName!='') {
+    if (user.displayName!=null) {
       runApp(Home(user: user,));
     } else {
-      OnBoardingPage(user: user,);
+      print('run app');
+      runApp(OnBoardingPage(user: user));
     }
   }
   else {
@@ -94,16 +96,20 @@ class _FrontGateState extends State<FrontGate> {
           return MainLoading();
         } else if (state is SignedIn) {
           print('signed in');
-          if (!authController.auth.currentUser!.emailVerified) {
-            print('mail not verified, go to verification screen...');
-            return MaterialApp(
-                title: 'YPO Israel Insider - Verification',
-                home: VerificationPage(user: authController.auth.currentUser!)
-            );
-          }
-          else {
-            print('mail verified, go to Home screen...');
-            return Home(user: authController.auth.currentUser);
+          User user = authController.auth.currentUser!;
+          // if (!user.emailVerified) {
+          //   print('mail not verified, go to verification screen...');
+          //   return MaterialApp(
+          //       title: 'YPO Israel Insider - Verification',
+          //       home: VerificationPage(user: authController.auth.currentUser!)
+          //   );
+          // }
+          if (user.displayName!=null) {
+             print('has ObBoarded go to Home...');
+              runApp(Home(user: user,));
+          } else {
+              print('first time, go to onBoarding');
+              runApp(OnBoardingPage(user: user));
           }
           //return Home(user: authController.auth.currentUser,);
         } else if (state is AuthFailed) {

@@ -196,7 +196,7 @@ class OnBoardingPageState extends State<OnBoardingPage> {
                   ],
                 ),
                 decoration: pageDecoration.copyWith(
-                  bodyFlex: 4,
+                  bodyFlex: 7,
                   imageFlex: 4,
                   bodyAlignment: Alignment.bottomCenter,
                   imageAlignment: Alignment.bottomCenter,

@@ -10,6 +10,7 @@ import 'package:ypo_connect/main.dart';
 import 'members_controller.dart';
 import 'theme.dart';
 import 'onboarding.dart';
+import 'home.dart';
 
 class EmailSignInForm extends StatelessWidget {
   final EmailAuthController authController;
@@ -245,6 +246,7 @@ class _EmailRegisterFormState extends State<EmailRegisterForm> {
 
   @override
   void initState() {
+    super.initState();
     print('init reg');
 
     print('init reg end');
@@ -391,6 +393,7 @@ class VerificationPage extends StatelessWidget {
         EmailVerifiedAction(() {
           Get.to(OnBoardingPage(user: user));
           controller.onVerify(user);
+          runApp(Home(user: user));
           //Navigator.pushReplacementNamed(context, '/onboarding');
         }),
         AuthCancelledAction((context) {
