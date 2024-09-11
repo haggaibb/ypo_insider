@@ -15,7 +15,6 @@ class Filters extends StatefulWidget {
 }
 class _FiltersState extends State<Filters> {
   final mainController = Get.put(MainController());
-  // multiple choice value
   late List filtersCategory;
   List<String> tags =[];
 
@@ -65,7 +64,7 @@ class _FiltersState extends State<Filters> {
                       padding: const EdgeInsets.only(bottom: 15.0),
                       child: ToggleSwitch(
                         minWidth: 50.0,
-                        initialLabelIndex: 0,
+                        initialLabelIndex: mainController.isAnd.value?0:1,
                         cornerRadius: 20.0,
                         activeFgColor: Colors.black,
                         inactiveBgColor: Colors.grey,

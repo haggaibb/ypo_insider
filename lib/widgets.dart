@@ -3,9 +3,11 @@ import 'package:url_launcher/url_launcher_string.dart';
 import 'package:ypo_connect/models.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'dart:html' as html;
 import 'RayBarFields.dart';
+import 'package:get/get.dart';
+import 'members_controller.dart';
+
 
 class ResultCard extends StatefulWidget {
   final Member member;
@@ -182,24 +184,31 @@ class ProfileAppDrawer extends StatelessWidget {
 }
 
 class MainLoading extends StatelessWidget {
-  const MainLoading({Key? key}) : super(key: key);
+  MainLoading({super.key});
+  final membersController = Get.put(MembersController());
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(bottom: 30.0),
-            child: Image.network('assets/images/logo.png', width: 200, height: 200,),
-          ),
-          SpinKitRotatingCircle(
-            color: Colors.blue.shade900,
-            size: 80.0,
-          ),
-        ],
+    return Directionality(
+        textDirection: TextDirection.ltr,
+        child: Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(bottom: 30.0),
+              child: Image.network('assets/images/logo.png', width: 200, height: 200,),
+            ),
+            SpinKitRotatingCircle(
+              color: Colors.blue.shade900,
+              size: 80.0,
+            ),
+            Obx(()=> Text(membersController.loadingStatus.value, style: TextStyle(fontSize: 16),))
+          ],
+        ),
       ),
+    )
     );
   }
 }

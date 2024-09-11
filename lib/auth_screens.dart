@@ -6,11 +6,9 @@ import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:password_strength_checker/password_strength_checker.dart';
-import 'package:ypo_connect/main.dart';
 import 'members_controller.dart';
 import 'dart:async';
 import 'onboarding.dart';
-import 'home.dart';
 
 class EmailSignInForm extends StatelessWidget {
   final EmailAuthController authController;
@@ -35,137 +33,139 @@ class EmailSignInForm extends StatelessWidget {
         home: Directionality(
           textDirection: TextDirection.ltr,
           child: Scaffold(
-            body: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(0.0),
-                  child: Image.network('assets/images/logo-landscape.png', width: 300,),
-                ),
-                Image.network(scale: 2, 'assets/images/logo-insider.png', width: 150,),
-                Container(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(18.0),
-                        child: Text(
-                          'Sign in',
-                          style:  TextStyle(fontSize: 28),
+            body: SingleChildScrollView(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(0.0),
+                    child: Image.network('assets/images/logo-landscape.png', width: 300,),
+                  ),
+                  Image.network(scale: 2, 'assets/images/logo-insider.png', width: 150,),
+                  Container(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(18.0),
+                          child: Text(
+                            'Sign in',
+                            style:  TextStyle(fontSize: 28),
+                          ),
                         ),
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.only(
-                            left: 18.0, right: 18.0, top: 8.0, bottom: 0),
-                        child: Text(
-                          'Welcome to YPO Israel Insdier! sign in to continue..',
-                          style: TextStyle(fontSize: 14),
+                        const Padding(
+                          padding: EdgeInsets.only(
+                              left: 18.0, right: 18.0, top: 8.0, bottom: 0),
+                          child: Text(
+                            'Welcome to YPO Israel Insdier! sign in to continue..',
+                            style: TextStyle(fontSize: 14),
+                          ),
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            left: 18.0, right: 18.0, top: 8.0, bottom: 20),
-                        child: Row(
-                          children: [
-                            Text(
-                              'Dont have an account yet?',
-                              style: TextStyle(fontSize: 14),
-                            ),
-                            GestureDetector(
-                                onTap: () {
-                                  Get.to(EmailRegisterForm(
-                                      authController: authController));
-                                },
-                                child: Text(
-                                  ' Register',
-                                  style: TextStyle(
-                                      fontSize: 14, color: Colors.blue),
-                                )),
-                          ],
-                        ),
-                      ),
-                      Center(
-                        child: Container(
-                          width: 350,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              left: 18.0, right: 18.0, top: 8.0, bottom: 20),
+                          child: Row(
                             children: [
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: TextField(
-                                  controller: emailCtrl,
-                                  decoration: InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    hintText: 'Enter your email',
-                                  ),
-                                ),
+                              Text(
+                                'Dont have an account yet?',
+                                style: TextStyle(fontSize: 14),
                               ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: TextField(
-                                  obscureText: true,
-                                  controller: passwordCtrl,
-                                  decoration: InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    hintText: 'Password',
-                                  ),
-                                ),
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  GestureDetector(
-                                    child: Text(
-                                      'Forgotten password??',
-                                      style: TextStyle(color: Colors.blueGrey),
-                                    ),
-                                    onTap: () {
-                                      Get.to(
-                                          ForgotPasswordScreen(
-                                          auth: authController.auth,
-                                            email: emailCtrl.text,
-                                            resizeToAvoidBottomInset: true,
-                                          ));
-                                    },
-                                  ),
-                                ],
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  children: [
-                                    errMsg != ''
-                                        ? const Text(
-                                            'Authentication Failed!',
-                                            style: TextStyle(color: Colors.red),
-                                          )
-                                        : SizedBox(
-                                            width: 1,
-                                          ),
-                                    Text(
-                                      errMsg,
-                                      style: TextStyle(color: Colors.red),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              SizedBox(
-                                width: 350,
-                                height: 50,
-                                child: ElevatedButton(
-                                  onPressed: () async {
-                                    await signIn(context);
+                              GestureDetector(
+                                  onTap: () {
+                                    Get.to(EmailRegisterForm(
+                                        authController: authController));
                                   },
-                                  child: Text('Sign in', style: TextStyle(fontSize: 18, color: Get.isDarkMode? Colors.blue: Colors.black),),
-                                ),
-                              )
+                                  child: Text(
+                                    ' Register',
+                                    style: TextStyle(
+                                        fontSize: 14, color: Colors.blue),
+                                  )),
                             ],
                           ),
                         ),
-                      )
-                    ],
+                        Center(
+                          child: Container(
+                            width: 350,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: TextField(
+                                    controller: emailCtrl,
+                                    decoration: InputDecoration(
+                                      border: OutlineInputBorder(),
+                                      hintText: 'Enter your email',
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: TextField(
+                                    obscureText: true,
+                                    controller: passwordCtrl,
+                                    decoration: InputDecoration(
+                                      border: OutlineInputBorder(),
+                                      hintText: 'Password',
+                                    ),
+                                  ),
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    GestureDetector(
+                                      child: Text(
+                                        'Forgotten password??',
+                                        style: TextStyle(color: Colors.blueGrey),
+                                      ),
+                                      onTap: () {
+                                        Get.to(
+                                            ForgotPasswordScreen(
+                                            auth: authController.auth,
+                                              email: emailCtrl.text,
+                                              resizeToAvoidBottomInset: true,
+                                            ));
+                                      },
+                                    ),
+                                  ],
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    children: [
+                                      errMsg != ''
+                                          ? const Text(
+                                              'Authentication Failed!',
+                                              style: TextStyle(color: Colors.red),
+                                            )
+                                          : SizedBox(
+                                              width: 1,
+                                            ),
+                                      Text(
+                                        errMsg,
+                                        style: TextStyle(color: Colors.red),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 350,
+                                  height: 50,
+                                  child: ElevatedButton(
+                                    onPressed: () async {
+                                      await signIn(context);
+                                    },
+                                    child: Text('Sign in', style: TextStyle(fontSize: 18, color: Get.isDarkMode? Colors.blue: Colors.black),),
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ));
@@ -182,15 +182,10 @@ class EmailRegisterForm extends StatefulWidget {
 
 class _EmailRegisterFormState extends State<EmailRegisterForm> {
   final controller = Get.put(MembersController());
-
   final emailCtrl = TextEditingController();
-
   final passwordCtrl = TextEditingController();
-
   final passwordCtrl2 = TextEditingController();
-
   final passNotifier = ValueNotifier<PasswordStrength?>(null);
-
   String errMsg ='';
 
   validateMembersEmail(String email) async {

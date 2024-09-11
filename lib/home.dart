@@ -41,6 +41,7 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     print('init home');
+    membersController.loadingStatus.value = 'Loading Insider Home';
     super.initState();
     if (membersController.currentMember.value.id == 'NA') membersController.setCurrentByUid(widget.user);
     setState(() {
@@ -243,6 +244,6 @@ class _HomeState extends State<Home> {
                 // This trailing comma makes auto-formatting nicer for build methods.
 
                 ))
-        : const MainLoading());
+        : MainLoading());
   }
 }

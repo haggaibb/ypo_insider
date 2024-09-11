@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:get/get.dart';
-import 'package:ypo_connect/main.dart';
 import 'package:ypo_connect/members_controller.dart';
 import 'home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -96,8 +95,8 @@ class OnBoardingPageState extends State<OnBoardingPage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      _buildImage('logo.png', 100),
-                      _buildImage('logo-insider.png', 150),
+                      _buildImage('logo.png', 75),
+                      _buildImage('logo-insider.png', 100),
                     ],
                   ),
                 ),

@@ -45,6 +45,7 @@ class MembersController extends GetxController {
       mobileCountryCode: 'NA',
       joinDate: 'NA');
   Rx<String> authErrMsg = ''.obs;
+  Rx<String> loadingStatus = 'Loading....'.obs;
   /// storage for profile pics
   Reference storageRef = FirebaseStorage.instance.ref();
   late Reference tempProfilePicRef;
@@ -56,6 +57,9 @@ class MembersController extends GetxController {
   final user = FirebaseAuth.instance.currentUser;
   setCurrentByUid(User? user) async {
     if (user != null) currentMember.value = await getMemberByUid(user.uid);
+    bool res = ((admins.firstWhere((element) => element==currentMember.value.id, orElse: () =>'') !=''));
+    print('Member is ${res} for AdminUx');
+    isAdmin.value=res;
     themeMode.value = currentMember.value.settings?['theme_mode'] == 'light'
         ? ThemeMode.light
         : ThemeMode.dark;
@@ -101,10 +105,12 @@ class MembersController extends GetxController {
   }
 
   onBoardingFinished(User user) async {
+    loadingStatus.value = 'Finished onBoarding.';
     loading.value = true;
     print('finished onboarding');
     print(
         'update full name to Auth User, this must be done as it acts as a flag for onboarding');
+    loadingStatus.value = 'Updating authentication profile...';
     print(currentMember.value.fullName());
     await FirebaseAuth.instance.currentUser!.updateDisplayName(currentMember.value.fullName());
     var memberId = currentMember.value.id;
@@ -303,13 +309,7 @@ class MembersController extends GetxController {
     super.onInit();
     print('init - Members Controller...');
     tempProfilePicRef = storageRef.child("");
-    print('load members DB needed info');
-    //await loadAllMembers();
-    print('get current member by user uid ${user?.uid}');
     await loadAdmins();
-    if (user != null) setCurrentByUid(user);
-    print('finished loading members DB');
-    print('current member init in home is ${currentMember.value.fullName()}');
     loading.value = false;
     update();
     print('end - init Members Controller');

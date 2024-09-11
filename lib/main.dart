@@ -9,6 +9,8 @@ import 'home.dart';
 import 'firebase_options.dart';
 import 'widgets.dart';
 import 'auth_screens.dart';
+import 'package:get/get.dart';
+import 'members_controller.dart';
 
 final actionCodeSettings = ActionCodeSettings(
   url: 'https://ypodex.web.app/',
@@ -20,24 +22,24 @@ final actionCodeSettings = ActionCodeSettings(
 final emailLinkProviderConfig = EmailLinkAuthProvider(
   actionCodeSettings: actionCodeSettings,
 );
+final membersController = Get.put(MembersController());
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  //runApp(TestPage());
-  //await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  //final user = FirebaseAuth.instance.currentUser;
-  // runApp(OnBoardingPage(user: user,));
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  final user = FirebaseAuth.instance.currentUser;
+  // runApp(GetMaterialApp(home: OnBoardingPage(user: user,)));
   // return;
   print('@@@@@@@@@@@@@@@@@@');
   print('main');
   runApp(MainLoading());
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  final user = FirebaseAuth.instance.currentUser;
   if (user!=null && user.emailVerified) {
     print('root check - user verified....');
     if (user.displayName!=null) {
+      membersController.loadingStatus.value = '${user.displayName} verified go to Home';
       runApp(Home(user: user,));
     } else {
+      membersController.loadingStatus.value = 'First timer, load onBoarding...';
       print('run app');
       runApp(OnBoardingPage(user: user));
     }
@@ -46,8 +48,7 @@ Future<void> main() async {
     print('root check - user either null or not verified');
     runApp(FrontGate(user: user));
   }
-  /// TODO onboarding....
-  //runApp(MainOnBoarding());
+
 }
 
 
