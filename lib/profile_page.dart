@@ -145,9 +145,7 @@ class _ProfilePageState extends State<ProfilePage> {
     tempProfilePicRef = storageRef.child("");
     tempProfileImageUrl =
         widget.member.profileImage ?? '/assets/images/profile0.jpg';
-
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -764,7 +762,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
                       /// Children
                       Padding(
-                        padding: EdgeInsets.only(left: editModeOn?60:0,bottom: 16.0),
+                        padding: EdgeInsets.only(
+                            left: editModeOn ? 60 : 0, bottom: 16.0),
                         child: RayBarMultiField(
                             keysPerEntry: ['Name', 'Year of Birth'],
                             entries: childrenCtrl,
@@ -815,7 +814,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                         index]['key'] !=
                                                     'forum')
                                             ? Card(
-                                          color: Colors.blue.shade900,
+                                                color: Colors.blue.shade900,
                                                 elevation: 10,
                                                 child: Column(
                                                   children: [
@@ -825,7 +824,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                                 .filteredTagsList[
                                                             index]['label'],
                                                         style: const TextStyle(
-                                                          color: Colors.white,
+                                                            color: Colors.white,
                                                             fontWeight:
                                                                 FontWeight
                                                                     .bold),
@@ -836,23 +835,23 @@ class _ProfilePageState extends State<ProfilePage> {
                                                           const EdgeInsets.all(
                                                               8.0),
                                                       child: Wrap(
-                                                          runSpacing: 8,
-                                                          spacing: 10,
+                                                          runSpacing: editModeOn?8:8,
+                                                          spacing: editModeOn?10:8,
                                                           children: List.generate(
                                                               mainController.filteredTagsList[index]['tags_list'].length,
                                                               (tagIndex) => editModeOn
                                                                   ? ChoiceChip(
                                                                       onSelected: (val) {
-                                                                        if (editModeOn) {
-                                                                          setState(
-                                                                              () {
-                                                                            if (selectedTags.contains(mainController.filteredTagsList[index]['tags_list'][tagIndex])) {
-                                                                              selectedTags.remove(mainController.filteredTagsList[index]['tags_list'][tagIndex]);
-                                                                            } else {
-                                                                              selectedTags.add(mainController.filteredTagsList[index]['tags_list'][tagIndex]);
-                                                                            }
-                                                                          });
-                                                                        }
+                                                                        setState(
+                                                                            () {
+                                                                          if (selectedTags.contains(mainController.filteredTagsList[index]['tags_list']
+                                                                              [
+                                                                              tagIndex])) {
+                                                                            selectedTags.remove(mainController.filteredTagsList[index]['tags_list'][tagIndex]);
+                                                                          } else {
+                                                                            selectedTags.add(mainController.filteredTagsList[index]['tags_list'][tagIndex]);
+                                                                          }
+                                                                        });
                                                                       },
                                                                       label: Text(mainController.filteredTagsList[index]['tags_list'][tagIndex]),
                                                                       labelStyle: const TextStyle(fontWeight: FontWeight.bold),
@@ -874,9 +873,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                                           label: Text(mainController.filteredTagsList[index]['tags_list'][tagIndex]),
                                                                           labelStyle: const TextStyle(fontWeight: FontWeight.bold),
                                                                           selected: selectedTags.contains(mainController.filteredTagsList[index]['tags_list'][tagIndex]))
-                                                                      : const SizedBox(
-                                                                          width: 1,))
-                                                      ),
+                                                                      : const SizedBox.shrink())),
                                                     ),
                                                   ],
                                                 ),
@@ -975,26 +972,30 @@ class _ProfilePageState extends State<ProfilePage> {
                                   child: Text(
                                       'You have not provided any extra information-Please Edit and Update!'),
                                 ),
-                      editModeOn?Column(
-                        children: [
-                          ElevatedButton(
-                            onPressed: () async {
-                              await updateMemberInfo();
-                              setState(() {
-                                editModeOn = false;
-                              });
-                            },
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.blue.shade900,
-                                side: BorderSide.none,
-                                shape: const StadiumBorder()),
-                            child: const Text('Save',
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold)),
-                          ),
-                        ],
-                      ):SizedBox(height: 20,)
+                      editModeOn
+                          ? Column(
+                              children: [
+                                ElevatedButton(
+                                  onPressed: () async {
+                                    await updateMemberInfo();
+                                    setState(() {
+                                      editModeOn = false;
+                                    });
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.blue.shade900,
+                                      side: BorderSide.none,
+                                      shape: const StadiumBorder()),
+                                  child: const Text('Save',
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold)),
+                                ),
+                              ],
+                            )
+                          : SizedBox(
+                              height: 20,
+                            )
                     ],
                   )),
             ),
