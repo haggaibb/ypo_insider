@@ -95,7 +95,7 @@ class _FiltersState extends State<Filters> {
                                       children: [
                                         ListTile(
                                           title:  Text(filtersCategory[index]['label'] ,style: Theme.of(context).textTheme.titleLarge),
-                                          subtitle: Text((filtersCategory[index]['label']=='Forum' || filtersCategory[index]['label'] == 'Residence')?'Single Choice':'Multiple Choices' ,style: Theme.of(context).textTheme.titleSmall),
+                                          subtitle: Text((filtersCategory[index]['label']=='Forum' || filtersCategory[index]['label'] == 'Residence')?'Please select one option from the list below':'Please select all relevant' ,style: Theme.of(context).textTheme.titleSmall),
                                         ),
                                         Obx(() {
                                           mainController.tags.isNotEmpty;

@@ -764,7 +764,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
                       /// Children
                       Padding(
-                        padding: EdgeInsets.only(left: editModeOn?50:0,bottom: 16.0),
+                        padding: EdgeInsets.only(left: editModeOn?60:0,bottom: 16.0),
                         child: RayBarMultiField(
                             keysPerEntry: ['Name', 'Year of Birth'],
                             entries: childrenCtrl,
