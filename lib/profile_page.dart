@@ -1,16 +1,10 @@
-import 'dart:convert';
-import 'dart:js';
-
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:ypo_connect/RayBarFields.dart';
-import 'package:ypo_connect/auth_screens.dart';
-import 'package:ypo_connect/main.dart';
 import 'package:ypo_connect/members_controller.dart';
 import 'package:ypo_connect/models.dart';
 import 'main_controller.dart';
-import 'members_controller.dart';
 import 'widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -153,7 +147,7 @@ class _ProfilePageState extends State<ProfilePage> {
       textDirection: TextDirection.ltr,
       child: Scaffold(
         backgroundColor: memberController.themeMode.value.name == 'dark'
-            ? Colors.black
+            ? null
             : Colors.blueGrey.shade50,
         appBar: AppBar(
           leading: editModeOn
