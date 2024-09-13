@@ -25,10 +25,10 @@ class _HomeState extends State<Home> {
   SheetController sheetController = SheetController();
   final membersController = Get.put(MembersController());
   final mainController = Get.put(MainController());
-  var minSheetPos = 20.0;
+  var minSheetPos = 45.0;
   var maxSheetPos = 800.0;
   var openSheetPos = 700.0;
-  var initSheetPos = 40.0;
+  var initSheetPos = 45.0;
 
   void sheetJumpFunction() {
     sheetController.offset <= initSheetPos
