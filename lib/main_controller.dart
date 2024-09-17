@@ -65,6 +65,7 @@ class MainController extends GetxController {
     if (category!='forum') list.sort((a, b) => a.compareTo(b));
     return list;
   }
+
   Map<String, dynamic> newFreeTextTag(key){
     return freeTextTagsList.firstWhere((element) => element['key']==key);
   }

@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
@@ -788,95 +790,9 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                         ),
                       ),
-                      Column(
-                        children: List.generate(
-                            mainController.filteredTagsList.length,
-                            (index) => Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 30.0,
-                                      right: 30.0,
-                                      top: 8,
-                                      bottom: 10),
-                                  child: SizedBox(
-                                    //height: 200,
-                                    width: 800,
-                                    child:
-                                        (mainController.filteredTagsList[index]
-                                                        ['key'] !=
-                                                    'residence' &&
-                                                mainController.filteredTagsList[
-                                                        index]['key'] !=
-                                                    'forum')
-                                            ? Card(
-                                                color: Colors.blue.shade900,
-                                                elevation: 10,
-                                                child: Column(
-                                                  children: [
-                                                    ListTile(
-                                                      title: Text(
-                                                        mainController
-                                                                .filteredTagsList[
-                                                            index]['label'],
-                                                        style: const TextStyle(
-                                                            color: Colors.white,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .bold),
-                                                      ),
-                                                    ),
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              8.0),
-                                                      child: Wrap(
-                                                          runSpacing: editModeOn?8:8,
-                                                          spacing: editModeOn?10:8,
-                                                          children: List.generate(
-                                                              mainController.filteredTagsList[index]['tags_list'].length,
-                                                              (tagIndex) => editModeOn
-                                                                  ? ChoiceChip(
-                                                                      onSelected: (val) {
-                                                                        setState(
-                                                                            () {
-                                                                          if (selectedTags.contains(mainController.filteredTagsList[index]['tags_list']
-                                                                              [
-                                                                              tagIndex])) {
-                                                                            selectedTags.remove(mainController.filteredTagsList[index]['tags_list'][tagIndex]);
-                                                                          } else {
-                                                                            selectedTags.add(mainController.filteredTagsList[index]['tags_list'][tagIndex]);
-                                                                          }
-                                                                        });
-                                                                      },
-                                                                      label: Text(mainController.filteredTagsList[index]['tags_list'][tagIndex]),
-                                                                      labelStyle: const TextStyle(fontWeight: FontWeight.bold),
-                                                                      selected: selectedTags.contains(mainController.filteredTagsList[index]['tags_list'][tagIndex]))
-                                                                  : selectedTags.contains(mainController.filteredTagsList[index]['tags_list'][tagIndex])
-                                                                      ? ChoiceChip(
-                                                                          //selectedColor: Colors.blueGrey,
-                                                                          onSelected: (val) {
-                                                                            if (editModeOn) {
-                                                                              setState(() {
-                                                                                if (selectedTags.contains(mainController.filteredTagsList[index]['tags_list'][tagIndex])) {
-                                                                                  selectedTags.remove(mainController.filteredTagsList[index]['tags_list'][tagIndex]);
-                                                                                } else {
-                                                                                  selectedTags.add(mainController.filteredTagsList[index]['tags_list'][tagIndex]);
-                                                                                }
-                                                                              });
-                                                                            }
-                                                                          },
-                                                                          label: Text(mainController.filteredTagsList[index]['tags_list'][tagIndex]),
-                                                                          labelStyle: const TextStyle(fontWeight: FontWeight.bold),
-                                                                          selected: selectedTags.contains(mainController.filteredTagsList[index]['tags_list'][tagIndex]))
-                                                                      : const SizedBox.shrink())),
-                                                    ),
-                                                  ],
-                                                ),
-                                              )
-                                            : const SizedBox(
-                                                height: 10,
-                                              ),
-                                  ),
-                                )),
+                      FilterTagsCards(
+                        editModeOn: editModeOn,
+                        selectedTags: selectedTags,
                       ),
 
                       /// Free Text Tags
@@ -996,6 +912,133 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ),
       ),
+    );
+  }
+}
+
+
+
+class FilterTagsCards extends StatefulWidget {
+  final bool editModeOn;
+  final List<String> selectedTags;
+
+  const FilterTagsCards(
+       {  required this.editModeOn,
+         required this.selectedTags,
+        super.key,
+      });
+
+  @override
+  _FilterTagsCardsState createState() => _FilterTagsCardsState();
+}
+
+class _FilterTagsCardsState extends State<FilterTagsCards> {
+  final mainController = Get.put(MainController());
+
+ List<String> getSelectedTagsInCategory(tagsInCategory, List<String> selectedTags) {
+   List<String> list = [];
+   for (String tag in selectedTags) {
+     if (tagsInCategory.contains(tag)) {
+       list.add(tag);
+     }
+   }
+   return list;
+ }
+
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: List.generate(
+          mainController.filteredTagsList.length,
+              (index) => Padding(
+            padding: const EdgeInsets.only(
+                left: 30.0,
+                right: 30.0,
+                top: 8,
+                bottom: 10),
+            child: SizedBox(
+              width: 800,
+              child:
+              (mainController.filteredTagsList[index]
+              ['key'] !=
+                  'residence' &&
+                  mainController.filteredTagsList[
+                  index]['key'] !=
+                      'forum')
+                  ? Card(
+                color: Colors.blue.shade900,
+                elevation: 10,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ListTile(
+                      title: Text(
+                        mainController
+                            .filteredTagsList[
+                        index]['label'],
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight:
+                            FontWeight
+                                .bold),
+                      ),
+                    ),
+                    Padding(
+                      padding:
+                      const EdgeInsets.all(8.0),
+                      child: Wrap(
+                          runSpacing: widget.editModeOn?8:8,
+                          spacing: widget.editModeOn?10:8,
+                          children: widget.editModeOn
+                              ? List.generate(
+                              mainController.filteredTagsList[index]['tags_list'].length,
+                                  (tagIndex) => ChoiceChip(
+                                  onSelected: (val) {
+                                    setState(
+                                            () {
+                                          if (widget.selectedTags.contains(mainController.filteredTagsList[index]['tags_list']
+                                          [
+                                          tagIndex])) {
+                                            widget.selectedTags.remove(mainController.filteredTagsList[index]['tags_list'][tagIndex]);
+                                          } else {
+                                            widget.selectedTags.add(mainController.filteredTagsList[index]['tags_list'][tagIndex]);
+                                          }
+                                        });
+                                  },
+                                  label: Text(mainController.filteredTagsList[index]['tags_list'][tagIndex]),
+                                  labelStyle: const TextStyle(fontWeight: FontWeight.bold),
+                                  selected: widget.selectedTags.contains(mainController.filteredTagsList[index]['tags_list'][tagIndex]))
+                          )
+                              : List.generate(
+                                  getSelectedTagsInCategory(mainController.filteredTagsList[index]['tags_list'],widget.selectedTags).length,
+                              (tagIndex) =>
+                                  ChoiceChip(
+                              label: Text(getSelectedTagsInCategory(mainController.filteredTagsList[index]['tags_list'],widget.selectedTags)[tagIndex]),
+                              labelStyle: const TextStyle(fontWeight: FontWeight.w900),
+                              selected: true
+                                  )
+                              ),
+                    ),
+                    )
+                  ],
+                ),
+              )
+                  : const SizedBox(
+                height: 10,
+              ),
+            ),
+          )),
     );
   }
 }
