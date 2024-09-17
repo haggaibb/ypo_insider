@@ -208,7 +208,7 @@ class _EmailRegisterFormState extends State<EmailRegisterForm> {
           if (credentials.user != null) {
             await controller.onRegister(credentials.user!);
             controller.loading.value = false;
-            await analytics.logSignUp(
+            analytics.logSignUp(
               signUpMethod: "Firebase_Auth",
               parameters: {
                 "user": credentials.user!.email!,
@@ -429,7 +429,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
     });
 
     if (isEmailVerified) {
-      await analytics.logSignUp(
+      analytics.logSignUp(
         signUpMethod: "Firebase_Auth",
         parameters: {
           "user": FirebaseAuth.instance.currentUser!.email!,

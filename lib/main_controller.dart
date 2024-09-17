@@ -51,7 +51,7 @@ class MainController extends GetxController {
     for (var member in filteredMembers) {
       filteredResults.add(Member.fromDocumentSnapshot(member));
     }
-    await analytics.logEvent(
+    analytics.logEvent(
       name: "filter_tags",
       parameters: {
         "user": membersController.currentMember.value.fullName(),
@@ -64,7 +64,7 @@ class MainController extends GetxController {
   switchAndOrFilter(List<String> selectedFilters) async {
     isAnd.value = !isAnd.value;
     await fetchFilteredMembers(selectedFilters);
-    await analytics.logEvent(
+    analytics.logEvent(
       name: "filter_tags",
       parameters: {
         "user": membersController.currentMember.value.fullName(),

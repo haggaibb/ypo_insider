@@ -40,7 +40,7 @@ Future<void> main() async {
     print('root check - user verified....');
     if (user.displayName!=null) {
       membersController.loadingStatus.value = '${user.displayName} verified go to Home';
-      await analytics.logEvent(
+      analytics.logEvent(
         name: "open_app",
         parameters: {
           "user": user.displayName!
