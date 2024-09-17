@@ -11,6 +11,7 @@ import 'widgets.dart';
 import 'auth_screens.dart';
 import 'package:get/get.dart';
 import 'members_controller.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 
 final actionCodeSettings = ActionCodeSettings(
   url: 'https://ypodex.web.app/',
@@ -23,6 +24,8 @@ final emailLinkProviderConfig = EmailLinkAuthProvider(
   actionCodeSettings: actionCodeSettings,
 );
 final membersController = Get.put(MembersController());
+FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,15 +40,30 @@ Future<void> main() async {
     print('root check - user verified....');
     if (user.displayName!=null) {
       membersController.loadingStatus.value = '${user.displayName} verified go to Home';
+      await analytics.logEvent(
+        name: "open_app",
+        parameters: {
+          "user": user.displayName!
+        },
+      );
       runApp(Home(user: user,));
     } else {
       membersController.loadingStatus.value = 'First timer, load onBoarding...';
+      await analytics.logEvent(
+        name: "on_boarding",
+        parameters: {
+          "user": user.email!
+        },
+      );
       print('run app');
       runApp(OnBoardingPage(user: user));
     }
   }
   else {
     print('root check - user either null or not verified');
+    await analytics.logEvent(
+      name: "unverified_user"
+    );
     runApp(FrontGate(user: user));
   }
 
@@ -68,23 +86,9 @@ class _FrontGateState extends State<FrontGate> {
   Widget build(BuildContext context) {
     return AuthFlowBuilder<EmailAuthController>(
       listener: (oldState, state, authController) async {
-        print('listen state msg:');print(state);
+        //print('listen state msg:');print(state);
         if (state is SignedIn) {
-          print('signed in');
-          // if (!authController.auth.currentUser!.emailVerified??false) {
-          //   print('mail not verified, go to verification screen...');
-          //   MaterialPageRoute(builder: (context) => const EmailVerificationScreen());
-          // }
-          // else {
-          //   print('mail verified, go to Home screen...');
-          //   Navigator.of(context).push(
-          //     MaterialPageRoute(
-          //         builder: (context) => Directionality(
-          //           textDirection: TextDirection.ltr,
-          //           child: Home(user: authController.auth.currentUser),
-          //         )),
-          //   );
-          // }
+          //print('signed in');
           }
       },
       builder: (context, state, authController, _) {
@@ -106,10 +110,23 @@ class _FrontGateState extends State<FrontGate> {
           //   );
           // }
           if (user.displayName!=null) {
+            analytics.logLogin(
+                loginMethod: "Firebase Auth",
+                parameters: {
+                  'user_displayName' : user.displayName!
+                }
+            );
              print('has ObBoarded go to Home...');
               runApp(Home(user: user,));
           } else {
               print('first time, go to onBoarding');
+              analytics.logEvent(
+                name: "on_boarding",
+                parameters: {
+                  "user": user.email!,
+                  "status" : "begin"
+                },
+              );
               runApp(OnBoardingPage(user: user));
           }
           //return Home(user: authController.auth.currentUser,);

@@ -9,6 +9,8 @@ import 'package:password_strength_checker/password_strength_checker.dart';
 import 'members_controller.dart';
 import 'dart:async';
 import 'onboarding.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+
 
 class EmailSignInForm extends StatelessWidget {
   final EmailAuthController authController;
@@ -19,9 +21,9 @@ class EmailSignInForm extends StatelessWidget {
   //final controller = Get.put(MembersController());
 
   signIn(BuildContext context) async {
-    print('sign-in');
+    //print('sign-in');
     authController.setEmailAndPassword(emailCtrl.text, passwordCtrl.text);
-    print('after try');
+    //print('after try');
   }
 
   @override
@@ -187,6 +189,7 @@ class _EmailRegisterFormState extends State<EmailRegisterForm> {
   final passwordCtrl2 = TextEditingController();
   final passNotifier = ValueNotifier<PasswordStrength?>(null);
   String errMsg ='';
+  FirebaseAnalytics analytics = FirebaseAnalytics.instance;
 
   validateMembersEmail(String email) async {
     bool validated = await controller.validateMemberEmail(email);
@@ -205,6 +208,13 @@ class _EmailRegisterFormState extends State<EmailRegisterForm> {
           if (credentials.user != null) {
             await controller.onRegister(credentials.user!);
             controller.loading.value = false;
+            await analytics.logSignUp(
+              signUpMethod: "Firebase_Auth",
+              parameters: {
+                "user": credentials.user!.email!,
+                "status" : "Registered"
+              },
+            );
             print('credentials.user!=null =>');
             print(credentials.user!=null);
             Get.to(() => const EmailVerificationScreen());
@@ -402,6 +412,8 @@ class EmailVerificationScreen extends StatefulWidget {
 class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
   bool isEmailVerified = false;
   Timer? timer;
+  FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+
   @override
   void initState() {
     super.initState();
@@ -417,6 +429,13 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
     });
 
     if (isEmailVerified) {
+      await analytics.logSignUp(
+        signUpMethod: "Firebase_Auth",
+        parameters: {
+          "user": FirebaseAuth.instance.currentUser!.email!,
+          "status" : "email verified"
+        },
+      );
       Get.to(() => OnBoardingPage(user: FirebaseAuth.instance.currentUser));
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Email Successfully Verified")));

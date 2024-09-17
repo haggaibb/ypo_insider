@@ -26,7 +26,6 @@ class _ResultsPageState extends State<ResultsPage> {
   bool memberSearchIsActive = true;
   bool companySearchIsActive = false;
   List<ResultRecord> filterResult(String search) {
-
     List<ResultRecord> res = mainController.suggestionsList.where((element) {
       var lowerCaseLabel = element.label.toLowerCase();
       var lowerCaseSearch = search.toLowerCase();

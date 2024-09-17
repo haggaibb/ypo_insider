@@ -8,6 +8,8 @@ import 'models.dart';
 import 'package:get/get.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+
 
 class MembersController extends GetxController {
   var db = FirebaseFirestore.instance;
@@ -55,6 +57,11 @@ class MembersController extends GetxController {
   final box = GetStorage();
   /// AUTH
   final user = FirebaseAuth.instance.currentUser;
+
+  FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+
+
+
   setCurrentByUid(User? user) async {
     if (user != null) currentMember.value = await getMemberByUid(user.uid);
     bool res = ((admins.firstWhere((element) => element==currentMember.value.id, orElse: () =>'') !=''));
@@ -198,6 +205,12 @@ class MembersController extends GetxController {
 
     /// TODO move to save  //await saveProfileImage(url, id);
     update();
+    await analytics.logEvent(
+      name: "uploaded_profile_image",
+      parameters: {
+        "user": currentMember.value.fullName()
+      },
+    );
     loadingProfileImage.value = false;
     return url;
   }
@@ -211,6 +224,12 @@ class MembersController extends GetxController {
     CollectionReference membersRef = db.collection('Members');
     //await membersRef.doc(member.id).set(member.toMap(), SetOptions(merge: true));
     await membersRef.doc(member.id).update(member.toMap());
+    await analytics.logEvent(
+      name: "profile_update",
+      parameters: {
+        "user": member.fullName()
+      },
+    );
     saving.value = false;
   }
 

@@ -55,6 +55,7 @@ dependencies:
   url_launcher: ^6.3.0
   get_storage:
   toggle_switch: ^2.3.0
+  firebase_analytics: ^11.3.0
 
 dev_dependencies:
   flutter_test:

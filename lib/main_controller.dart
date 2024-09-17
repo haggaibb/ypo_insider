@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ypo_connect/main.dart';
 import 'models.dart';
 import 'package:get/get.dart';
 import 'dart:math';
+import 'package:firebase_analytics/firebase_analytics.dart';
 
 
 
@@ -21,6 +23,7 @@ class MainController extends GetxController {
   RxBool mainLoading = false.obs;
   RxBool isAnd = true.obs;
   int numberOfMembers = 1;
+  FirebaseAnalytics analytics = FirebaseAnalytics.instance;
 
 
   fetchFilteredMembers(List<String> selectedFilters) async {
@@ -48,12 +51,26 @@ class MainController extends GetxController {
     for (var member in filteredMembers) {
       filteredResults.add(Member.fromDocumentSnapshot(member));
     }
+    await analytics.logEvent(
+      name: "filter_tags",
+      parameters: {
+        "user": membersController.currentMember.value.fullName(),
+        "tags" :  selectedFilters.toString()
+      },
+    );
     resultsLoading.value = false;
     update();
   }
   switchAndOrFilter(List<String> selectedFilters) async {
     isAnd.value = !isAnd.value;
     await fetchFilteredMembers(selectedFilters);
+    await analytics.logEvent(
+      name: "filter_tags",
+      parameters: {
+        "user": membersController.currentMember.value.fullName(),
+        "is_and" : isAnd.value.toString()
+      },
+    );
   }
   List<String> getFilteredTagsFromCategory(category) {
     List<String> list = [];
