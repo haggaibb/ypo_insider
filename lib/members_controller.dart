@@ -205,7 +205,7 @@ class MembersController extends GetxController {
 
     /// TODO move to save  //await saveProfileImage(url, id);
     update();
-    await analytics.logEvent(
+    await analytics. logEvent(
       name: "uploaded_profile_image",
       parameters: {
         "user": currentMember.value.fullName()
@@ -224,7 +224,7 @@ class MembersController extends GetxController {
     CollectionReference membersRef = db.collection('Members');
     //await membersRef.doc(member.id).set(member.toMap(), SetOptions(merge: true));
     await membersRef.doc(member.id).update(member.toMap());
-    await analytics.logEvent(
+    await analytics. logEvent(
       name: "profile_update",
       parameters: {
         "user": member.fullName()

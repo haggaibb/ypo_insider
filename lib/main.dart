@@ -24,12 +24,12 @@ final emailLinkProviderConfig = EmailLinkAuthProvider(
   actionCodeSettings: actionCodeSettings,
 );
 final membersController = Get.put(MembersController());
-FirebaseAnalytics analytics = FirebaseAnalytics.instance;
 
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  FirebaseAnalytics analytics = FirebaseAnalytics.instance;
   final user = FirebaseAuth.instance.currentUser;
   // runApp(GetMaterialApp(home: OnBoardingPage(user: user,)));
   // return;
@@ -49,7 +49,7 @@ Future<void> main() async {
       runApp(Home(user: user,));
     } else {
       membersController.loadingStatus.value = 'First timer, load onBoarding...';
-      await analytics.logEvent(
+      analytics.logEvent(
         name: "on_boarding",
         parameters: {
           "user": user.email!
@@ -61,7 +61,7 @@ Future<void> main() async {
   }
   else {
     print('root check - user either null or not verified');
-    await analytics.logEvent(
+    analytics.logEvent(
       name: "unverified_user"
     );
     runApp(FrontGate(user: user));
@@ -77,6 +77,8 @@ class FrontGate extends StatefulWidget {
   State<FrontGate> createState() => _FrontGateState();
 }
 class _FrontGateState extends State<FrontGate> {
+  FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+
   @override
   void initState()  {
     print('init FrontGate');
