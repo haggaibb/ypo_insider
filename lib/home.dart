@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:sheet/sheet.dart';
-import 'package:ypo_connect/onboarding.dart';
 import 'package:ypo_connect/profile_page.dart';
 import 'filters.dart';
 import 'main_controller.dart';
@@ -12,6 +11,7 @@ import 'package:ypo_connect/members_controller.dart';
 import 'package:chips_choice/chips_choice.dart';
 import 'theme.dart';
 import 'admin_pages.dart';
+
 
 class Home extends StatefulWidget {
   const Home({super.key, this.user});
@@ -217,29 +217,34 @@ class _HomeState extends State<Home> {
                     ),
                   ),
                 ),
-                body: Stack(
-                  children: [
-                    ResultsPage(),
-                    Obx(() => mainController.mainLoading.value
-                        ? ResultsLoading()
-                        : Sheet(
-                            shape: ContinuousRectangleBorder(
-                              borderRadius: BorderRadius.circular(50),
-                            ),
-                            elevation: 0,
-                            backgroundColor: Colors.transparent,
-                            controller: sheetController,
-                            minExtent: minSheetPos,
-                            maxExtent: maxSheetPos,
-                            initialExtent: initSheetPos,
-                            fit: SheetFit.expand,
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 20, right: 20),
-                              child: Filters(() => sheetJumpFunction()),
-                            ),
-                          )),
-                  ],
+                body: Center(
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width>600?600: MediaQuery.of(context).size.width,
+                    child: Stack(
+                      children: [
+                        ResultsPage(),
+                        Obx(() => mainController.mainLoading.value
+                            ? ResultsLoading()
+                            : Sheet(
+                                shape: ContinuousRectangleBorder(
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
+                                elevation: 0,
+                                backgroundColor: Colors.transparent,
+                                controller: sheetController,
+                                minExtent: minSheetPos,
+                                maxExtent: maxSheetPos,
+                                initialExtent: initSheetPos,
+                                fit: SheetFit.expand,
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.only(left: 20, right: 20),
+                                  child: Filters(() => sheetJumpFunction()),
+                                ),
+                              )),
+                      ],
+                    ),
+                  ),
                 )
                 // This trailing comma makes auto-formatting nicer for build methods.
 

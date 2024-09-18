@@ -4,6 +4,7 @@ import 'models.dart';
 import 'package:get/get.dart';
 import 'dart:math';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'dart:js' as js;
 
 
 
@@ -184,6 +185,7 @@ class MainController extends GetxController {
     /// loadTags() should be first, it also gets the number of members data
     await loadTags();
     await loadRandomResults(numberOfMembers);
+    js.context.callMethod('hideSplashScreen');
     mainLoading.value = false;
     update();
     print('end - init main Controller');

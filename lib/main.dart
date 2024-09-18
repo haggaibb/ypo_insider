@@ -12,6 +12,7 @@ import 'auth_screens.dart';
 import 'package:get/get.dart';
 import 'members_controller.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'dart:js' as js;
 
 final actionCodeSettings = ActionCodeSettings(
   url: 'https://ypodex.web.app/',
@@ -37,6 +38,7 @@ Future<void> main() async {
   print('main');
   runApp(MainLoading());
   if (user!=null && user.emailVerified) {
+    //js.context.callMethod('hideSplashScreen');
     print('root check - user verified....');
     if (user.displayName!=null) {
       membersController.loadingStatus.value = '${user.displayName} verified go to Home';
@@ -56,6 +58,7 @@ Future<void> main() async {
         },
       );
       print('run app');
+      js.context.callMethod('hideSplashScreen');
       runApp(OnBoardingPage(user: user));
     }
   }
@@ -64,6 +67,7 @@ Future<void> main() async {
     analytics.logEvent(
       name: "unverified_user"
     );
+    js.context.callMethod('hideSplashScreen');
     runApp(FrontGate(user: user));
   }
 
