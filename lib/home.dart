@@ -40,9 +40,9 @@ class _HomeState extends State<Home> {
 
   @override
   void initState() {
+    super.initState();
     print('init home');
     membersController.loadingStatus.value = 'Loading Insider Home';
-    super.initState();
     if (membersController.currentMember.value.id == 'NA') membersController.setCurrentByUid(widget.user);
     setState(() {
 

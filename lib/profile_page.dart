@@ -6,6 +6,7 @@ import 'package:ypo_connect/members_controller.dart';
 import 'package:ypo_connect/models.dart';
 import 'main_controller.dart';
 import 'widgets.dart';
+import 'auth_screens.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
@@ -103,6 +104,7 @@ class _ProfilePageState extends State<ProfilePage> {
     /// Save to Db
     await memberController.updateMemberInfo(editedMember);
     tempProfilePicRef = storageRef.child("");
+    await mainController.logProfileEdit(editedMember.fullName());
   }
 
   @override
@@ -134,11 +136,11 @@ class _ProfilePageState extends State<ProfilePage> {
       freeTextControls[i].text = widget.member
           .getFreeTextTagValueByKey(mainController.freeTextTagsList[i]['key']);
     }
-
     ///ProfileImage
     tempProfilePicRef = storageRef.child("");
-    tempProfileImageUrl =
-        widget.member.profileImage ?? '/assets/images/profile0.jpg';
+    tempProfileImageUrl = widget.member.profileImage ?? '/assets/images/profile0.jpg';
+    mainController.logProfileView(widget.member.fullName());
+
   }
 
   @override

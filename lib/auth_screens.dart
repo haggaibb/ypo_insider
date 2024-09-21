@@ -6,6 +6,7 @@ import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:password_strength_checker/password_strength_checker.dart';
+import 'dart:html' as html;
 import 'members_controller.dart';
 import 'dart:async';
 import 'onboarding.dart';
@@ -18,12 +19,9 @@ class EmailSignInForm extends StatelessWidget {
   EmailSignInForm({required this.authController, super.key, this.errMsg = ''});
   final emailCtrl = TextEditingController();
   final passwordCtrl = TextEditingController();
-  //final controller = Get.put(MembersController());
 
   signIn(BuildContext context) async {
-    //print('sign-in');
     authController.setEmailAndPassword(emailCtrl.text, passwordCtrl.text);
-    //print('after try');
   }
 
   @override
@@ -47,8 +45,8 @@ class EmailSignInForm extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.all(18.0),
+                        const Padding(
+                          padding: EdgeInsets.all(18.0),
                           child: Text(
                             'Sign in',
                             style:  TextStyle(fontSize: 28),
@@ -76,7 +74,7 @@ class EmailSignInForm extends StatelessWidget {
                                     Get.to(EmailRegisterForm(
                                         authController: authController));
                                   },
-                                  child: Text(
+                                  child: const Text(
                                     ' Register',
                                     style: TextStyle(
                                         fontSize: 14, color: Colors.blue),
@@ -94,7 +92,7 @@ class EmailSignInForm extends StatelessWidget {
                                   padding: const EdgeInsets.all(8.0),
                                   child: TextField(
                                     controller: emailCtrl,
-                                    decoration: InputDecoration(
+                                    decoration: const InputDecoration(
                                       border: OutlineInputBorder(),
                                       hintText: 'Enter your email',
                                     ),
@@ -105,7 +103,7 @@ class EmailSignInForm extends StatelessWidget {
                                   child: TextField(
                                     obscureText: true,
                                     controller: passwordCtrl,
-                                    decoration: InputDecoration(
+                                    decoration: const InputDecoration(
                                       border: OutlineInputBorder(),
                                       hintText: 'Password',
                                     ),
@@ -115,7 +113,7 @@ class EmailSignInForm extends StatelessWidget {
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
                                     GestureDetector(
-                                      child: Text(
+                                      child: const Text(
                                         'Forgotten password??',
                                         style: TextStyle(color: Colors.blueGrey),
                                       ),
@@ -139,7 +137,7 @@ class EmailSignInForm extends StatelessWidget {
                                               'Authentication Failed!',
                                               style: TextStyle(color: Colors.red),
                                             )
-                                          : SizedBox(
+                                          : const SizedBox(
                                               width: 1,
                                             ),
                                       Text(
@@ -209,14 +207,12 @@ class _EmailRegisterFormState extends State<EmailRegisterForm> {
             await controller.onRegister(credentials.user!);
             controller.loading.value = false;
             analytics.logSignUp(
-              signUpMethod: "Firebase_Auth",
+              signUpMethod: "firebase_auth",
               parameters: {
                 "user": credentials.user!.email!,
                 "status" : "Registered"
               },
             );
-            print('credentials.user!=null =>');
-            print(credentials.user!=null);
             Get.to(() => const EmailVerificationScreen());
           }
         } on FirebaseAuthException catch  (e) {
@@ -429,13 +425,13 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
     });
 
     if (isEmailVerified) {
-      analytics.logSignUp(
-        signUpMethod: "Firebase_Auth",
-        parameters: {
-          "user": FirebaseAuth.instance.currentUser!.email!,
-          "status" : "email verified"
-        },
-      );
+      // analytics.logSignUp(
+      //   signUpMethod: "Firebase_Auth",
+      //   parameters: {
+      //     "user": FirebaseAuth.instance.currentUser!.email!,
+      //     "status" : "email verified"
+      //   },
+      // );
       Get.to(() => OnBoardingPage(user: FirebaseAuth.instance.currentUser));
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Email Successfully Verified")));
@@ -515,20 +511,23 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
 }
 
 
-/*
-EmailVerificationScreen(
-//             headerBuilder: headerIcon(Icons.verified),
-//             sideBuilder: sideIcon(Icons.verified),
-//             actionCodeSettings: actionCodeSettings,
-//             actions: [
-//               EmailVerifiedAction(() {
-//                 controller.onVerify(user!);
-//                 Navigator.pushReplacementNamed(context, '/onboarding');
-//               }),
-//               AuthCancelledAction((context) {
-//                 FirebaseUIAuth.signOut(context: context);
-//                 Navigator.pushReplacementNamed(context, '/');
-//               }),
-//             ],
-//           );
- */
+class Goodbye extends StatelessWidget {
+
+  const Goodbye({super.key, });
+
+  @override
+  Widget build(BuildContext context) {
+    Future.delayed(const Duration(milliseconds: 3000), () {
+      html.window.open('https://ypodex.web.app/', '_self');
+    });
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.network('assets/images/logo-insider.png'),
+          Text('Goodbye', style : TextStyle(fontSize: 24, color: Colors.blue.shade900)),
+        ],
+      ),
+    );
+  }
+}

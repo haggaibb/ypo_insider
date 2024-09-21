@@ -57,7 +57,7 @@ class MembersController extends GetxController {
   final box = GetStorage();
   /// AUTH
   final user = FirebaseAuth.instance.currentUser;
-
+  ///
   FirebaseAnalytics analytics = FirebaseAnalytics.instance;
 
 
@@ -100,6 +100,12 @@ class MembersController extends GetxController {
     DocumentSnapshot refreshedMember = await membersRef.doc(memberId).get();
     setCurrentByMember(Member.fromDocumentSnapshot(refreshedMember));
     print('Registration done - member is ${currentMember.value.fullName()}');
+    await analytics.logEvent(
+      name: "registered",
+      parameters: {
+        "user": currentMember.value.fullName(),
+      },
+    );
     return (memberSnapshot.docs.isNotEmpty);
   }
 
@@ -125,6 +131,13 @@ class MembersController extends GetxController {
     membersRef.doc(memberId).update({'onBoarding.boarded': true});
     currentMember.value.onBoarding!['boarded']=true;
     print('{$currentMember.value.fullName()} has on Boarded' );
+    await analytics.logEvent(
+      name: "on_boarding",
+      parameters: {
+        "user": currentMember.value.fullName(),
+        "status" : "finished"
+      },
+    );
     loading.value = false;
   }
 
@@ -155,7 +168,8 @@ class MembersController extends GetxController {
     CollectionReference membersRef = db.collection('Members');
     QuerySnapshot res = await membersRef.where("uid" , isEqualTo: uid).get();
     if (res.docs.isNotEmpty) {
-      return Member.fromJson(res.docs.first.data() as Map<String,dynamic>);
+      Member member = Member.fromJson(res.docs.first.data() as Map<String,dynamic>);
+      return member;
     } else {
       return noUser;
     }
@@ -205,12 +219,6 @@ class MembersController extends GetxController {
 
     /// TODO move to save  //await saveProfileImage(url, id);
     update();
-    analytics. logEvent(
-      name: "uploaded_profile_image",
-      parameters: {
-        "user": currentMember.value.fullName()
-      },
-    );
     loadingProfileImage.value = false;
     return url;
   }
@@ -227,7 +235,7 @@ class MembersController extends GetxController {
     analytics.logEvent(
       name: "profile_update",
       parameters: {
-        "user": member.fullName()
+        "member_update": member.fullName()
       },
     );
     saving.value = false;

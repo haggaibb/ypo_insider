@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher_string.dart';
+import 'package:ypo_connect/main.dart';
 import 'package:ypo_connect/models.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -400,23 +401,7 @@ class ProfileMenuWidget extends StatelessWidget {
   }
 }
 ///
-class Goodbye extends StatelessWidget {
 
-  const Goodbye({super.key, });
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Image.network('assets/images/logo-insider.png'),
-          Text('Goodbye', style : TextStyle(fontSize: 24, color: Colors.blue.shade900)),
-        ],
-      ),
-    );
-  }
-}
 
 
 

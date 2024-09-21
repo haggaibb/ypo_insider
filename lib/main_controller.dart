@@ -1,21 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:ypo_connect/main.dart';
 import 'models.dart';
 import 'package:get/get.dart';
 import 'dart:math';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'dart:js' as js;
-
-
+import 'package:firebase_auth/firebase_auth.dart'
+    hide PhoneAuthProvider, EmailAuthProvider;
 
 class MainController extends GetxController {
   var db = FirebaseFirestore.instance;
   List<ResultRecord> allMembersFullName = [];
-  List<ResultRecord> allCompanies =[];
-  List<ResultRecord> suggestionsList =[];
-  List<String> residenceList=[];
-  List<String> forumList=[];
-  List< Map<String, dynamic>> freeTextTagsList = [];
+  List<ResultRecord> allCompanies = [];
+  List<ResultRecord> suggestionsList = [];
+  List<String> residenceList = [];
+  List<String> forumList = [];
+  List<Map<String, dynamic>> freeTextTagsList = [];
   List<Map> filteredTagsList = [];
   RxList<String> tags = <String>[].obs;
   List<String> activeFilters = <String>[].obs;
@@ -24,23 +23,28 @@ class MainController extends GetxController {
   RxBool mainLoading = false.obs;
   RxBool isAnd = true.obs;
   int numberOfMembers = 1;
-  FirebaseAnalytics analytics = FirebaseAnalytics.instance;
-
+  AnalyticsEngine analyticsEngine = AnalyticsEngine();
+  final user = FirebaseAuth.instance.currentUser;
 
   fetchFilteredMembers(List<String> selectedFilters) async {
     if (selectedFilters.isEmpty) {
-      filteredResults.value = []; /// TODO add ref to def result list if we wish
+      filteredResults.value = [];
+
+      /// TODO add ref to def result list if we wish
       resultsLoading.value = false;
       return;
     }
     resultsLoading.value = true;
     List<QueryDocumentSnapshot> filteredMembers;
     final membersRef = db.collection("Members");
-    final QuerySnapshot membersQuery = await membersRef.where("filter_tags", arrayContainsAny: selectedFilters).get();
+    final QuerySnapshot membersQuery = await membersRef
+        .where("filter_tags", arrayContainsAny: selectedFilters)
+        .get();
     if (isAnd.value) {
       filteredMembers = membersQuery.docs.where((doc) {
         // Safely cast the 'filter_tags' array to List<String>
-        List<String> filterTags = List<String>.from(doc['filter_tags'] as List<dynamic>);
+        List<String> filterTags =
+            List<String>.from(doc['filter_tags'] as List<dynamic>);
 
         // Check if all the selectedTags are in filterTags
         return selectedFilters.every((tag) => filterTags.contains(tag));
@@ -48,81 +52,75 @@ class MainController extends GetxController {
     } else {
       filteredMembers = membersQuery.docs;
     }
-    filteredResults.value =[];
+    filteredResults.value = [];
     for (var member in filteredMembers) {
       filteredResults.add(Member.fromDocumentSnapshot(member));
     }
-    analytics.logEvent(
-      name: "filter_tags",
-      parameters: {
-        "user": membersController.currentMember.value.fullName(),
-        "tags" :  selectedFilters.toString()
-      },
-    );
     resultsLoading.value = false;
+    await logFilterTagsSearch(selectedFilters);
     update();
   }
+
   switchAndOrFilter(List<String> selectedFilters) async {
     isAnd.value = !isAnd.value;
     await fetchFilteredMembers(selectedFilters);
-    analytics.logEvent(
-      name: "filter_tags",
-      parameters: {
-        "user": membersController.currentMember.value.fullName(),
-        "is_and" : isAnd.value.toString()
-      },
-    );
   }
+
   List<String> getFilteredTagsFromCategory(category) {
     List<String> list = [];
-    var catIndex = filteredTagsList.indexWhere((cat) => cat['key']==category);
+    var catIndex = filteredTagsList.indexWhere((cat) => cat['key'] == category);
     List tagsList = filteredTagsList[catIndex]['tags_list'];
     for (var tag in tagsList) {
       list.add(tag);
     }
-    if (category!='forum') list.sort((a, b) => a.compareTo(b));
+    if (category != 'forum') list.sort((a, b) => a.compareTo(b));
     return list;
   }
 
-  Map<String, dynamic> newFreeTextTag(key){
-    return freeTextTagsList.firstWhere((element) => element['key']==key);
+  Map<String, dynamic> newFreeTextTag(key) {
+    return freeTextTagsList.firstWhere((element) => element['key'] == key);
   }
+
   loadRandomResults(size) async {
     resultsLoading.value = true;
-    List randomArr =[];
+    List randomArr = [];
     final Random _random = Random();
-    for (int i=0; i<15;i++) {
+    for (int i = 0; i < 15; i++) {
       int _randomNumber = _random.nextInt(size);
       randomArr.add(_randomNumber);
     }
     CollectionReference membersRef = db.collection('Members');
     QuerySnapshot membersSnapshot = await membersRef.get();
     List<QueryDocumentSnapshot> membersDocs = membersSnapshot.docs;
-    filteredResults.value =[];
+    filteredResults.value = [];
     for (var index in randomArr) {
       filteredResults.add(Member.fromDocumentSnapshot(membersDocs[index]));
     }
     resultsLoading.value = false;
   }
+
   loadTags() async {
     print('load tags');
     //filtersLoading.value=true;
     ///load free text tags
     CollectionReference freeTextTagsRef = db.collection('FreeTextTags');
     QuerySnapshot freeTextTagsSnapshot = await freeTextTagsRef.get();
-    List<QueryDocumentSnapshot>  freeTextTagsDocList =  freeTextTagsSnapshot.docs;
+    List<QueryDocumentSnapshot> freeTextTagsDocList = freeTextTagsSnapshot.docs;
     for (var tag in freeTextTagsDocList) {
       freeTextTagsList.add(tag.data() as Map<String, dynamic>);
     }
+
     ///load filtered tags
     CollectionReference filteredTagsRef = db.collection('FilterTags');
-    QuerySnapshot filteredTagsSnapshot = await filteredTagsRef.orderBy('show_order').get();
-    List<QueryDocumentSnapshot>  filteredTagsQuery =  filteredTagsSnapshot.docs;
+    QuerySnapshot filteredTagsSnapshot =
+        await filteredTagsRef.orderBy('show_order').get();
+    List<QueryDocumentSnapshot> filteredTagsQuery = filteredTagsSnapshot.docs;
     for (var tag in filteredTagsQuery) {
       filteredTagsList.add(tag.data() as Map<String, dynamic>);
+
       /// build residence list for use in dropdown in profile
       var tempTag = tag.data() as Map<String, dynamic>;
-      if (tempTag['key']=='residence') {
+      if (tempTag['key'] == 'residence') {
         List list = tempTag['tags_list'];
         list.sort((a, b) => a.compareTo(b));
         residenceList = [];
@@ -130,8 +128,9 @@ class MainController extends GetxController {
           residenceList.add(element);
         }
       }
+
       /// build forum list for use in dropdown in profile
-      if (tempTag['key']=='forum') {
+      if (tempTag['key'] == 'forum') {
         List list = tempTag['tags_list'];
         //list.sort((a, b) => a.compareTo(b));
         forumList = [];
@@ -140,6 +139,7 @@ class MainController extends GetxController {
         }
       }
     }
+
     /// App filter tags and free text
     final membersRef = db.collection("Members");
     final membersQuery = await membersRef.get();
@@ -147,51 +147,148 @@ class MainController extends GetxController {
     numberOfMembers = membersSnapshot.length;
     for (var member in membersSnapshot) {
       Map<String, dynamic>? data = member.data() as Map<String, dynamic>?;
-      suggestionsList.add(ResultRecord(label: member['firstName']+' '+member['lastName'] , id: member.id));
+      suggestionsList.add(ResultRecord(
+          label: member['firstName'] + ' ' + member['lastName'],
+          id: member.id));
       var bizName;
-      if (data!=null) {
-        bizName = data.containsKey('current_business_name') ? data['current_business_name'] as String : null;
+      if (data != null) {
+        bizName = data.containsKey('current_business_name')
+            ? data['current_business_name'] as String
+            : null;
       }
-      (bizName!=null && bizName!='')?suggestionsList.add(ResultRecord(label: bizName, id: member.id)):null;
-      suggestionsList.sort((a, b) => a.label. compareTo(b.label));
+      (bizName != null && bizName != '')
+          ? suggestionsList.add(ResultRecord(label: bizName, id: member.id))
+          : null;
+      suggestionsList.sort((a, b) => a.label.compareTo(b.label));
     }
     //filtersLoading.value=false;
     update();
     print('tags loaded');
   }
+
   addNewResidence(String newResidence) async {
     CollectionReference filtersRef = db.collection('FilterTags');
-    final filtersQuery = await filtersRef.where("key", isEqualTo: 'residence' ).get();
+    final filtersQuery =
+        await filtersRef.where("key", isEqualTo: 'residence').get();
     var id = filtersQuery.docs.first.id;
     filtersRef.doc(id).update({
       "tags_list": FieldValue.arrayUnion([newResidence]),
     });
   }
+
   addNewForum(String newForum) async {
     CollectionReference filtersRef = db.collection('FilterTags');
-    final filtersQuery = await filtersRef.where("key", isEqualTo: 'forum' ).get();
+    final filtersQuery =
+        await filtersRef.where("key", isEqualTo: 'forum').get();
     var id = filtersQuery.docs.first.id;
     filtersRef.doc(id).update({
       "tags_list": FieldValue.arrayUnion([newForum]),
     });
   }
 
+  logUserLogsIn(String fullName) async {
+    await AnalyticsEngine.userLogsIn('firebase_auth', fullName);
+  }
+
+  logUserOpensApp(String fullName) async {
+    await AnalyticsEngine.logUserOpensApp(fullName);
+  }
+
+  logProfileView(String fullName) async {
+    await AnalyticsEngine.logProfileView(fullName);
+  }
+
+  logProfileEdit(String fullName) async {
+    await AnalyticsEngine.logProfileEdit(fullName);
+  }
+
+  logFilterTagsSearch(List<String> tags) async {
+    await AnalyticsEngine.logFilterTagsSearch(tags.toString());
+  }
 
   @override
   onInit() async {
     super.onInit();
     print('init - main Controller...');
     mainLoading.value = true;
+
     /// loadTags() should be first, it also gets the number of members data
     await loadTags();
     await loadRandomResults(numberOfMembers);
     js.context.callMethod('hideSplashScreen');
+    //await logUserLogsIn(user!.displayName??'NA');
+    await logUserOpensApp(user!.displayName ?? 'NA');
     mainLoading.value = false;
     update();
     print('end - init main Controller');
   }
-
 }
 
+class AnalyticsEngine {
+  static final _instance = FirebaseAnalytics.instance;
 
+  static Future<void> userLogsIn(String loginMethod, String fullName) async {
+    print('log -- user log in --');
+    try {
+      await _instance.logLogin(
+          loginMethod: 'firebase_auth',
+          parameters: <String, Object>{"user": fullName});
+    } catch (err) {
+      print('log to GA err:  user log in');
+      print(err);
+    }
+  }
 
+  static Future<void> logUserOpensApp(String fullName) async {
+    print('log -- user opens app --');
+    try {
+      await _instance
+          .logEvent(name: 'open_app', parameters: <String, Object>{
+            "user" : fullName
+      });
+    } catch (err) {
+      print('log to GA err:  user opens app');
+      print(err);
+    }
+  }
+
+  static Future<void> logProfileView(String fullName) async {
+    print('log -- Profile View --');
+    try {
+      await _instance
+          .logEvent(name: 'profile_view', parameters: <String, Object>{
+        "profile_viewed" : fullName
+      });
+    } catch (err) {
+      print('log to GA err:  Profile View');
+      print(err);
+    }
+  }
+
+  static Future<void> logProfileEdit(String fullName) async {
+    print('log -- Profile Edit --');
+    try {
+      await _instance
+          .logEvent(name: 'profile_edit', parameters: <String, Object>{
+        "profile_edited" : fullName
+      });
+    } catch (err) {
+      print('log to GA err:  Profile Edit');
+      print(err);
+    }
+  }
+
+  static Future<void> logFilterTagsSearch(String tags) async {
+    print('log -- Filter Tags Search --');
+    try {
+      await _instance
+          .logEvent(name: 'filter_tags_search', parameters: <String, Object>{
+        "tags" : tags
+      });
+    } catch (err) {
+      print('log to GA err:  Filter Tags Search');
+      print(err);
+    }
+  }
+
+}

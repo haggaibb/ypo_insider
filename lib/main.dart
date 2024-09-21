@@ -18,8 +18,6 @@ final actionCodeSettings = ActionCodeSettings(
   url: 'https://ypodex.web.app/',
   handleCodeInApp: true,
   //androidMinimumVersion: '1',
-  //androidPackageName: 'io.flutter.plugins.firebase_ui.firebase_ui_example',
-  //iOSBundleId: 'io.flutter.plugins.fireabaseUiExample',
 );
 final emailLinkProviderConfig = EmailLinkAuthProvider(
   actionCodeSettings: actionCodeSettings,
@@ -27,36 +25,22 @@ final emailLinkProviderConfig = EmailLinkAuthProvider(
 final membersController = Get.put(MembersController());
 
 
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   FirebaseAnalytics analytics = FirebaseAnalytics.instance;
   final user = FirebaseAuth.instance.currentUser;
-  // runApp(GetMaterialApp(home: OnBoardingPage(user: user,)));
-  // return;
   print('@@@@@@@@@@@@@@@@@@');
   print('main');
   runApp(MainLoading());
   if (user!=null && user.emailVerified) {
-    //js.context.callMethod('hideSplashScreen');
     print('root check - user verified....');
     if (user.displayName!=null) {
       membersController.loadingStatus.value = '${user.displayName} verified go to Home';
-      analytics.logEvent(
-        name: "open_app",
-        parameters: {
-          "user": user.displayName!
-        },
-      );
       runApp(Home(user: user,));
     } else {
       membersController.loadingStatus.value = 'First timer, load onBoarding...';
-      analytics.logEvent(
-        name: "on_boarding",
-        parameters: {
-          "user": user.email!
-        },
-      );
       print('run app');
       js.context.callMethod('hideSplashScreen');
       runApp(OnBoardingPage(user: user));
@@ -64,9 +48,6 @@ Future<void> main() async {
   }
   else {
     print('root check - user either null or not verified');
-    analytics.logEvent(
-      name: "unverified_user"
-    );
     js.context.callMethod('hideSplashScreen');
     runApp(FrontGate(user: user));
   }
@@ -108,20 +89,19 @@ class _FrontGateState extends State<FrontGate> {
         } else if (state is SignedIn) {
           print('signed in');
           User user = authController.auth.currentUser!;
-          // if (!user.emailVerified) {
-          //   print('mail not verified, go to verification screen...');
-          //   return MaterialApp(
-          //       title: 'YPO Israel Insider - Verification',
-          //       home: VerificationPage(user: authController.auth.currentUser!)
-          //   );
-          // }
           if (user.displayName!=null) {
-            analytics.logLogin(
-                loginMethod: "Firebase Auth",
-                parameters: {
-                  'user_displayName' : user.displayName!
-                }
-            );
+            try {
+              analytics.logEvent(
+                  name: 'signed_in',
+                  parameters: <String, Object> {
+                    'user': user.displayName!
+                  }
+              );
+              print('logged to GA -signed_in');
+            } catch(err){
+              print('log to GA err - signed_in:');
+              print(err);
+            }
              print('has ObBoarded go to Home...');
               runApp(Home(user: user,));
           } else {
