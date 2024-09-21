@@ -8,8 +8,7 @@ import 'models.dart';
 import 'package:get/get.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
-
+import './ga.dart';
 
 class MembersController extends GetxController {
   var db = FirebaseFirestore.instance;
@@ -58,7 +57,6 @@ class MembersController extends GetxController {
   /// AUTH
   final user = FirebaseAuth.instance.currentUser;
   ///
-  FirebaseAnalytics analytics = FirebaseAnalytics.instance;
 
 
 
@@ -100,12 +98,7 @@ class MembersController extends GetxController {
     DocumentSnapshot refreshedMember = await membersRef.doc(memberId).get();
     setCurrentByMember(Member.fromDocumentSnapshot(refreshedMember));
     print('Registration done - member is ${currentMember.value.fullName()}');
-    await analytics.logEvent(
-      name: "registered",
-      parameters: {
-        "user": currentMember.value.fullName(),
-      },
-    );
+    await AnalyticsEngine.logMemberRegistered(currentMember.value.fullName());
     return (memberSnapshot.docs.isNotEmpty);
   }
 
@@ -131,13 +124,7 @@ class MembersController extends GetxController {
     membersRef.doc(memberId).update({'onBoarding.boarded': true});
     currentMember.value.onBoarding!['boarded']=true;
     print('{$currentMember.value.fullName()} has on Boarded' );
-    await analytics.logEvent(
-      name: "on_boarding",
-      parameters: {
-        "user": currentMember.value.fullName(),
-        "status" : "finished"
-      },
-    );
+    await AnalyticsEngine.logOnBoarding(user.email!,'start');
     loading.value = false;
   }
 
@@ -232,12 +219,7 @@ class MembersController extends GetxController {
     CollectionReference membersRef = db.collection('Members');
     //await membersRef.doc(member.id).set(member.toMap(), SetOptions(merge: true));
     await membersRef.doc(member.id).update(member.toMap());
-    analytics.logEvent(
-      name: "profile_update",
-      parameters: {
-        "member_update": member.fullName()
-      },
-    );
+    await AnalyticsEngine.logProfileEdit(member.fullName());
     saving.value = false;
   }
 

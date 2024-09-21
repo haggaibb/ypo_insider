@@ -48,6 +48,7 @@ class OnBoardingPageState extends State<OnBoardingPage> {
       print('Invalid access to OnBoarding page, user is NULL');
       Navigator.of(context).pop;
     }
+
   }
 
   void _onIntroEnd(context) async  {

@@ -2,10 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'models.dart';
 import 'package:get/get.dart';
 import 'dart:math';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'dart:js' as js;
 import 'package:firebase_auth/firebase_auth.dart'
     hide PhoneAuthProvider, EmailAuthProvider;
+import 'ga.dart';
 
 class MainController extends GetxController {
   var db = FirebaseFirestore.instance;
@@ -23,7 +23,6 @@ class MainController extends GetxController {
   RxBool mainLoading = false.obs;
   RxBool isAnd = true.obs;
   int numberOfMembers = 1;
-  AnalyticsEngine analyticsEngine = AnalyticsEngine();
   final user = FirebaseAuth.instance.currentUser;
 
   fetchFilteredMembers(List<String> selectedFilters) async {
@@ -57,7 +56,7 @@ class MainController extends GetxController {
       filteredResults.add(Member.fromDocumentSnapshot(member));
     }
     resultsLoading.value = false;
-    await logFilterTagsSearch(selectedFilters);
+    await AnalyticsEngine.logFilterTagsSearch(tags.toString());
     update();
   }
 
@@ -186,6 +185,7 @@ class MainController extends GetxController {
     });
   }
 
+
   logUserLogsIn(String fullName) async {
     await AnalyticsEngine.userLogsIn('firebase_auth', fullName);
   }
@@ -202,9 +202,6 @@ class MainController extends GetxController {
     await AnalyticsEngine.logProfileEdit(fullName);
   }
 
-  logFilterTagsSearch(List<String> tags) async {
-    await AnalyticsEngine.logFilterTagsSearch(tags.toString());
-  }
 
   @override
   onInit() async {
@@ -224,71 +221,3 @@ class MainController extends GetxController {
   }
 }
 
-class AnalyticsEngine {
-  static final _instance = FirebaseAnalytics.instance;
-
-  static Future<void> userLogsIn(String loginMethod, String fullName) async {
-    print('log -- user log in --');
-    try {
-      await _instance.logLogin(
-          loginMethod: 'firebase_auth',
-          parameters: <String, Object>{"user": fullName});
-    } catch (err) {
-      print('log to GA err:  user log in');
-      print(err);
-    }
-  }
-
-  static Future<void> logUserOpensApp(String fullName) async {
-    print('log -- user opens app --');
-    try {
-      await _instance
-          .logEvent(name: 'open_app', parameters: <String, Object>{
-            "user" : fullName
-      });
-    } catch (err) {
-      print('log to GA err:  user opens app');
-      print(err);
-    }
-  }
-
-  static Future<void> logProfileView(String fullName) async {
-    print('log -- Profile View --');
-    try {
-      await _instance
-          .logEvent(name: 'profile_view', parameters: <String, Object>{
-        "profile_viewed" : fullName
-      });
-    } catch (err) {
-      print('log to GA err:  Profile View');
-      print(err);
-    }
-  }
-
-  static Future<void> logProfileEdit(String fullName) async {
-    print('log -- Profile Edit --');
-    try {
-      await _instance
-          .logEvent(name: 'profile_edit', parameters: <String, Object>{
-        "profile_edited" : fullName
-      });
-    } catch (err) {
-      print('log to GA err:  Profile Edit');
-      print(err);
-    }
-  }
-
-  static Future<void> logFilterTagsSearch(String tags) async {
-    print('log -- Filter Tags Search --');
-    try {
-      await _instance
-          .logEvent(name: 'filter_tags_search', parameters: <String, Object>{
-        "tags" : tags
-      });
-    } catch (err) {
-      print('log to GA err:  Filter Tags Search');
-      print(err);
-    }
-  }
-
-}

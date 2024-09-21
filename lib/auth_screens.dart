@@ -10,7 +10,6 @@ import 'dart:html' as html;
 import 'members_controller.dart';
 import 'dart:async';
 import 'onboarding.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 
 
 class EmailSignInForm extends StatelessWidget {
@@ -187,7 +186,6 @@ class _EmailRegisterFormState extends State<EmailRegisterForm> {
   final passwordCtrl2 = TextEditingController();
   final passNotifier = ValueNotifier<PasswordStrength?>(null);
   String errMsg ='';
-  FirebaseAnalytics analytics = FirebaseAnalytics.instance;
 
   validateMembersEmail(String email) async {
     bool validated = await controller.validateMemberEmail(email);
@@ -206,13 +204,6 @@ class _EmailRegisterFormState extends State<EmailRegisterForm> {
           if (credentials.user != null) {
             await controller.onRegister(credentials.user!);
             controller.loading.value = false;
-            analytics.logSignUp(
-              signUpMethod: "firebase_auth",
-              parameters: {
-                "user": credentials.user!.email!,
-                "status" : "Registered"
-              },
-            );
             Get.to(() => const EmailVerificationScreen());
           }
         } on FirebaseAuthException catch  (e) {
@@ -408,7 +399,6 @@ class EmailVerificationScreen extends StatefulWidget {
 class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
   bool isEmailVerified = false;
   Timer? timer;
-  FirebaseAnalytics analytics = FirebaseAnalytics.instance;
 
   @override
   void initState() {

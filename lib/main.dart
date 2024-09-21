@@ -11,8 +11,8 @@ import 'widgets.dart';
 import 'auth_screens.dart';
 import 'package:get/get.dart';
 import 'members_controller.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'dart:js' as js;
+import 'ga.dart';
 
 final actionCodeSettings = ActionCodeSettings(
   url: 'https://ypodex.web.app/',
@@ -29,7 +29,6 @@ final membersController = Get.put(MembersController());
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  FirebaseAnalytics analytics = FirebaseAnalytics.instance;
   final user = FirebaseAuth.instance.currentUser;
   print('@@@@@@@@@@@@@@@@@@');
   print('main');
@@ -62,7 +61,6 @@ class FrontGate extends StatefulWidget {
   State<FrontGate> createState() => _FrontGateState();
 }
 class _FrontGateState extends State<FrontGate> {
-  FirebaseAnalytics analytics = FirebaseAnalytics.instance;
 
   @override
   void initState()  {
@@ -91,12 +89,7 @@ class _FrontGateState extends State<FrontGate> {
           User user = authController.auth.currentUser!;
           if (user.displayName!=null) {
             try {
-              analytics.logEvent(
-                  name: 'signed_in',
-                  parameters: <String, Object> {
-                    'user': user.displayName!
-                  }
-              );
+              AnalyticsEngine.userLogsIn('firebase_auth',user.displayName!);
               print('logged to GA -signed_in');
             } catch(err){
               print('log to GA err - signed_in:');
@@ -106,13 +99,7 @@ class _FrontGateState extends State<FrontGate> {
               runApp(Home(user: user,));
           } else {
               print('first time, go to onBoarding');
-              analytics.logEvent(
-                name: "on_boarding",
-                parameters: {
-                  "user": user.email!,
-                  "status" : "begin"
-                },
-              );
+              AnalyticsEngine.logOnBoarding(user.email!,'start');
               runApp(OnBoardingPage(user: user));
           }
           //return Home(user: authController.auth.currentUser,);
