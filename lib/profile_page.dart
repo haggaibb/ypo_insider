@@ -139,7 +139,9 @@ class _ProfilePageState extends State<ProfilePage> {
     ///ProfileImage
     tempProfilePicRef = storageRef.child("");
     tempProfileImageUrl = widget.member.profileImage ?? '/assets/images/profile0.jpg';
-    mainController.logProfileView(widget.member.fullName());
+    if (widget.member.email != memberController.currentMember.value.email) {
+      mainController.logProfileView(widget.member.fullName());
+    }
 
   }
 

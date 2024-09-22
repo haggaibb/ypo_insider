@@ -101,7 +101,7 @@ class _HomeState extends State<Home> {
                   ),
                 ),
                 drawer: SizedBox(
-                  height: 500,
+                  height: membersController.isAdmin.value?600:400,
                   child: Drawer(
                     shape: ContinuousRectangleBorder(
                         borderRadius: BorderRadius.circular(75),
@@ -213,6 +213,17 @@ class _HomeState extends State<Home> {
                             );
                           },
                         ):SizedBox(),
+                        /// add free text
+                        // membersController.isAdmin.value?ListTile(
+                        //   leading: const Icon(
+                        //     Icons.text_fields,
+                        //   ),
+                        //   title: const Text('Add a Free Text Field'),
+                        //   onTap: () {
+                        //     Get.to(() => AddNewFreeText()
+                        //     );
+                        //   },
+                        // ):SizedBox(),
                       ],
                     ),
                   ),

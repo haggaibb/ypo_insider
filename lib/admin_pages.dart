@@ -173,7 +173,6 @@ class AddNewMember extends StatelessWidget {
   }
 }
 
-
 class AddNewResidence extends StatelessWidget {
 
   const AddNewResidence({super.key, });
@@ -260,7 +259,6 @@ class AddNewForum extends StatelessWidget {
             width: 350,
             height: 500,
             child: Column(
-              //crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 Image.network('assets/images/logo-insider.png' , height: 100,),
@@ -286,6 +284,144 @@ class AddNewForum extends StatelessWidget {
                           await mainController.addNewForum(forumCtrl.text);
                           const snackBar = SnackBar(
                             content: Text('Forum Added!' ,  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),),
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                          Get.back();
+                          Get.back();
+                        },
+                        child: Text('Save')
+                    ),
+                    ElevatedButton(
+                        onPressed: ()  {
+                          print('Cancel');
+                          Get.back();
+                          Get.back();
+                        },
+                        child: Text('Cancel')
+                    ),
+                  ],
+                )
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
+class AddNewFreeText extends StatelessWidget {
+
+  AddNewFreeText({super.key, });
+
+  @override
+  Widget build(BuildContext context) {
+    TextEditingController fieldNameCtrl = TextEditingController();
+    TextEditingController typeCtrl = TextEditingController();
+    TextEditingController hintCtrl = TextEditingController();
+    TextEditingController iconCodeCtrl = TextEditingController();
+    final mainController = Get.put(MainController());
+
+    return MaterialApp(
+      home: Directionality(
+        textDirection: TextDirection.ltr,
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          body: Container(
+            width: 350,
+            height: 800,
+            child: Column(
+              //crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Image.network('assets/images/logo-insider.png' , height: 100,),
+                SizedBox(height: 20,),
+                Text('Add a new Free Text Field' , style: TextStyle(fontSize: 24),),
+                ///name
+                Padding(
+                  padding: const EdgeInsets.all(18.0),
+                  child: Row(
+                    children: [
+                      Text('field name:', style: TextStyle(fontWeight: FontWeight.bold)),
+                      Padding(
+                        padding: const EdgeInsets.only(left :12.0),
+                        child: SizedBox(width: 150, height: 50, child: TextField(controller: fieldNameCtrl,)),
+                      ),
+                    ],
+                  ),
+                ),
+                ///type
+                Padding(
+                  padding: const EdgeInsets.all(18.0),
+                  child: Row(
+                    children: [
+                      Text('field type:', style: TextStyle(fontWeight: FontWeight.bold)),
+                      Padding(
+                        padding: const EdgeInsets.only(left :12.0),
+                        child: SizedBox(width: 150, height: 50,
+                            child: DropdownMenu(
+                              controller: typeCtrl,
+                              dropdownMenuEntries: [
+                                DropdownMenuEntry(
+                                    value: 'text',
+                                    label: 'Text Field (1-Line)'
+                                ),
+                                DropdownMenuEntry(
+                                    value: 'link',
+                                    label: 'Link Field (1-Line)'
+                                ),
+                                DropdownMenuEntry(
+                                    value: 'textbox',
+                                    label: 'Text Box (multi-Line)'
+                                )
+                              ],
+                            )
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                ///hint
+                Padding(
+                  padding: const EdgeInsets.all(18.0),
+                  child: Row(
+                    children: [
+                      Text('hint:', style: TextStyle(fontWeight: FontWeight.bold)),
+                      Padding(
+                        padding: const EdgeInsets.only(left :12.0),
+                        child: SizedBox(width: 250, height: 50, child: TextField(controller: hintCtrl,)),
+                      ),
+                    ],
+                  ),
+                ),
+                ///Icon code
+                Padding(
+                  padding: const EdgeInsets.all(18.0),
+                  child: Row(
+                    children: [
+                      Text('icon code:', style: TextStyle(fontWeight: FontWeight.bold)),
+                      Padding(
+                        padding: const EdgeInsets.only(left :12.0),
+                        child: SizedBox(width: 150, height: 50, child: TextField(controller: iconCodeCtrl,)),
+                      ),
+                    ],
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ElevatedButton(
+                        onPressed: () async {
+                          await mainController.addNewFreeTextField({
+                            'key' : fieldNameCtrl.text,
+                            'label' : fieldNameCtrl.text,
+                            'type' : typeCtrl.text,
+                            'hint' : hintCtrl.text,
+                            'icon_code' : iconCodeCtrl.text
+                          });
+                          const snackBar = SnackBar(
+                            content: Text('Free Text Field Added!' ,  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),),
                           );
                           ScaffoldMessenger.of(context).showSnackBar(snackBar);
                           Get.back();

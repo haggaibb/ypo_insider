@@ -185,7 +185,12 @@ class MainController extends GetxController {
     });
   }
 
+  addNewFreeTextField(Map<String,dynamic> freeTextData) async {
+    CollectionReference freeTextTagsRef = db.collection('FreeTextTags');
+    freeTextTagsRef.add(freeTextData);
+  }
 
+  /// events
   logUserLogsIn(String fullName) async {
     await AnalyticsEngine.userLogsIn('firebase_auth', fullName);
   }
