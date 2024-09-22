@@ -101,7 +101,7 @@ class _HomeState extends State<Home> {
                   ),
                 ),
                 drawer: SizedBox(
-                  height: membersController.isAdmin.value?650:500,
+                  height: membersController.isAdmin.value?650:450,
                   child: Drawer(
                     shape: ContinuousRectangleBorder(
                         borderRadius: BorderRadius.circular(75),
