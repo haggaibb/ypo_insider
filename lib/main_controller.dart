@@ -100,7 +100,6 @@ class MainController extends GetxController {
 
   loadTags() async {
     print('load tags');
-    //filtersLoading.value=true;
     ///load free text tags
     CollectionReference freeTextTagsRef = db.collection('FreeTextTags');
     QuerySnapshot freeTextTagsSnapshot = await freeTextTagsRef.get();

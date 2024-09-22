@@ -83,20 +83,6 @@ class _HomeState extends State<Home> {
                                   : null,
                           scale: 2,
                           'assets/images/logo-insider.png'),
-                      // const Text(
-                      //   'Insider',
-                      //   style: TextStyle(
-                      //       fontSize: 26, fontWeight: FontWeight.bold),
-                      // ),
-                      // Obx(() => !membersController.loading.value
-                      //     ? Text(
-                      //         '${membersController.numberOfMembers} registered members',
-                      //         style: const TextStyle(
-                      //             fontSize: 12, fontWeight: FontWeight.bold),
-                      //       )
-                      //     : const SizedBox(
-                      //         width: 1,
-                      //       )),
                     ],
                   ),
                 ),
