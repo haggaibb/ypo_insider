@@ -63,7 +63,7 @@ class MembersController extends GetxController {
   setCurrentByUid(User? user) async {
     if (user != null) currentMember.value = await getMemberByUid(user.uid);
     bool res = ((admins.firstWhere((element) => element==currentMember.value.id, orElse: () =>'') !=''));
-    print('Member is ${res} for AdminUx');
+    print('Member is $res for AdminUx');
     isAdmin.value=res;
     themeMode.value = currentMember.value.settings?['theme_mode'] == 'light'
         ? ThemeMode.light
@@ -84,10 +84,6 @@ class MembersController extends GetxController {
     QuerySnapshot memberSnapshot =
         await membersRef.where('email', isEqualTo: user.email).get();
     var memberId = memberSnapshot.docs.first.id;
-    var memberData = memberSnapshot.docs.first.data() as Map<String, dynamic>;
-    var displayName = memberData['firstName'] + " " + memberData['lastName'];
-    /// we want this updated only after onboarding this way we use it as a flag in the root to init onboarding
-    //await FirebaseAuth.instance.currentUser!.updateDisplayName(displayName);
     await membersRef.doc(memberId).update({
       'id': memberId,
       'uid': user.uid,
@@ -185,11 +181,6 @@ class MembersController extends GetxController {
     /// TODO does not work,
     await FirebaseAuth.instance.signOut();
     return;
-    // Remove any route in the stack
-    //Navigator.of(context).popUntil((route) => false);
-    print('logged out');
-    //Get.to(FrontGate());
-    //Get.to(Email);
   }
 
   Future<String> uploadProfileImage(XFile img, String id) async {
@@ -223,32 +214,16 @@ class MembersController extends GetxController {
     saving.value = false;
   }
 
-  // loadAllMembers() async {
-  //   final membersRef = db.collection("Members");
-  //   final membersQuery = await membersRef.get();
-  //   final membersSnapshot = membersQuery.docs;
-  //   for (var member in membersSnapshot) {
-  //     allMembers.add(Member.fromDocumentSnapshot(member));
-  //   }
-  // }
-
-  // getMembersCount() async {
-  //   final membersRef = db.collection("Members");
-  //   final membersQuery = await membersRef.count().get();
-  //   if (membersQuery.count!=null)  numberOfMembers=membersQuery.count!;
-  //   print(numberOfMembers);
-  // }
-
   loadAdmins() async {
     DocumentReference settingsRef = db.collection('Settings').doc('Admins');
     settingsRef.get().then(
       (DocumentSnapshot doc) {
         final data = doc.data() as Map<String, dynamic>;
         admins = data.containsKey('admins')
-            ? List<String>.from(data["admins"]) as List<String>
+            ? List<String>.from(data["admins"])
             : [];
         bool res = ((admins.firstWhere((element) => element==currentMember.value.id, orElse: () =>'') !=''));
-        print('Member is ${res} for AdminUx');
+        print('Member is $res for AdminUx');
         isAdmin.value=res;
       },
       onError: (e) => print("Error getting document: $e"),

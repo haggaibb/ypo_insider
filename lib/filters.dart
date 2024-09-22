@@ -1,7 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:chips_choice/chips_choice.dart';
-import 'package:flutter/widgets.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 import 'main_controller.dart';
 import 'package:get/get.dart';
@@ -34,15 +32,15 @@ class _FiltersState extends State<Filters> {
     return Directionality(
         textDirection: TextDirection.ltr,
         child: Padding(
-          padding: const EdgeInsets.only(top: 10.0),
+          padding: const EdgeInsets.only(top: 60.0),
           child: Container(
-          decoration: BoxDecoration(
-            border: const Border.fromBorderSide(BorderSide(width: 0.5)),
-              borderRadius: const BorderRadius.only(
+          decoration: const BoxDecoration(
+            border: Border.fromBorderSide(BorderSide(width: 0.5)),
+              borderRadius: BorderRadius.only(
                 topRight: Radius.circular(200),
                 topLeft: Radius.circular(200),
               ),
-              color: Color(4281221236),
+              color: Color(0xff2e4074),
           ),
             child: Padding(
               padding: const EdgeInsets.only(top: 0.0),
@@ -56,7 +54,7 @@ class _FiltersState extends State<Filters> {
                       padding: const EdgeInsets.only(bottom: 0.0),
                       child: IconButton(
                         onPressed: widget.jumpFunction,
-                        icon : Icon(Icons.filter_list_outlined),
+                        icon : const Icon(Icons.filter_list_outlined),
                         color: Colors.white,
                       ),
                     ),
@@ -70,9 +68,9 @@ class _FiltersState extends State<Filters> {
                         inactiveBgColor: Colors.grey,
                         inactiveFgColor: Colors.white,
                         totalSwitches: 2,
-                        labels: ['And', 'Or'],
+                        labels: const ['And', 'Or'],
                         //icons: [Icons.add, Icons.safety_divider],
-                        activeBgColors: [[Colors.green],[Colors.green]],
+                        activeBgColors: const [[Colors.green],[Colors.green]],
                         onToggle: (index) async {
                           await mainController.switchAndOrFilter(tags);
                         },
@@ -127,7 +125,7 @@ class _FiltersState extends State<Filters> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 50,)
+                    const SizedBox(height: 50,)
                   ]),
             ),
           ),

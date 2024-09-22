@@ -1,7 +1,5 @@
-import 'dart:ui';
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'members_controller.dart';
 import 'main_controller.dart';
 import 'package:get/get.dart';
@@ -26,7 +24,7 @@ class AddNewMember extends StatelessWidget {
         textDirection: TextDirection.ltr,
         child: Scaffold(
           backgroundColor: Colors.white,
-          body: Container(
+          body: SizedBox(
             width: 350,
             height: 750,
             child: Column(
@@ -186,7 +184,7 @@ class AddNewResidence extends StatelessWidget {
         textDirection: TextDirection.ltr,
         child: Scaffold(
           backgroundColor: Colors.white,
-          body: Container(
+          body: SizedBox(
             width: 350,
             height: 500,
             child: Column(
@@ -221,7 +219,7 @@ class AddNewResidence extends StatelessWidget {
                           Get.back();
                           Get.back();
                         },
-                        child: Text('Save')
+                        child: const Text('Save')
                     ),
                     ElevatedButton(
                         onPressed: ()  {
@@ -229,7 +227,7 @@ class AddNewResidence extends StatelessWidget {
                           Get.back();
                           Get.back();
                         },
-                        child: Text('Cancel')
+                        child: const Text('Cancel')
                     ),
                   ],
                 )
@@ -255,7 +253,7 @@ class AddNewForum extends StatelessWidget {
         textDirection: TextDirection.ltr,
         child: Scaffold(
           backgroundColor: Colors.white,
-          body: Container(
+          body: SizedBox(
             width: 350,
             height: 500,
             child: Column(
@@ -313,7 +311,7 @@ class AddNewForum extends StatelessWidget {
 
 class AddNewFreeText extends StatelessWidget {
 
-  AddNewFreeText({super.key, });
+  const AddNewFreeText({super.key, });
 
   @override
   Widget build(BuildContext context) {
@@ -328,7 +326,7 @@ class AddNewFreeText extends StatelessWidget {
         textDirection: TextDirection.ltr,
         child: Scaffold(
           backgroundColor: Colors.white,
-          body: Container(
+          body: SizedBox(
             width: 350,
             height: 800,
             child: Column(
@@ -356,13 +354,13 @@ class AddNewFreeText extends StatelessWidget {
                   padding: const EdgeInsets.all(18.0),
                   child: Row(
                     children: [
-                      Text('field type:', style: TextStyle(fontWeight: FontWeight.bold)),
+                      const Text('field type:', style: TextStyle(fontWeight: FontWeight.bold)),
                       Padding(
                         padding: const EdgeInsets.only(left :12.0),
                         child: SizedBox(width: 150, height: 50,
                             child: DropdownMenu(
                               controller: typeCtrl,
-                              dropdownMenuEntries: [
+                              dropdownMenuEntries: const [
                                 DropdownMenuEntry(
                                     value: 'text',
                                     label: 'Text Field (1-Line)'
@@ -400,7 +398,7 @@ class AddNewFreeText extends StatelessWidget {
                   padding: const EdgeInsets.all(18.0),
                   child: Row(
                     children: [
-                      Text('icon code:', style: TextStyle(fontWeight: FontWeight.bold)),
+                      const Text('icon code:', style: TextStyle(fontWeight: FontWeight.bold)),
                       Padding(
                         padding: const EdgeInsets.only(left :12.0),
                         child: SizedBox(width: 150, height: 50, child: TextField(controller: iconCodeCtrl,)),
@@ -427,7 +425,7 @@ class AddNewFreeText extends StatelessWidget {
                           Get.back();
                           Get.back();
                         },
-                        child: Text('Save')
+                        child: const Text('Save')
                     ),
                     ElevatedButton(
                         onPressed: ()  {
@@ -435,7 +433,7 @@ class AddNewFreeText extends StatelessWidget {
                           Get.back();
                           Get.back();
                         },
-                        child: Text('Cancel')
+                        child: const Text('Cancel')
                     ),
                   ],
                 )

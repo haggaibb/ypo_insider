@@ -1,7 +1,7 @@
 
 //import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:get/get.dart';
+import 'widgets.dart';
 
 class Member {
   final String id;
@@ -13,6 +13,7 @@ class Member {
   String mobile;
   String mobileCountryCode;
   String email;
+  String? preferredChannel;
   String forum;
   String joinDate;
   String currentBusinessName;
@@ -37,10 +38,11 @@ class Member {
     required this.mobile,
     required this.mobileCountryCode,
     required this.email,
+    this.preferredChannel,
     required this.forum,
     required this.joinDate,
-    required this.currentBusinessName,
-    required this.birthdate,
+    this.currentBusinessName = '',
+    this.birthdate,
     this.children = const [],
     this.linkedin ='',
     this.instagram = '',
@@ -107,6 +109,7 @@ class Member {
       'mobile' :mobile,
       'mobile_country_code' :mobileCountryCode,
       'email' : email,
+      'preferred_channel' : preferredChannel,
       'profileImage' : profileImage,
       'forum' : forum,
       'join_date' : joinDate,
@@ -138,6 +141,7 @@ class Member {
         mobile :  data.containsKey('mobile') ? data['mobile'] as String : '',
         mobileCountryCode :data.containsKey('mobile_country_code') ? data['mobile_country_code'] as String : '',
         email :data.containsKey('email') ? data['email'] as String : '',
+        preferredChannel : data.containsKey('preferred_channel') ? data['preferred_channel'] as String : '',
         profileImage : data.containsKey('profileImage') ? data['profileImage'] as String : '',
         forum : data.containsKey('forum') ? data['forum'] as String : '',
         joinDate : data.containsKey('join_date') ? data['join_date'] as String : '',
@@ -148,7 +152,7 @@ class Member {
         facebook : data.containsKey('facebook') ? data['facebook'] as String : '',
         birthdate : data.containsKey('birthdate') ? data['birthdate'] as Timestamp : null,
         freeTextTags : data.containsKey('free_text_tags') ? (data['free_text_tags'] as List<dynamic>).map((e) => Map<String, dynamic>.from(e)).toList() : [],
-        filterTags :  data.containsKey('filter_tags') ? List<String>.from(data["filter_tags"]) as List<String> : [],
+        filterTags :  data.containsKey('filter_tags') ? List<String>.from(data["filter_tags"]) : [],
         onBoarding : data.containsKey('onBoarding') ? data['onBoarding'] as Map<String,dynamic> : {},
         settings : data.containsKey('settings') ? data['settings'] as Map<String,dynamic> : {},
     );
@@ -168,10 +172,11 @@ class Member {
       mobile: json.containsKey('mobile') ? json['mobile'] as String : '',
       mobileCountryCode: json.containsKey('mobile_country_code') ? json['mobile_country_code'] as String : '',
       email: json.containsKey('email') ? json['email'] as String : '',
+      preferredChannel: json.containsKey('preferred_channel') ? json['preferred_channel'] as String : '',
       forum: json.containsKey('forum') ? json['forum'] as String : '',
       joinDate: json.containsKey('join_date') ? json['join_date'] as String : '',
       currentBusinessName: json.containsKey('current_business_name') ? json['current_business_name'] as String : '',
-      birthdate: json.containsKey('birthdate') ? json['birthdate'] as Timestamp : null,
+      birthdate: json.containsKey('birthdate') ? json['birthdate']??Timestamp.now() : Timestamp.now(),
 
       // Correctly handle List<Map<String, dynamic>> fields
       children: json.containsKey('children') && json['children'] != null

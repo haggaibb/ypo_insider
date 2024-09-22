@@ -36,11 +36,13 @@ Future<void> main() async {
   if (user!=null && user.emailVerified) {
     print('root check - user verified....');
     if (user.displayName!=null) {
+      print('verified go to Home');
+      print(user.displayName);
       membersController.loadingStatus.value = '${user.displayName} verified go to Home';
       runApp(Home(user: user,));
     } else {
       membersController.loadingStatus.value = 'First timer, load onBoarding...';
-      print('run app');
+      print('First timer, load onBoarding...');
       js.context.callMethod('hideSplashScreen');
       runApp(OnBoardingPage(user: user));
     }

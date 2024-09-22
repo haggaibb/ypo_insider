@@ -404,9 +404,32 @@ class ProfileMenuWidget extends StatelessWidget {
 
 
 
+enum PreferredChannelLabel {
+  email('Email', Icons.email),
+  phone('Phone', Icons.phone,),
+  dm('Whatsapp', Icons.message);
 
 
+  const PreferredChannelLabel(this.label, this.icon);
+  final String label;
+  final IconData icon;
 
+}
+
+PreferredChannelLabel getLabel(String txtLabel) {
+  switch (txtLabel) {
+    case 'Email':
+      return PreferredChannelLabel.email;
+      break;
+    case 'Pone' :
+      return PreferredChannelLabel.phone;
+      break;
+    case 'Whatsapp' :
+      return PreferredChannelLabel.dm;
+      break;
+  }
+  return PreferredChannelLabel.email;
+}
 
 
 

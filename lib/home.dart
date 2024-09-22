@@ -25,10 +25,10 @@ class _HomeState extends State<Home> {
   SheetController sheetController = SheetController();
   final membersController = Get.put(MembersController());
   final mainController = Get.put(MainController());
-  var minSheetPos = 45.0;
+  var minSheetPos = 100.0;
   var maxSheetPos = 800.0;
   var openSheetPos = 700.0;
-  var initSheetPos = 45.0;
+  var initSheetPos = 100.0;
 
   void sheetJumpFunction() {
     sheetController.offset <= initSheetPos
@@ -65,7 +65,7 @@ class _HomeState extends State<Home> {
                     Padding(
                       padding: const EdgeInsets.all(0.0),
                       child: membersController.themeMode.value.name == 'dark'
-                          ? SizedBox(width:1)// TODO replace with logo white
+                          ? const SizedBox(width:1)// TODO replace with logo white
                           : Image.network('assets/images/logo.png'),
                     )
                   ],
@@ -118,12 +118,12 @@ class _HomeState extends State<Home> {
                             style: ButtonStyle(
                                 foregroundColor:
                                 membersController.themeMode.value.name == 'dark'
-                                    ? MaterialStatePropertyAll<Color>(Colors.white)
+                                    ? const MaterialStatePropertyAll<Color>(Colors.white)
                                     : MaterialStatePropertyAll<Color>(Colors.blue.shade700)
                             ),
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 8,
                         ),
                         DrawerHeader(
@@ -151,8 +151,8 @@ class _HomeState extends State<Home> {
                           trailing:
                               membersController.themeMode.value.name == 'dark'
                                   ? const Icon(Icons.dark_mode)
-                                  : Icon(Icons.light_mode),
-                          title: Text('Settings'),
+                                  : const Icon(Icons.light_mode),
+                          title: const Text('Settings'),
                           children: <Widget>[
                             ChipsChoice<ThemeMode>.single(
                               //placeholderStyle: TextStyle(color: Colors.blue.shade900),
@@ -179,7 +179,7 @@ class _HomeState extends State<Home> {
                             ),
                           ],
                         ),
-                        Divider(),
+                        const Divider(),
                         /// new member
                         membersController.isAdmin.value?ListTile(
                           leading: const Icon(
@@ -190,7 +190,7 @@ class _HomeState extends State<Home> {
                             Get.to(() => const AddNewMember()
                             );
                           },
-                        ):SizedBox(),
+                        ):const SizedBox(),
                         /// new residence
                         membersController.isAdmin.value?ListTile(
                           leading: const Icon(
@@ -201,7 +201,7 @@ class _HomeState extends State<Home> {
                             Get.to(() => const AddNewResidence()
                             );
                           },
-                        ):SizedBox(),
+                        ):const SizedBox(),
                         /// new forum
                         membersController.isAdmin.value?ListTile(
                           leading: const Icon(
@@ -212,7 +212,7 @@ class _HomeState extends State<Home> {
                             Get.to(() => const AddNewForum()
                             );
                           },
-                        ):SizedBox(),
+                        ):const SizedBox(),
                         /// add free text
                         // membersController.isAdmin.value?ListTile(
                         //   leading: const Icon(
@@ -233,9 +233,9 @@ class _HomeState extends State<Home> {
                     width: MediaQuery.of(context).size.width>600?600: MediaQuery.of(context).size.width,
                     child: Stack(
                       children: [
-                        ResultsPage(),
+                        const ResultsPage(),
                         Obx(() => mainController.mainLoading.value
-                            ? ResultsLoading()
+                            ? const ResultsLoading()
                             : Sheet(
                                 shape: ContinuousRectangleBorder(
                                   borderRadius: BorderRadius.circular(50),
