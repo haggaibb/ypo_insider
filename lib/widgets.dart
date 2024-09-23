@@ -38,10 +38,10 @@ class _ResultCardState extends State<ResultCard> {
     }
     if (checkIfNewMember(widget.member.joinDate)) {
       return const Positioned(
-        top: 135,
+        top: 130,
         left: 100,
         child: Image(
-          width: 180,
+          width: 100,
             image:
             AssetImage('images/new-member.png') ),
       );

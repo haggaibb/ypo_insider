@@ -45,15 +45,15 @@ class AnalyticsEngine {
   }
 
   static Future<void> logProfileEdit(String fullName) async {
-    print('log -- Profile Edit --');
+    //print('log -- Profile Edit --');
     try {
       await _instance
           .logEvent(name: 'profile_edit', parameters: <String, Object>{
         "profile_edited" : fullName
       });
     } catch (err) {
-      print('log to GA err:  Profile Edit');
-      print(err);
+      //print('log to GA err:  Profile Edit');
+      //print(err);
     }
   }
 
