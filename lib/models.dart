@@ -150,7 +150,7 @@ class Member {
         linkedin : data.containsKey('linkedin') ? data['linkedin'] as String : '',
         instagram : data.containsKey('instagram') ? data['instagram'] as String : '',
         facebook : data.containsKey('facebook') ? data['facebook'] as String : '',
-        birthdate : data.containsKey('birthdate') ? data['birthdate'] as Timestamp : null,
+        birthdate : data.containsKey('birthdate') ? data['birthdate'] as Timestamp :Timestamp.now(),
         freeTextTags : data.containsKey('free_text_tags') ? (data['free_text_tags'] as List<dynamic>).map((e) => Map<String, dynamic>.from(e)).toList() : [],
         filterTags :  data.containsKey('filter_tags') ? List<String>.from(data["filter_tags"]) : [],
         onBoarding : data.containsKey('onBoarding') ? data['onBoarding'] as Map<String,dynamic> : {},

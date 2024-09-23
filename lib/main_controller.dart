@@ -6,6 +6,8 @@ import 'dart:js' as js;
 import 'package:firebase_auth/firebase_auth.dart'
     hide PhoneAuthProvider, EmailAuthProvider;
 import 'ga.dart';
+import 'utils.dart';
+
 
 class MainController extends GetxController {
   var db = FirebaseFirestore.instance;
@@ -189,7 +191,7 @@ class MainController extends GetxController {
     freeTextTagsRef.add(freeTextData);
   }
 
-  /// events
+  /// GA events
   logUserLogsIn(String fullName) async {
     await AnalyticsEngine.userLogsIn('firebase_auth', fullName);
   }
@@ -214,7 +216,9 @@ class MainController extends GetxController {
     mainLoading.value = true;
 
     /// loadTags() should be first, it also gets the number of members data
+    updateSplashScreenText('Loading Filter Tags...');
     await loadTags();
+    updateSplashScreenText('Loading Random Results...');
     await loadRandomResults(numberOfMembers);
     js.context.callMethod('hideSplashScreen');
     //await logUserLogsIn(user!.displayName??'NA');

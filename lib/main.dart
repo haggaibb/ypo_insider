@@ -25,8 +25,6 @@ final emailLinkProviderConfig = EmailLinkAuthProvider(
 );
 final membersController = Get.put(MembersController());
 
-
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   updateSplashScreenText('Initializing...');
