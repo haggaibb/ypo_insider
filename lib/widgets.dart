@@ -30,8 +30,10 @@ class _ResultCardState extends State<ResultCard> {
     ///check if birthday today
     if (checkIfTodayIsBirthday(widget.member.birthdate??Timestamp.fromMicrosecondsSinceEpoch(0))) {
       return const Positioned(
-        //left: 0,
+        left: 75,
+        top: 150,
         child: Image(
+            width: 180,
             image:
             AssetImage('images/hb-banner.png') ),
       );
