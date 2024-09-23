@@ -1,7 +1,5 @@
 
-//import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'widgets.dart';
 
 class Member {
   final String id;
@@ -27,6 +25,8 @@ class Member {
   List<String>? filterTags;
   Map? onBoarding;
   Map? settings;
+  bool? banner;
+  String? bannerUri;
 
   Member({
     required this.id,
@@ -53,7 +53,9 @@ class Member {
     this.onBoarding = const {
 
     },
-    this.settings = const {}
+    this.settings = const {},
+    this.banner = false,
+    this.bannerUri
   });
 
 
@@ -122,7 +124,9 @@ class Member {
       'free_text_tags' : freeTextTags,
       'filter_tags' : filterTags,
       'onBoarding' : onBoarding,
-      'settings' : settings
+      'settings' : settings,
+      'banner' : banner,
+      'bannerUri' : bannerUri
     };
   }
 
@@ -150,11 +154,14 @@ class Member {
         linkedin : data.containsKey('linkedin') ? data['linkedin'] as String : '',
         instagram : data.containsKey('instagram') ? data['instagram'] as String : '',
         facebook : data.containsKey('facebook') ? data['facebook'] as String : '',
-        birthdate : data.containsKey('birthdate') ? data['birthdate'] as Timestamp :Timestamp.now(),
+        birthdate : data.containsKey('birthdate') ? data['birthdate']!=null?data['birthdate'] as Timestamp :Timestamp.fromMicrosecondsSinceEpoch(0):Timestamp.fromMicrosecondsSinceEpoch(0),
         freeTextTags : data.containsKey('free_text_tags') ? (data['free_text_tags'] as List<dynamic>).map((e) => Map<String, dynamic>.from(e)).toList() : [],
         filterTags :  data.containsKey('filter_tags') ? List<String>.from(data["filter_tags"]) : [],
         onBoarding : data.containsKey('onBoarding') ? data['onBoarding'] as Map<String,dynamic> : {},
         settings : data.containsKey('settings') ? data['settings'] as Map<String,dynamic> : {},
+        banner: data.containsKey('banner') ? data['banner'] as bool : false,
+        bannerUri: data.containsKey('bannerUri') ? data['bannerUri'] as String : '',
+
     );
 
 
@@ -207,6 +214,9 @@ class Member {
       settings: json.containsKey('settings') && json['settings'] != null
           ? Map<String, dynamic>.from(json['settings'])
           : {},
+      banner: json.containsKey('banner') ? json['banner'] as bool : false,
+      bannerUri: json.containsKey('bannerUri') ? json['bannerUri'] as String : '',
+
     );
   }
 

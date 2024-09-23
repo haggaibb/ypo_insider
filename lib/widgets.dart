@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:ypo_connect/models.dart';
@@ -7,6 +8,7 @@ import 'dart:html' as html;
 import 'RayBarFields.dart';
 import 'package:get/get.dart';
 import 'members_controller.dart';
+import 'utils.dart';
 
 class ResultCard extends StatefulWidget {
   final Member member;
@@ -16,11 +18,42 @@ class ResultCard extends StatefulWidget {
     super.key,
   });
 
+
+
   @override
   _ResultCardState createState() => _ResultCardState();
 }
 
 class _ResultCardState extends State<ResultCard> {
+
+  getBanner() {
+    ///check if birthday today
+    if (checkIfTodayIsBirthday(widget.member.birthdate??Timestamp.fromMicrosecondsSinceEpoch(0))) {
+      return const Positioned(
+        //left: 0,
+        child: Image(
+            image:
+            AssetImage('images/hb-banner.png') ),
+      );
+    }
+    if (checkIfNewMember(widget.member.joinDate)) {
+      return const Positioned(
+        top: 135,
+        left: 100,
+        child: Image(
+          width: 180,
+            image:
+            AssetImage('images/new-member.png') ),
+      );
+    }
+    if (!widget.member.banner!) return SizedBox.shrink();
+    /// banner is on
+    /// show the banner from network
+    return Positioned(
+      child: Image.network(widget.member.bannerUri!),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -33,78 +66,83 @@ class _ResultCardState extends State<ResultCard> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      surfaceTintColor: Colors.blue.shade900,
-      //color : Colors.white,
-      elevation: 10,
-      child: Column(
-        children: [
-          Text(
-            widget.member.fullName(),
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          Row(
-            //mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
+    return Stack(
+      children: [
+        Card(
+          surfaceTintColor: Colors.blue.shade900,
+          //color : Colors.white,
+          elevation: 10,
+          child: Column(
             children: [
-              Column(
+              Text(
+                widget.member.fullName(),
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Row(
+                //mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Padding(
-                      padding: const EdgeInsets.only(left: 8.0, bottom: 6),
-                      child: SizedBox(
-                        width: 230,
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
                         height: 20,
-                        child: Text(
-                          widget.member.currentTitle,
-                          //overflow: TextOverflow.fade,
-                          //softWrap: false,
-                          maxLines: 2,
-                        ),
-                      )),
-                  Padding(
-                      padding: const EdgeInsets.only(left: 8.0, bottom: 6),
-                      child: SizedBox(
-                        width: 230,
-                        child: Text(
-                          widget.member.currentBusinessName,
-                          //overflow: TextOverflow.ellipsis,
-                          //softWrap: false,
-                          maxLines: 2,
-                        ),
-                      )),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8.0, bottom: 6),
-                    child: Text(widget.member.residence),
+                      ),
+                      Padding(
+                          padding: const EdgeInsets.only(left: 8.0, bottom: 6),
+                          child: SizedBox(
+                            width: 230,
+                            height: 20,
+                            child: Text(
+                              widget.member.currentTitle,
+                              //overflow: TextOverflow.fade,
+                              //softWrap: false,
+                              maxLines: 2,
+                            ),
+                          )),
+                      Padding(
+                          padding: const EdgeInsets.only(left: 8.0, bottom: 6),
+                          child: SizedBox(
+                            width: 230,
+                            child: Text(
+                              widget.member.currentBusinessName,
+                              //overflow: TextOverflow.ellipsis,
+                              //softWrap: false,
+                              maxLines: 2,
+                            ),
+                          )),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 8.0, bottom: 6),
+                        child: Text(widget.member.residence),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 8.0),
+                        child: Text('Forum  ${widget.member.forum}'),
+                      ),
+                    ],
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
-                    child: Text('Forum  ${widget.member.forum}'),
+                  Column(
+                    children: [
+                      ProfilePic(widget.member.profileImage ?? ''),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 10.0),
+                        child: SizedBox(
+                            width: 90,
+                            height: 20,
+                            child: SocialBar(
+                                linkedin: widget.member.linkedin,
+                                instagram: widget.member.instagram,
+                                facebook: widget.member.facebook)),
+                      )
+                    ],
                   ),
-                ],
-              ),
-              Column(
-                children: [
-                  ProfilePic(widget.member.profileImage ?? ''),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10.0),
-                    child: SizedBox(
-                        width: 90,
-                        height: 20,
-                        child: SocialBar(
-                            linkedin: widget.member.linkedin,
-                            instagram: widget.member.instagram,
-                            facebook: widget.member.facebook)),
-                  )
                 ],
               ),
             ],
           ),
-        ],
-      ),
+        ),
+        getBanner()
+      ],
     );
   }
 }
@@ -257,6 +295,7 @@ class ProfileImageLoading extends StatelessWidget {
     );
   }
 }
+
 /// open url in browser
 Future<void> _launchInBrowser(String url) async {
   /// print(url);
@@ -430,7 +469,8 @@ class ProfileMenuWidget extends StatelessWidget {
                             ))
                         : type == 'whatsapp' || type == 'Whatsapp'
                             ? GestureDetector(
-                                onTap: () => _launchWhatsappClient(value2??''),
+                                onTap: () =>
+                                    _launchWhatsappClient(value2 ?? ''),
                                 child: Text(
                                   value,
                                   maxLines: 1,

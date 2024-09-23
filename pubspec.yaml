@@ -98,6 +98,8 @@ flutter:
     - images/linkedin.png
     - images/instagram.png
     - images/facebook.png
+    - images/hb-banner.png
+    - images/new-member.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
