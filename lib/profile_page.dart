@@ -536,8 +536,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                   icon: Icons.phone,
                                   value: widget.member.mobileCountryCode +
                                       widget.member.mobile,
-                                  type: 'text',
-                                  onPress: () {},
+                                  type: 'phone',
+                                  onPress: () async {
+                                  },
                                 ),
                               ),
 
@@ -614,7 +615,12 @@ class _ProfilePageState extends State<ProfilePage> {
                                     title: "Contact me by: ",
                                     icon: Icons.messenger_outline,
                                     value: widget.member.preferredChannel??'',
-                                    type: 'text',
+                                    value2: widget.member.preferredChannel=='Email'
+                                              ? widget.member.email
+                                              : widget.member.preferredChannel=='Phone' || widget.member.preferredChannel=='Whatsapp'
+                                                  ? widget.member.mobileCountryCode + widget.member.mobile
+                                                  : null,
+                                    type: widget.member.preferredChannel,
                                     onPress: () {}),
                               ),
 

@@ -1,5 +1,4 @@
 import 'dart:html' as html;
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 enum Lines { single, multi }
@@ -68,7 +67,7 @@ class RayBarTextField extends StatelessWidget {
                 height: editMode ? 60 : 18,
                 child: GestureDetector(
                   onTap: () {
-                    print('click');
+                    //print('click');
                     (type == FieldType.link && !editMode)
                         ? html.window.open(controller.text, 'new tab')
                         : null;

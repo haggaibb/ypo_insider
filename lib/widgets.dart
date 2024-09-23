@@ -8,7 +8,6 @@ import 'RayBarFields.dart';
 import 'package:get/get.dart';
 import 'members_controller.dart';
 
-
 class ResultCard extends StatefulWidget {
   final Member member;
 
@@ -192,30 +191,36 @@ class MainLoading extends StatelessWidget {
     return Directionality(
         textDirection: TextDirection.ltr,
         child: Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(bottom: 30.0),
-              child: Image.network('assets/images/logo.png', width: 200, height: 200,),
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 30.0),
+                  child: Image.network(
+                    'assets/images/logo.png',
+                    width: 200,
+                    height: 200,
+                  ),
+                ),
+                SpinKitRotatingCircle(
+                  color: Colors.blue.shade900,
+                  size: 80.0,
+                ),
+                Obx(() => Text(
+                      membersController.loadingStatus.value,
+                      style: TextStyle(fontSize: 16),
+                    ))
+              ],
             ),
-            SpinKitRotatingCircle(
-              color: Colors.blue.shade900,
-              size: 80.0,
-            ),
-            Obx(()=> Text(membersController.loadingStatus.value, style: TextStyle(fontSize: 16),))
-          ],
-        ),
-      ),
-    )
-    );
+          ),
+        ));
   }
 }
 
 class ResultsLoading extends StatelessWidget {
   final String statusMsg;
-  const ResultsLoading({super.key, this.statusMsg=''});
+  const ResultsLoading({super.key, this.statusMsg = ''});
 
   @override
   Widget build(BuildContext context) {
@@ -270,10 +275,26 @@ Future<void> _launchInBrowser(String url) async {
 
 /// send email
 void _launchMailClient(String targetEmail) async {
-  String mailUrl = 'mailto:$targetEmail';
-  try {
-    await launchUrlString(mailUrl);
-  } catch (e) {}
+  final Uri emailLaunchUri = Uri(
+    scheme: 'mailto',
+    path: targetEmail,
+  );
+  //print(await canLaunchUrl(emailLaunchUri));
+  await launchUrl(emailLaunchUri);
+  //print('done');
+}
+
+/// make call
+void _launchPhoneClient(String targetPhone) async {
+  final Uri telLaunchUri = Uri(scheme: 'tel', path: targetPhone);
+  await launchUrl(telLaunchUri);
+}
+
+///
+/// whatsapp
+void _launchWhatsappClient(String targetPhone) async {
+  String webUrl = 'https://api.whatsapp.com/send/?phone=+$targetPhone&text=hi';
+  await launchUrl(Uri.parse(webUrl), mode: LaunchMode.externalApplication);
 }
 
 ///
@@ -299,7 +320,11 @@ class SocialBar extends StatelessWidget {
                 },
                 child: Image.asset('images/linkedin.png'),
               )
-            : Image.asset('images/linkedin.png', color: Colors.grey,  colorBlendMode: BlendMode.saturation,),
+            : Image.asset(
+                'images/linkedin.png',
+                color: Colors.grey,
+                colorBlendMode: BlendMode.saturation,
+              ),
 
         /// instagram
         instagram != ''
@@ -310,7 +335,11 @@ class SocialBar extends StatelessWidget {
                 },
                 child: Image.asset('images/instagram.png'),
               )
-            : Image.asset('images/instagram.png', color: Colors.grey, colorBlendMode: BlendMode.saturation,),
+            : Image.asset(
+                'images/instagram.png',
+                color: Colors.grey,
+                colorBlendMode: BlendMode.saturation,
+              ),
 
         /// facebook
         facebook != ''
@@ -321,7 +350,11 @@ class SocialBar extends StatelessWidget {
                 },
                 child: Image.asset('images/facebook.png'),
               )
-            : Image.asset('images/facebook.png', color: Colors.grey, colorBlendMode: BlendMode.saturation,),
+            : Image.asset(
+                'images/facebook.png',
+                color: Colors.grey,
+                colorBlendMode: BlendMode.saturation,
+              ),
       ],
     );
   }
@@ -334,12 +367,14 @@ class ProfileMenuWidget extends StatelessWidget {
       {super.key,
       required this.title,
       required this.value,
+      this.value2,
       required this.icon,
       required this.onPress,
       this.type});
 
   final String title;
   final String value;
+  final String? value2;
   final IconData icon;
   final VoidCallback onPress;
   final String? type;
@@ -348,10 +383,12 @@ class ProfileMenuWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     var isDark = MediaQuery.of(context).platformBrightness == Brightness.dark;
     var iconColor = isDark ? Colors.blue : Colors.greenAccent;
-    return Column(
-        children: [
+    return Column(children: [
       Row(children: [
-        Icon(icon, color: Colors.blue.shade900,),
+        Icon(
+          icon,
+          color: Colors.blue.shade900,
+        ),
         Padding(
           padding: const EdgeInsets.only(left: 8.0, right: 4),
           child: Text(
@@ -363,56 +400,72 @@ class ProfileMenuWidget extends StatelessWidget {
             ? Text(
                 value,
                 maxLines: 1,
-                 style: TextStyle(fontSize: 18),
+                style: TextStyle(fontSize: 18),
               )
             : type == 'link'
                 ? GestureDetector(
-                    onTap: () => html.window.open(value, 'new tab'),//_launchInBrowser(value),
+                    onTap: () => html.window
+                        .open(value, 'new tab'), //_launchInBrowser(value),
                     child: SizedBox(
                       width: 180,
                       child: Text(value,
                           overflow: TextOverflow.ellipsis,
                           softWrap: true,
                           maxLines: 1,
-                          style: TextStyle(fontSize: 18,color: Colors.blue)),
+                          style: TextStyle(fontSize: 18, color: Colors.blue)),
                     ))
-                : type == 'email'
+                : type == 'email' || type == 'Email'
                     ? GestureDetector(
-                         onTap: () => {},
-                        //onTap: () => _launchMailClient(value),
+                        onTap: () => _launchMailClient(value),
                         child: Text(
                           value,
                           maxLines: 1,
-                          style: TextStyle(fontSize: 18),
+                          style: TextStyle(fontSize: 18, color: Colors.blue),
                         ))
-                    : const SizedBox(width: 1),
+                    : type == 'phone' || type == 'Phone'
+                        ? GestureDetector(
+                            onTap: () => _launchPhoneClient(value),
+                            child: Text(
+                              value,
+                              maxLines: 1,
+                              style:
+                                  TextStyle(fontSize: 18, color: Colors.blue),
+                            ))
+                        : type == 'whatsapp' || type == 'Whatsapp'
+                            ? GestureDetector(
+                                onTap: () => _launchWhatsappClient(value2??''),
+                                child: Text(
+                                  value,
+                                  maxLines: 1,
+                                  style: TextStyle(
+                                      fontSize: 18, color: Colors.blue),
+                                ))
+                            : const SizedBox(width: 1),
       ]),
       type == 'textbox'
           ? SizedBox(
-              height: (value.length / 50 * 40)>50?(value.length / 50 * 40):50,
+              height:
+                  (value.length / 50 * 40) > 50 ? (value.length / 50 * 40) : 50,
               width: 350,
-              child: Text(
-                value,
-                maxLines: 3, style: TextStyle(fontSize: 18)
-              ))
+              child: Text(value, maxLines: 3, style: TextStyle(fontSize: 18)))
           : SizedBox(width: 1),
     ]);
   }
 }
+
 ///
-
-
 
 enum PreferredChannelLabel {
   email('Email', Icons.email),
-  phone('Phone', Icons.phone,),
+  phone(
+    'Phone',
+    Icons.phone,
+  ),
   dm('Whatsapp', Icons.message);
-
 
   const PreferredChannelLabel(this.label, this.icon);
   final String label;
   final IconData icon;
-
 }
 
 PreferredChannelLabel getLabel(String txtLabel) {
@@ -420,22 +473,20 @@ PreferredChannelLabel getLabel(String txtLabel) {
     case 'Email':
       return PreferredChannelLabel.email;
       break;
-    case 'Pone' :
+    case 'Pone':
       return PreferredChannelLabel.phone;
       break;
-    case 'Whatsapp' :
+    case 'Whatsapp':
       return PreferredChannelLabel.dm;
       break;
   }
   return PreferredChannelLabel.email;
 }
 
-
-
-
-
 class TestPage extends StatefulWidget {
-  TestPage({super.key, });
+  TestPage({
+    super.key,
+  });
 
   @override
   State<TestPage> createState() => _TestPageState();
@@ -452,137 +503,131 @@ class _TestPageState extends State<TestPage> {
 
   @override
   Widget build(BuildContext context) {
-    dropController.text='Tel Aviv';
+    dropController.text = 'Tel Aviv';
     controller.text = 'http://www.google.com';
-    textBoxController.text = 'Ther is a way to do this this is not the way, I think this is long, not sure, Ther is a way to do this this is not the way, I think this is long, not sure';
+    textBoxController.text =
+        'Ther is a way to do this this is not the way, I think this is long, not sure, Ther is a way to do this this is not the way, I think this is long, not sure';
     return MaterialApp(
-      home: Directionality(
-        textDirection: TextDirection.ltr,
-        child: Scaffold(
-          body: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: SingleChildScrollView(
-                child: Column(
-                  //mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(height: 20,),
-                    ElevatedButton(
-                        onPressed:() {
-                          setState(() {
-                            editMode=!editMode;
-                          });
-                        },
-                        child: Text('Toggle')
-                    ),
-                    SizedBox(height: 20,),
-                    RayBarTextField(
-                      //padding: EdgeInsets.only(bottom: 20),
-                      controller: controller,
-                      label: 'Residence',
-                      lines: Lines.single,
-                      enableIcon: true,
-                      icon:  Icons.house_outlined,
-                      editMode: editMode,
-                      type: FieldType.link,
-                      helperText: 'This is a helper text line.',
-                      hintText: 'http://...',
-                      fieldWidth: 250,
-                    ),
-                    RayBarTextField(
-                      //padding: EdgeInsets.only(bottom: 20),
-                      controller: textBoxController,
-                      label: 'Overview',
-                      lines: Lines.multi,
-                      maxLines: 3,
-                      editMode: editMode,
-                      helperText: 'please feel a few lines...',
-                      hintText: 'Enter free text',
-                      fieldWidth: 250,
-                      enableIcon: true,
-                      icon:  Icons.text_snippet_outlined,
-                    ),
-                    // RayBarMultiChipMenu(
-                    //     tags: ['Tel Aviv','Herzliya','Ramat Hasharon'],
-                    //     label: 'Residence:',
-                    //     selectedTags: [],
-                    //     editMode: editMode
-                    // ),
-                    RayBarTextField(
-                      //padding: EdgeInsets.only(bottom: 20),
-                      controller: controller,
-                      label: 'Residence',
-                      lines: Lines.single,
-                      enableIcon: true,
-                      icon:  Icons.house_outlined,
-                      editMode: editMode,
-                      type: FieldType.text,
-                      fieldWidth: 250,
-
-                    ),
-                    RayBarTextField(
-                      //padding: EdgeInsets.only(bottom: 20),
-                      controller: controller,
-                      label: 'Residence',
-                      lines: Lines.single,
-                      enableIcon: true,
-                      icon:  Icons.house_outlined,
-                      editMode: editMode,
-                      type: FieldType.text,
-                      fieldWidth: 250,
-
-
-
-                    ),
-                    RayBarDropdownMenu(
-                      onSelected: (val) => {},
-                      //padding: EdgeInsets.only(bottom: 20),
-                      controller: dropController,
-                      label: 'Residence',
-                      enableIcon: true,
-                      icon:  Icons.house_outlined,
-                      editMode: editMode,
-                      type: FieldType.text,
-                      //fieldWidth: 250,
-                      dropdownMenuEntries: [
-                        DropdownMenuEntry(value: 'Tel Aviv', label: 'Tel Aviv'),
-                        DropdownMenuEntry(value: 'Ramat Hashron', label: 'Ramat Hashron'),
-                        DropdownMenuEntry(value: 'Herzlia', label: 'Herzlia'),
-                      ],
-
-                    ),
-                    RayBarMultiChipMenu(
-                        tags: ['Tel Aviv','Herzliya','Ramat Hasharon'],
-                        label: 'Residence:',
-                        selectedTags: ['Tel Aviv','Herzliya','Ramat Hasharon'],
-                        editMode: editMode,
-                      onChange: (selected) {
-                          /// print(selected);
+        home: Directionality(
+      textDirection: TextDirection.ltr,
+      child: Scaffold(
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: SingleChildScrollView(
+              child: Column(
+                //mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    height: 20,
+                  ),
+                  ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          editMode = !editMode;
+                        });
                       },
-                    ),
-                    RayBarMultiField(
-                      keysPerEntry: ['Child Name','Year of Birth'],
+                      child: Text('Toggle')),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  RayBarTextField(
+                    //padding: EdgeInsets.only(bottom: 20),
+                    controller: controller,
+                    label: 'Residence',
+                    lines: Lines.single,
+                    enableIcon: true,
+                    icon: Icons.house_outlined,
+                    editMode: editMode,
+                    type: FieldType.link,
+                    helperText: 'This is a helper text line.',
+                    hintText: 'http://...',
+                    fieldWidth: 250,
+                  ),
+                  RayBarTextField(
+                    //padding: EdgeInsets.only(bottom: 20),
+                    controller: textBoxController,
+                    label: 'Overview',
+                    lines: Lines.multi,
+                    maxLines: 3,
+                    editMode: editMode,
+                    helperText: 'please feel a few lines...',
+                    hintText: 'Enter free text',
+                    fieldWidth: 250,
+                    enableIcon: true,
+                    icon: Icons.text_snippet_outlined,
+                  ),
+                  // RayBarMultiChipMenu(
+                  //     tags: ['Tel Aviv','Herzliya','Ramat Hasharon'],
+                  //     label: 'Residence:',
+                  //     selectedTags: [],
+                  //     editMode: editMode
+                  // ),
+                  RayBarTextField(
+                    //padding: EdgeInsets.only(bottom: 20),
+                    controller: controller,
+                    label: 'Residence',
+                    lines: Lines.single,
+                    enableIcon: true,
+                    icon: Icons.house_outlined,
+                    editMode: editMode,
+                    type: FieldType.text,
+                    fieldWidth: 250,
+                  ),
+                  RayBarTextField(
+                    //padding: EdgeInsets.only(bottom: 20),
+                    controller: controller,
+                    label: 'Residence',
+                    lines: Lines.single,
+                    enableIcon: true,
+                    icon: Icons.house_outlined,
+                    editMode: editMode,
+                    type: FieldType.text,
+                    fieldWidth: 250,
+                  ),
+                  RayBarDropdownMenu(
+                    onSelected: (val) => {},
+                    //padding: EdgeInsets.only(bottom: 20),
+                    controller: dropController,
+                    label: 'Residence',
+                    enableIcon: true,
+                    icon: Icons.house_outlined,
+                    editMode: editMode,
+                    type: FieldType.text,
+                    //fieldWidth: 250,
+                    dropdownMenuEntries: [
+                      DropdownMenuEntry(value: 'Tel Aviv', label: 'Tel Aviv'),
+                      DropdownMenuEntry(
+                          value: 'Ramat Hashron', label: 'Ramat Hashron'),
+                      DropdownMenuEntry(value: 'Herzlia', label: 'Herzlia'),
+                    ],
+                  ),
+                  RayBarMultiChipMenu(
+                    tags: ['Tel Aviv', 'Herzliya', 'Ramat Hasharon'],
+                    label: 'Residence:',
+                    selectedTags: ['Tel Aviv', 'Herzliya', 'Ramat Hasharon'],
+                    editMode: editMode,
+                    onChange: (selected) {
+                      /// print(selected);
+                    },
+                  ),
+                  RayBarMultiField(
+                      keysPerEntry: ['Child Name', 'Year of Birth'],
                       label: 'Children',
                       editMode: editMode,
                       fieldWidth: 100,
-                      icon : Icons.family_restroom_sharp,
-                      iconColor : Colors.blue.shade900,
+                      icon: Icons.family_restroom_sharp,
+                      iconColor: Colors.blue.shade900,
                       onChangeMultiFieldCallback: (data) {
                         /// print('callback:');
                         /// print(data);
-                      }
-
-
-                    )
-                  ],
-                ),
+                      })
+                ],
               ),
             ),
           ),
         ),
-      )
-    );
-
-
+      ),
+    ));
   }
 }
