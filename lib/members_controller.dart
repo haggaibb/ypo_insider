@@ -57,9 +57,6 @@ class MembersController extends GetxController {
   /// AUTH
   final user = FirebaseAuth.instance.currentUser;
   ///
-
-
-
   setCurrentByUid(User? user) async {
     if (user != null) currentMember.value = await getMemberByUid(user.uid);
     bool res = ((admins.firstWhere((element) => element==currentMember.value.id, orElse: () =>'') !=''));
@@ -156,9 +153,6 @@ class MembersController extends GetxController {
     } else {
       return noUser;
     }
-    // Member foundMember = allMembers.firstWhere((element) => element.uid == uid,
-    //     orElse: () => noUser);
-    // return foundMember;
   }
 
   setCurrentByMember(Member member) async {
@@ -177,8 +171,6 @@ class MembersController extends GetxController {
 
   logout() async {
     print('logout');
-
-    /// TODO does not work,
     await FirebaseAuth.instance.signOut();
     return;
   }
@@ -208,7 +200,6 @@ class MembersController extends GetxController {
   updateMemberInfo(Member member) async {
     saving.value = true;
     CollectionReference membersRef = db.collection('Members');
-    //await membersRef.doc(member.id).set(member.toMap(), SetOptions(merge: true));
     await membersRef.doc(member.id).update(member.toMap());
     await AnalyticsEngine.logProfileEdit(member.fullName());
     saving.value = false;

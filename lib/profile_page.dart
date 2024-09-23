@@ -1,3 +1,5 @@
+import 'dart:js';
+
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
@@ -50,6 +52,7 @@ class _ProfilePageState extends State<ProfilePage> {
   final ImagePicker picker = ImagePicker();
   XFile? profileImage;
   late Member editedMember;
+
 
   cancelEdit() {
     setState(() {
@@ -154,7 +157,8 @@ class _ProfilePageState extends State<ProfilePage> {
     return Directionality(
       textDirection: TextDirection.ltr,
       child: Scaffold(
-        backgroundColor: memberController.themeMode.value.name == 'dark'
+        backgroundColor:
+        memberController.themeMode.value.name == 'dark'
             ? null
             : Colors.blueGrey.shade50,
         appBar: AppBar(

@@ -69,7 +69,6 @@ class _FiltersState extends State<Filters> {
                         inactiveFgColor: Colors.white,
                         totalSwitches: 2,
                         labels: const ['And', 'Or'],
-                        //icons: [Icons.add, Icons.safety_divider],
                         activeBgColors: const [[Colors.green],[Colors.green]],
                         onToggle: (index) async {
                           await mainController.switchAndOrFilter(tags);
@@ -93,7 +92,7 @@ class _FiltersState extends State<Filters> {
                                       children: [
                                         ListTile(
                                           title:  Text(filtersCategory[index]['label'] ,style: Theme.of(context).textTheme.titleLarge),
-                                          subtitle: Text((filtersCategory[index]['label']=='Forum' || filtersCategory[index]['label'] == 'Residence')?'Please select one option from the list below':'Please select all relevant' ,style: Theme.of(context).textTheme.titleSmall),
+                                          subtitle: Text((filtersCategory[index]['label']=='Forum' || filtersCategory[index]['label'] == 'Residence')?'Please select one option from the list below':'Please select all relevant' ),
                                         ),
                                         Obx(() {
                                           mainController.tags.isNotEmpty;
