@@ -60,7 +60,7 @@ class MembersController extends GetxController {
   setCurrentByUid(User? user) async {
     if (user != null) currentMember.value = await getMemberByUid(user.uid);
     bool res = ((admins.firstWhere((element) => element==currentMember.value.id, orElse: () =>'') !=''));
-    print('Member is $res for AdminUx');
+    /// print('Member is $res for AdminUx');
     isAdmin.value=res;
     themeMode.value = currentMember.value.settings?['theme_mode'] == 'light'
         ? ThemeMode.light
@@ -75,8 +75,8 @@ class MembersController extends GetxController {
   }
 
   onRegister(User user) async {
-    print('Registration');
-    print('for User ${user.email} uid is ${user.uid}');
+    /// print('Registration');
+    /// print('for User ${user.email} uid is ${user.uid}');
     CollectionReference membersRef = db.collection('Members');
     QuerySnapshot memberSnapshot =
         await membersRef.where('email', isEqualTo: user.email).get();
@@ -90,14 +90,14 @@ class MembersController extends GetxController {
     });
     DocumentSnapshot refreshedMember = await membersRef.doc(memberId).get();
     setCurrentByMember(Member.fromDocumentSnapshot(refreshedMember));
-    print('Registration done - member is ${currentMember.value.fullName()}');
+    /// print('Registration done - member is ${currentMember.value.fullName()}');
     await AnalyticsEngine.logMemberRegistered(currentMember.value.fullName());
     return (memberSnapshot.docs.isNotEmpty);
   }
 
   onVerify(User user) async {
-    print('user has just verified his email');
-    print('update his profile');
+    /// print('user has just verified his email');
+    /// print('update his profile');
     CollectionReference membersRef = db.collection('Members');
     var memberId = currentMember.value.id;
     await membersRef.doc(memberId).update({'onBoarding.verified': true});
@@ -106,17 +106,17 @@ class MembersController extends GetxController {
   onBoardingFinished(User user) async {
     loadingStatus.value = 'Finished onBoarding.';
     loading.value = true;
-    print('finished onboarding');
-    print(
-        'update full name to Auth User, this must be done as it acts as a flag for onboarding');
+    /// print('finished onboarding');
+    /// print(
+     ///   'update full name to Auth User, this must be done as it acts as a flag for onboarding');
     loadingStatus.value = 'Updating authentication profile...';
-    print(currentMember.value.fullName());
+    /// print(currentMember.value.fullName());
     await FirebaseAuth.instance.currentUser!.updateDisplayName(currentMember.value.fullName());
     var memberId = currentMember.value.id;
     CollectionReference membersRef = db.collection('Members');
     membersRef.doc(memberId).update({'onBoarding.boarded': true});
     currentMember.value.onBoarding!['boarded']=true;
-    print('{$currentMember.value.fullName()} has on Boarded' );
+    /// print('{$currentMember.value.fullName()} has on Boarded' );
     await AnalyticsEngine.logOnBoarding(user.email!,'start');
     loading.value = false;
   }
@@ -136,7 +136,7 @@ class MembersController extends GetxController {
     if (res.exists) {
       return Member.fromDocumentSnapshot(res);
     } else {
-      print('get by id - no user found');
+      /// print('get by id - no user found');
       noUser;
     }
     // Member foundMember = allMembers.firstWhere((element) => element.id == id,
@@ -159,10 +159,10 @@ class MembersController extends GetxController {
     currentMember.value = member;
     var memberId = currentMember.value.id;
     /// check for mail verification
-    print('verification check');
+    /// print('verification check');
     if (user!.emailVerified) {
       await db.collection('Members').doc(memberId).update({'onBoarding.verified': true});
-      print('update email verification for user ${member.fullName()} to ${user?.emailVerified}');
+      /// print('update email verification for user ${member.fullName()} to ${user?.emailVerified}');
     }
     themeMode.value = currentMember.value.settings?['theme_mode'] == 'light'
         ? ThemeMode.light
@@ -170,7 +170,7 @@ class MembersController extends GetxController {
   }
 
   logout() async {
-    print('logout');
+    /// print('logout');
     await FirebaseAuth.instance.signOut();
     return;
   }
@@ -214,10 +214,10 @@ class MembersController extends GetxController {
             ? List<String>.from(data["admins"])
             : [];
         bool res = ((admins.firstWhere((element) => element==currentMember.value.id, orElse: () =>'') !=''));
-        print('Member is $res for AdminUx');
+        /// print('Member is $res for AdminUx');
         isAdmin.value=res;
       },
-      onError: (e) => print("Error getting document: $e"),
+      onError: (e) =>  print("Error getting document: $e"),
     );
   }
 
@@ -282,11 +282,11 @@ class MembersController extends GetxController {
     Get.changeTheme(
         box.read('themeMode') == 'dark' ? ThemeData.dark() : ThemeData.light());
     super.onInit();
-    print('init - Members Controller...');
+    /// print('init - Members Controller...');
     tempProfilePicRef = storageRef.child("");
     await loadAdmins();
     loading.value = false;
     update();
-    print('end - init Members Controller');
+    /// print('end - init Members Controller');
   }
 }

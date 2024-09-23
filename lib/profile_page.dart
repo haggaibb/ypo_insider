@@ -230,8 +230,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                             profileImage!, widget.member.id);
                                     setState(() {
                                       if (url != '') tempProfileImageUrl = url;
-                                      print('new tempprofile:');
-                                      print(tempProfileImageUrl);
+                                      /// print('new tempprofile:');
+                                      /// print(tempProfileImageUrl);
                                       memberController
                                           .loadingProfileImage.value = false;
                                     });
@@ -373,7 +373,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                         widget.member.email
                                     ? ElevatedButton(
                                         onPressed: () async {
-                                          print('logout');
+                                          /// print('logout');
                                           await memberController.logout();
                                           Get.to(() => const Goodbye());
                                         },
@@ -519,9 +519,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                           ),
                                           onChanged: (s) => {
                                             if (GetUtils.isPhoneNumber(s))
-                                              {print('legal phone')}
+                                              {}
                                             else
-                                              {print('illegal phone')}
+                                              {}
                                           },
                                         ),
                                       ),

@@ -41,13 +41,13 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
-    print('init home');
+    /// print('init home');
     membersController.loadingStatus.value = 'Loading Insider Home';
     if (membersController.currentMember.value.id == 'NA') membersController.setCurrentByUid(widget.user);
     setState(() {
 
     });
-    print('init home end');
+    /// print('init home end');
   }
 
   @override
@@ -147,7 +147,7 @@ class _HomeState extends State<Home> {
                                 setState(() {
                                   membersController.saveThemeMode(val.name);
                                   membersController.themeMode.value = val;
-                                  print('change theme mode');
+                                  /// print('change theme mode');
                                   Get.changeTheme(val.name == 'dark'
                                       ? ThemeData.dark()
                                       : ThemeData.light());

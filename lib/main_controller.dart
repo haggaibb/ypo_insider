@@ -99,7 +99,7 @@ class MainController extends GetxController {
   }
 
   loadTags() async {
-    print('load tags');
+    /// print('load tags');
     ///load free text tags
     CollectionReference freeTextTagsRef = db.collection('FreeTextTags');
     QuerySnapshot freeTextTagsSnapshot = await freeTextTagsRef.get();
@@ -161,7 +161,7 @@ class MainController extends GetxController {
     }
     //filtersLoading.value=false;
     update();
-    print('tags loaded');
+    /// print('tags loaded');
   }
 
   addNewResidence(String newResidence) async {
@@ -210,7 +210,7 @@ class MainController extends GetxController {
   @override
   onInit() async {
     super.onInit();
-    print('init - main Controller...');
+    /// print('init - main Controller...');
     mainLoading.value = true;
 
     /// loadTags() should be first, it also gets the number of members data
@@ -221,7 +221,7 @@ class MainController extends GetxController {
     await logUserOpensApp(user!.displayName ?? 'NA');
     mainLoading.value = false;
     update();
-    print('end - init main Controller');
+    /// print('end - init main Controller');
   }
 }
 

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher_string.dart';
-import 'package:ypo_connect/main.dart';
 import 'package:ypo_connect/models.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -258,7 +257,7 @@ class ProfileImageLoading extends StatelessWidget {
 ///
 /// open url in browser
 Future<void> _launchInBrowser(String url) async {
-  print(url);
+  /// print(url);
   final Uri _url = Uri.parse(url);
   if (!await launchUrl(
     webOnlyWindowName: '_blank',
@@ -558,7 +557,7 @@ class _TestPageState extends State<TestPage> {
                         selectedTags: ['Tel Aviv','Herzliya','Ramat Hasharon'],
                         editMode: editMode,
                       onChange: (selected) {
-                          print(selected);
+                          /// print(selected);
                       },
                     ),
                     RayBarMultiField(
@@ -569,8 +568,8 @@ class _TestPageState extends State<TestPage> {
                       icon : Icons.family_restroom_sharp,
                       iconColor : Colors.blue.shade900,
                       onChangeMultiFieldCallback: (data) {
-                        print('callback:');
-                        print(data);
+                        /// print('callback:');
+                        /// print(data);
                       }
 
 

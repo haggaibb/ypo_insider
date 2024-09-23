@@ -141,7 +141,7 @@ class AddNewMember extends StatelessWidget {
                   children: [
                     ElevatedButton(
                         onPressed: () async {
-                          print('save data');
+                          /// print('save data');
                           await membersController.addNewMember(firstNameCtrl.text, lastNameCtrl.text, emailCtrl.text);
                           const snackBar = SnackBar(
                             content: Text('Member Added!' ,  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),),
@@ -154,7 +154,7 @@ class AddNewMember extends StatelessWidget {
                     ),
                     ElevatedButton(
                         onPressed: ()  {
-                          print('Cancel');
+                          /// print('Cancel');
                           Get.back();
                           Get.back();
                         },
@@ -223,7 +223,7 @@ class AddNewResidence extends StatelessWidget {
                     ),
                     ElevatedButton(
                         onPressed: ()  {
-                          print('Cancel');
+                          /// print('Cancel');
                           Get.back();
                           Get.back();
                         },
@@ -291,7 +291,7 @@ class AddNewForum extends StatelessWidget {
                     ),
                     ElevatedButton(
                         onPressed: ()  {
-                          print('Cancel');
+                          /// print('Cancel');
                           Get.back();
                           Get.back();
                         },
@@ -429,7 +429,7 @@ class AddNewFreeText extends StatelessWidget {
                     ),
                     ElevatedButton(
                         onPressed: ()  {
-                          print('Cancel');
+                          /// print('Cancel');
                           Get.back();
                           Get.back();
                         },
