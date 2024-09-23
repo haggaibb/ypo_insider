@@ -13,6 +13,7 @@ import 'package:get/get.dart';
 import 'members_controller.dart';
 import 'dart:js' as js;
 import 'ga.dart';
+import 'utils.dart';
 
 final actionCodeSettings = ActionCodeSettings(
   url: 'https://ypodex.web.app/',
@@ -28,6 +29,7 @@ final membersController = Get.put(MembersController());
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  updateSplashScreenText('Initializing...');
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   final user = FirebaseAuth.instance.currentUser;
   //print('@@@@@@@@@@@@@@@@@@');
@@ -36,6 +38,7 @@ Future<void> main() async {
   if (user!=null && user.emailVerified) {
     /// print('root check - user verified....');
     if (user.displayName!=null) {
+      updateSplashScreenText('${user.displayName} Verified..');
       /// print('verified go to Home');
       /// print(user.displayName);
       membersController.loadingStatus.value = '${user.displayName} verified go to Home';
@@ -43,7 +46,8 @@ Future<void> main() async {
     } else {
       membersController.loadingStatus.value = 'First timer, load onBoarding...';
       /// print('First timer, load onBoarding...');
-      js.context.callMethod('hideSplashScreen');
+      updateSplashScreenText('${user.displayName} first visit...');
+      js.context.callMethod('hideSplashxScreen');
       runApp(OnBoardingPage(user: user));
     }
   }

@@ -11,6 +11,7 @@ import 'package:ypo_connect/members_controller.dart';
 import 'package:chips_choice/chips_choice.dart';
 import 'theme.dart';
 import 'admin_pages.dart';
+import 'utils.dart';
 
 
 class Home extends StatefulWidget {
@@ -42,11 +43,9 @@ class _HomeState extends State<Home> {
   void initState() {
     super.initState();
     /// print('init home');
+    updateSplashScreenText('Loading Insider Home...');
     membersController.loadingStatus.value = 'Loading Insider Home';
     if (membersController.currentMember.value.id == 'NA') membersController.setCurrentByUid(widget.user);
-    setState(() {
-
-    });
     /// print('init home end');
   }
 
@@ -87,7 +86,7 @@ class _HomeState extends State<Home> {
                   ),
                 ),
                 drawer: SizedBox(
-                  height: membersController.isAdmin.value?650:450,
+                  height: membersController.isAdmin.value?550:450,
                   child: Drawer(
                     shape: ContinuousRectangleBorder(
                         borderRadius: BorderRadius.circular(75),

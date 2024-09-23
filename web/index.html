@@ -55,7 +55,11 @@
       align-items: center;     /* Vertically center the content */
       z-index: 9999;
     }
-
+    .status-text {
+      margin-top: 20px;
+      font-size: 16px;
+      color: #555;
+    }
     .splash-screen.hidden {
       display: none;
     }
@@ -112,8 +116,15 @@
     <img src="icons/splash-insider.png" alt="App Logo" />
     <img src="icons/logo-insider.png" width="63" height="18" alt="App Logo" />
     <div class="spinner"></div> <!-- Spinner overlaid on the image -->
+    <div class="status-text" id="status-text">Loading...</div>
   </div>
 </div>
+<script>
+  // Function to update the status text on the splash screen
+  function updateStatusText(message) {
+    document.getElementById('status-text').textContent = message;
+  }
+</script>
   <script>
     window.addEventListener('load', function(ev) {
       // Download main.dart.js

@@ -257,9 +257,6 @@ class ProfileImageLoading extends StatelessWidget {
     );
   }
 }
-
-///
-///
 /// open url in browser
 Future<void> _launchInBrowser(String url) async {
   /// print(url);
@@ -286,7 +283,7 @@ void _launchMailClient(String targetEmail) async {
 
 /// make call
 void _launchPhoneClient(String targetPhone) async {
-  final Uri telLaunchUri = Uri(scheme: 'tel', path: targetPhone);
+  final Uri telLaunchUri = Uri(scheme: 'tel', path: '+$targetPhone');
   await launchUrl(telLaunchUri);
 }
 
