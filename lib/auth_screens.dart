@@ -314,6 +314,7 @@ class _EmailRegisterFormState extends State<EmailRegisterForm> {
                               validationRules: {
                                 DigitValidationRule(),
                                 UppercaseValidationRule(),
+                                MinCharactersValidationRule(6),
                               },
                               validator: (value) {
                                 return _passwordController.areAllRulesValidated

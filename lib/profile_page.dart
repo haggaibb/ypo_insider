@@ -159,7 +159,7 @@ class _ProfilePageState extends State<ProfilePage> {
       child: Scaffold(
         backgroundColor:
         memberController.themeMode.value.name == 'dark'
-            ? null
+            ? Colors.black
             : Colors.blueGrey.shade50,
         appBar: AppBar(
           leading: editModeOn
