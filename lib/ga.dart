@@ -2,19 +2,18 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 
 
 
-
 class AnalyticsEngine {
   static final _instance = FirebaseAnalytics.instance;
 
   static Future<void> userLogsIn(String loginMethod, String fullName) async {
-    print('log -- user log in --');
+    ///print('log -- user log in --');
     try {
       await _instance.logLogin(
           loginMethod: 'firebase_auth',
           parameters: <String, Object>{"user": fullName});
     } catch (err) {
-      print('log to GA err:  user log in');
-      print(err);
+      ///print('log to GA err:  user log in');
+      ///print(err);
     }
   }
 
@@ -32,15 +31,15 @@ class AnalyticsEngine {
   }
 
   static Future<void> logProfileView(String fullName) async {
-    print('log -- Profile View --');
+    //print('log -- Profile View --');
     try {
       await _instance
           .logEvent(name: 'profile_view', parameters: <String, Object>{
-        "profile_viewed" : fullName
+        //"profile_viewed" : fullName
       });
     } catch (err) {
-      print('log to GA err:  Profile View');
-      print(err);
+      //print('log to GA err:  Profile View');
+      //print(err);
     }
   }
 
@@ -58,14 +57,14 @@ class AnalyticsEngine {
   }
 
   static Future<void> logFilterTagsSearch(String tags) async {
-    print('log -- Filter Tags Search --');
+    //print('log -- Filter Tags Search --');
     try {
       await _instance
           .logEvent(name: 'filter_tags_search', parameters: <String, Object>{
         "tags" : tags
       });
     } catch (err) {
-      print('log to GA err:  Filter Tags Search');
+      //print('log to GA err:  Filter Tags Search');
       print(err);
     }
   }

@@ -28,36 +28,32 @@ class _ResultCardState extends State<ResultCard> {
 
   Widget getBanner() {
     ///check if birthday today
-    // print(widget.member.birthdate.toString());
-    // print(checkIfTodayIsBirthday(widget.member.birthdate??Timestamp.fromMicrosecondsSinceEpoch(0)));
-    // if (checkIfTodayIsBirthday(widget.member.birthdate??Timestamp.fromMicrosecondsSinceEpoch(0))) {
-    //   print('after birth');
-    //
-    //   return const Positioned(
-    //     left: 0,
-    //     top: 120,
-    //     child: Image(
-    //         width: 150,
-    //         image:
-    //         AssetImage('images/hb-banner.png') ),
-    //   );
-    // }
-    if (checkIfNewMember(widget.member.joinDate)) {
-      return const Positioned(
-        top: 130,
-        left: 100,
-        child: Image(
-          width: 100,
-            image:
-            AssetImage('images/new-member.png') ),
-      );
+    //print(widget.member.birthdate.toString());
+    //print(checkIfTodayIsBirthday(widget.member.birthdate??Timestamp.fromMicrosecondsSinceEpoch(0)));
+    if (checkIfTodayIsBirthday(widget.member.birthdate??Timestamp.fromMicrosecondsSinceEpoch(0))) {
+      return const Image(
+          width: 150,
+          image:
+          AssetImage('images/hb-banner.png') );
     }
-    if (!widget.member.banner!) return SizedBox.shrink();
-    /// banner is on
-    /// show the banner from network
-    return Positioned(
-      child: Image.network(widget.member.bannerUri!),
-    );
+    if (checkIfNewMember(widget.member.joinDate)) {
+      return const Image(
+          width: 100,
+          image:
+          AssetImage('images/new-member.png') );
+    }
+    if (!widget.member.banner!) {
+      return const SizedBox.shrink();
+    } else {
+      /// banner is on
+      /// show the banner from network
+      if (widget.member.bannerUri!=null && widget.member.bannerUri!='') {
+        return Image.network(widget.member.bannerUri!);
+      } else {
+        return const SizedBox.shrink();
+      }
+    }
+
   }
 
   @override
@@ -72,84 +68,79 @@ class _ResultCardState extends State<ResultCard> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Card(
-          surfaceTintColor: Colors.blue.shade900,
-          //color : Colors.white,
-          elevation: 10,
-          child: Column(
+    return Card(
+      surfaceTintColor: Colors.blue.shade900,
+      //color : Colors.white,
+      elevation: 10,
+      child: Column(
+        children: [
+          Text(
+            widget.member.fullName(),
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          Row(
+            //mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                widget.member.fullName(),
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              Row(
-                //mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Padding(
-                          padding: const EdgeInsets.only(left: 8.0, bottom: 6),
-                          child: SizedBox(
-                            width: 230,
-                            height: 20,
-                            child: Text(
-                              widget.member.currentTitle,
-                              //overflow: TextOverflow.fade,
-                              //softWrap: false,
-                              maxLines: 2,
-                            ),
-                          )),
-                      Padding(
-                          padding: const EdgeInsets.only(left: 8.0, bottom: 6),
-                          child: SizedBox(
-                            width: 230,
-                            child: Text(
-                              widget.member.currentBusinessName,
-                              //overflow: TextOverflow.ellipsis,
-                              //softWrap: false,
-                              maxLines: 2,
-                            ),
-                          )),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 8.0, bottom: 6),
-                        child: Text(widget.member.residence),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 8.0),
-                        child: Text('Forum  ${widget.member.forum}'),
-                      ),
-                    ],
+                  SizedBox(
+                    height: 20,
                   ),
-                  Column(
-                    children: [
-                      ProfilePic(widget.member.profileImage ?? ''),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 10.0),
-                        child: SizedBox(
-                            width: 90,
-                            height: 20,
-                            child: SocialBar(
-                                linkedin: widget.member.linkedin,
-                                instagram: widget.member.instagram,
-                                facebook: widget.member.facebook)),
-                      )
-                    ],
+                  Padding(
+                      padding: const EdgeInsets.only(left: 8.0, bottom: 6),
+                      child: SizedBox(
+                        width: 230,
+                        height: 20,
+                        child: Text(
+                          widget.member.currentTitle,
+                          //overflow: TextOverflow.fade,
+                          //softWrap: false,
+                          maxLines: 2,
+                        ),
+                      )),
+                  Padding(
+                      padding: const EdgeInsets.only(left: 8.0, bottom: 6),
+                      child: SizedBox(
+                        width: 230,
+                        child: Text(
+                          widget.member.currentBusinessName,
+                          //overflow: TextOverflow.ellipsis,
+                          //softWrap: false,
+                          maxLines: 2,
+                        ),
+                      )),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8.0, bottom: 6),
+                    child: Text(widget.member.residence),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: Text('Forum  ${widget.member.forum}'),
                   ),
                 ],
               ),
-              //getBanner()
+              Column(
+                children: [
+                  ProfilePic(widget.member.profileImage ?? ''),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10.0),
+                    child: SizedBox(
+                        width: 90,
+                        height: 20,
+                        child: SocialBar(
+                            linkedin: widget.member.linkedin,
+                            instagram: widget.member.instagram,
+                            facebook: widget.member.facebook)),
+                  )
+                ],
+              ),
             ],
           ),
-        ),
-        ///getBanner()
-      ],
+          getBanner()
+        ],
+      ),
     );
   }
 }
