@@ -9,6 +9,7 @@ void updateSplashScreenText(String message) {
 
 
 bool checkIfTodayIsBirthday(Timestamp birthdayTimestamp) {
+  print('in birth');
   DateTime today = DateTime.now();
   DateTime birthday = birthdayTimestamp.toDate();
   // Check if today is the birthday (ignoring the year)
@@ -22,6 +23,7 @@ bool checkIfTodayIsBirthday(Timestamp birthdayTimestamp) {
 }
 
 bool checkIfNewMember(String joinDate) {
+  if (joinDate=='') return false;
   DateTime today = DateTime.now();
   DateTime memberSince = DateTime(int.parse(joinDate));
   // Calculate the total months for each date

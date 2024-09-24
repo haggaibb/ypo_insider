@@ -8,7 +8,7 @@ import 'dart:html' as html;
 import 'members_controller.dart';
 import 'dart:async';
 import 'onboarding.dart';
-
+import 'package:fancy_password_field/fancy_password_field.dart';
 
 class EmailSignInForm extends StatelessWidget {
   final EmailAuthController authController;
@@ -16,6 +16,7 @@ class EmailSignInForm extends StatelessWidget {
   EmailSignInForm({required this.authController, super.key, this.errMsg = ''});
   final emailCtrl = TextEditingController();
   final passwordCtrl = TextEditingController();
+
 
   signIn(BuildContext context) async {
     authController.setEmailAndPassword(emailCtrl.text, passwordCtrl.text);
@@ -35,9 +36,16 @@ class EmailSignInForm extends StatelessWidget {
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(0.0),
-                    child: Image.network('assets/images/logo-landscape.png', width: 300,),
+                    child: Image.network(
+                      'assets/images/logo-landscape.png',
+                      width: 300,
+                    ),
                   ),
-                  Image.network(scale: 2, 'assets/images/logo-insider.png', width: 150,),
+                  Image.network(
+                    scale: 2,
+                    'assets/images/logo-insider.png',
+                    width: 150,
+                  ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -45,7 +53,7 @@ class EmailSignInForm extends StatelessWidget {
                         padding: EdgeInsets.all(18.0),
                         child: Text(
                           'Sign in',
-                          style:  TextStyle(fontSize: 28),
+                          style: TextStyle(fontSize: 28),
                         ),
                       ),
                       const Padding(
@@ -114,12 +122,11 @@ class EmailSignInForm extends StatelessWidget {
                                       style: TextStyle(color: Colors.blueGrey),
                                     ),
                                     onTap: () {
-                                      Get.to(
-                                          ForgotPasswordScreen(
-                                          auth: authController.auth,
-                                            email: emailCtrl.text,
-                                            resizeToAvoidBottomInset: true,
-                                          ));
+                                      Get.to(ForgotPasswordScreen(
+                                        auth: authController.auth,
+                                        email: emailCtrl.text,
+                                        resizeToAvoidBottomInset: true,
+                                      ));
                                     },
                                   ),
                                 ],
@@ -150,7 +157,14 @@ class EmailSignInForm extends StatelessWidget {
                                   onPressed: () async {
                                     await signIn(context);
                                   },
-                                  child: Text('Sign in', style: TextStyle(fontSize: 18, color: Get.isDarkMode? Colors.blue: Colors.black),),
+                                  child: Text(
+                                    'Sign in',
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        color: Get.isDarkMode
+                                            ? Colors.blue
+                                            : Colors.black),
+                                  ),
                                 ),
                               )
                             ],
@@ -181,7 +195,9 @@ class _EmailRegisterFormState extends State<EmailRegisterForm> {
   final passwordCtrl = TextEditingController();
   final passwordCtrl2 = TextEditingController();
   final passNotifier = ValueNotifier<PasswordStrength?>(null);
-  String errMsg ='';
+  final FancyPasswordController _passwordController = FancyPasswordController();
+
+  String errMsg = '';
 
   validateMembersEmail(String email) async {
     bool validated = await controller.validateMemberEmail(email);
@@ -195,21 +211,21 @@ class _EmailRegisterFormState extends State<EmailRegisterForm> {
       if ((passwordCtrl.text == passwordCtrl2.text) &&
           (passwordCtrl.text != '')) {
         try {
-          var credentials = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-              email: emailCtrl.text, password: passwordCtrl.text);
+          var credentials = await FirebaseAuth.instance
+              .createUserWithEmailAndPassword(
+                  email: emailCtrl.text, password: passwordCtrl.text);
           if (credentials.user != null) {
             await controller.onRegister(credentials.user!);
             controller.loading.value = false;
             Get.to(() => const EmailVerificationScreen());
           }
-        } on FirebaseAuthException catch  (e) {
+        } on FirebaseAuthException catch (e) {
           setState(() {
             controller.loading.value = false;
-            controller.authErrMsg.value = e.message??'error code#0';
-            errMsg = e.message??'error code#0';
+            controller.authErrMsg.value = e.message ?? 'error code#0';
+            errMsg = e.message ?? 'error code#0';
           });
         }
-
       } else {
         controller.loading.value = false;
         controller.authErrMsg.value =
@@ -219,6 +235,7 @@ class _EmailRegisterFormState extends State<EmailRegisterForm> {
       controller.loading.value = false;
       controller.authErrMsg.value =
           'This email is not recognized by YPO Israel!';
+
       /// print('not a valid email');
     }
   }
@@ -226,6 +243,7 @@ class _EmailRegisterFormState extends State<EmailRegisterForm> {
   @override
   void initState() {
     super.initState();
+
     /// print('init reg');
 
     /// print('init reg end');
@@ -240,9 +258,15 @@ class _EmailRegisterFormState extends State<EmailRegisterForm> {
           children: [
             Padding(
               padding: const EdgeInsets.all(0.0),
-              child: Image.network('assets/images/logo-landscape.png', width: 300,),
+              child: Image.network(
+                'assets/images/logo-landscape.png',
+                width: 300,
+              ),
             ),
-            Image.network('assets/images/logo-insider.png', width: 150,),
+            Image.network(
+              'assets/images/logo-insider.png',
+              width: 150,
+            ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -278,20 +302,64 @@ class _EmailRegisterFormState extends State<EmailRegisterForm> {
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: TextField(
-                            onChanged: (text) {
-                              passNotifier.value =
-                                  PasswordStrength.calculate(text: text);
-                            },
-                            obscureText: true,
-                            controller: passwordCtrl,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              hintText: 'Password',
+                            padding: const EdgeInsets.all(8.0),
+                            child: FancyPasswordField(
+                              controller: passwordCtrl,
+                              decoration: const InputDecoration(
+                                prefixIcon: Icon(Icons.lock),
+                                border: OutlineInputBorder(),
+                                hintText: 'Password',
+                              ),
+                              passwordController: _passwordController,
+                              validationRules: {
+                                DigitValidationRule(),
+                                UppercaseValidationRule(),
+                              },
+                              validator: (value) {
+                                return _passwordController.areAllRulesValidated
+                                    ? null
+                                    : 'Not Validated';
+                              },
+                              validationRuleBuilder: (rules, value) {
+                                return ListView(
+                                  shrinkWrap: true,
+                                  children: rules.map(
+                                        (rule) {
+                                      final ruleValidated = rule.validate(value);
+                                      return Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(
+                                            ruleValidated ? Icons.check : Icons.close,
+                                            color: ruleValidated ? Colors.green : Colors.red,
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Text(
+                                            rule.name,
+                                            style: TextStyle(
+                                              color: ruleValidated ? Colors.green : Colors.red,
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  ).toList(),
+                                );
+                              },
+                            )
+                            // TextField(
+                            //   onChanged: (text) {
+                            //     passNotifier.value =
+                            //         PasswordStrength.calculate(text: text);
+                            //   },
+                            //   obscureText: true,
+                            //   controller: passwordCtrl,
+                            //   decoration: const InputDecoration(
+                            //     border: OutlineInputBorder(),
+                            //     hintText: 'Password',
+                            //   ),
+                            // ),
                             ),
-                          ),
-                        ),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: TextField(
@@ -303,10 +371,10 @@ class _EmailRegisterFormState extends State<EmailRegisterForm> {
                             ),
                           ),
                         ),
-                        PasswordStrengthChecker(
-                          strength: passNotifier,
-                          //configuration: PasswordStrengthCheckerConfiguration(),
-                        ),
+                        // PasswordStrengthChecker(
+                        //   strength: passNotifier,
+                        //   configuration: PasswordStrengthCheckerConfiguration(),
+                        // ),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Obx(() => Text(
@@ -383,7 +451,7 @@ class _EmailRegisterFormState extends State<EmailRegisterForm> {
 // }
 
 class EmailVerificationScreen extends StatefulWidget {
-  const EmailVerificationScreen({ super.key});
+  const EmailVerificationScreen({super.key});
 
   @override
   State<EmailVerificationScreen> createState() =>
@@ -397,9 +465,11 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
   @override
   void initState() {
     super.initState();
+
     /// print('init Verification screen');
     FirebaseAuth.instance.currentUser?.sendEmailVerification();
-    timer = Timer.periodic(const Duration(seconds: 3), (_) => checkEmailVerified());
+    timer =
+        Timer.periodic(const Duration(seconds: 3), (_) => checkEmailVerified());
   }
 
   checkEmailVerified() async {
@@ -417,8 +487,8 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
       //   },
       // );
       Get.to(() => OnBoardingPage(user: FirebaseAuth.instance.currentUser));
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text("Email Successfully Verified")));
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Email Successfully Verified")));
 
       timer?.cancel();
     }
@@ -461,8 +531,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
               const Center(child: CircularProgressIndicator()),
               const SizedBox(height: 8),
               const Padding(
-                padding: EdgeInsets
-                    .symmetric(horizontal: 32.0),
+                padding: EdgeInsets.symmetric(horizontal: 32.0),
                 child: Center(
                   child: Text(
                     'Verifying email....',
@@ -472,8 +541,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
               ),
               const SizedBox(height: 57),
               Padding(
-                padding: const EdgeInsets
-                    .symmetric(horizontal: 32.0),
+                padding: const EdgeInsets.symmetric(horizontal: 32.0),
                 child: ElevatedButton(
                   child: const Text('Resend'),
                   onPressed: () {
@@ -494,10 +562,10 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
   }
 }
 
-
 class Goodbye extends StatelessWidget {
-
-  const Goodbye({super.key, });
+  const Goodbye({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -509,7 +577,8 @@ class Goodbye extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Image.network('assets/images/logo-insider.png'),
-          Text('Goodbye', style : TextStyle(fontSize: 24, color: Colors.blue.shade900)),
+          Text('Goodbye',
+              style: TextStyle(fontSize: 24, color: Colors.blue.shade900)),
         ],
       ),
     );

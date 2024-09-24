@@ -670,6 +670,19 @@ class _ProfilePageState extends State<ProfilePage> {
                                     onPress: () {}),
                               ),
 
+                        /// Join Date
+                        editModeOn
+                            ? SizedBox.shrink()
+                            : Padding(
+                          padding: const EdgeInsets.only(bottom: 10.0),
+                          child: ProfileMenuWidget(
+                              title: "Member Since: ",
+                              icon: Icons.date_range_outlined,
+                              value: widget.member.joinDate,
+                              type: 'text',
+                              onPress: () {}),
+                        ),
+
                         /// linkedin
                         editModeOn
                             ? Padding(

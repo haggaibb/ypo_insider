@@ -26,18 +26,22 @@ class ResultCard extends StatefulWidget {
 
 class _ResultCardState extends State<ResultCard> {
 
-  getBanner() {
+  Widget getBanner() {
     ///check if birthday today
-    if (checkIfTodayIsBirthday(widget.member.birthdate??Timestamp.fromMicrosecondsSinceEpoch(0))) {
-      return const Positioned(
-        left: 75,
-        top: 150,
-        child: Image(
-            width: 180,
-            image:
-            AssetImage('images/hb-banner.png') ),
-      );
-    }
+    // print(widget.member.birthdate.toString());
+    // print(checkIfTodayIsBirthday(widget.member.birthdate??Timestamp.fromMicrosecondsSinceEpoch(0)));
+    // if (checkIfTodayIsBirthday(widget.member.birthdate??Timestamp.fromMicrosecondsSinceEpoch(0))) {
+    //   print('after birth');
+    //
+    //   return const Positioned(
+    //     left: 0,
+    //     top: 120,
+    //     child: Image(
+    //         width: 150,
+    //         image:
+    //         AssetImage('images/hb-banner.png') ),
+    //   );
+    // }
     if (checkIfNewMember(widget.member.joinDate)) {
       return const Positioned(
         top: 130,
@@ -140,10 +144,11 @@ class _ResultCardState extends State<ResultCard> {
                   ),
                 ],
               ),
+              //getBanner()
             ],
           ),
         ),
-        getBanner()
+        ///getBanner()
       ],
     );
   }
