@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart'
 import 'package:flutter/material.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:get/get.dart';
-import 'package:password_strength_checker/password_strength_checker.dart';
 import 'dart:html' as html;
 import 'members_controller.dart';
 import 'dart:async';
@@ -194,9 +193,7 @@ class _EmailRegisterFormState extends State<EmailRegisterForm> {
   final emailCtrl = TextEditingController();
   final passwordCtrl = TextEditingController();
   final passwordCtrl2 = TextEditingController();
-  final passNotifier = ValueNotifier<PasswordStrength?>(null);
   final FancyPasswordController _passwordController = FancyPasswordController();
-
   String errMsg = '';
 
   validateMembersEmail(String email) async {
@@ -348,19 +345,7 @@ class _EmailRegisterFormState extends State<EmailRegisterForm> {
                                 );
                               },
                             )
-                            // TextField(
-                            //   onChanged: (text) {
-                            //     passNotifier.value =
-                            //         PasswordStrength.calculate(text: text);
-                            //   },
-                            //   obscureText: true,
-                            //   controller: passwordCtrl,
-                            //   decoration: const InputDecoration(
-                            //     border: OutlineInputBorder(),
-                            //     hintText: 'Password',
-                            //   ),
-                            // ),
-                            ),
+                        ),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: TextField(
@@ -372,10 +357,6 @@ class _EmailRegisterFormState extends State<EmailRegisterForm> {
                             ),
                           ),
                         ),
-                        // PasswordStrengthChecker(
-                        //   strength: passNotifier,
-                        //   configuration: PasswordStrengthCheckerConfiguration(),
-                        // ),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Obx(() => Text(
@@ -427,29 +408,6 @@ class _EmailRegisterFormState extends State<EmailRegisterForm> {
   }
 }
 
-// class VerificationPage extends StatelessWidget {
-//   final User user;
-//   //final controller = Get.put(MembersController());
-//   const VerificationPage({super.key, required this.user});
-//   @override
-//   Widget build(BuildContext context) {
-//     final controller = Get.put(MembersController());
-//     return EmailVerificationScreen(
-//       actions: [
-//         EmailVerifiedAction(() {
-//           Get.to(OnBoardingPage(user: user));
-//           controller.onVerify(user);
-//           runApp(Home(user: user));
-//           //Navigator.pushReplacementNamed(context, '/onboarding');
-//         }),
-//         AuthCancelledAction((context) {
-//           FirebaseUIAuth.signOut(context: context);
-//           Get.to(FrontGate());
-//         }),
-//       ],
-//     );
-//   }
-// }
 
 class EmailVerificationScreen extends StatefulWidget {
   const EmailVerificationScreen({super.key});
@@ -490,7 +448,6 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
       Get.to(() => OnBoardingPage(user: FirebaseAuth.instance.currentUser));
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Email Successfully Verified")));
-
       timer?.cancel();
     }
   }

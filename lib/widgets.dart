@@ -18,42 +18,77 @@ class ResultCard extends StatefulWidget {
     super.key,
   });
 
-
-
   @override
   _ResultCardState createState() => _ResultCardState();
 }
 
 class _ResultCardState extends State<ResultCard> {
-
   Widget getBanner() {
     ///check if birthday today
-    //print(widget.member.birthdate.toString());
-    //print(checkIfTodayIsBirthday(widget.member.birthdate??Timestamp.fromMicrosecondsSinceEpoch(0)));
-    if (checkIfTodayIsBirthday(widget.member.birthdate??Timestamp.fromMicrosecondsSinceEpoch(0))) {
-      return const Image(
-          width: 150,
-          image:
-          AssetImage('images/hb-banner.png') );
+    if (checkIfTodayIsBirthday(
+        widget.member.birthdate ?? Timestamp.fromMicrosecondsSinceEpoch(0))) {
+      return Positioned(
+        top: 65,
+        left: 0,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.black, // Background color
+            // border: Border.all(color: Colors.red, width: 1), // Border
+            borderRadius: BorderRadius.circular(10), // Rounded corners
+          ),
+          padding: EdgeInsets.all(0), // Padding around the image
+          child: Image.asset(
+            'images/happy-birthday.png', // Replace with your image path
+            width: 90, // Set width
+            height: 22, // Set height
+            //fit: BoxFit.cover, // Adjust the image fit
+          ),
+        ),
+
+        /*
+            Container(
+              decoration: ,
+              color: Colors.black,
+                child: Image( width: 80, height: 80, image:AssetImage('images/happy-birthday.png'))),
+
+          */
+      );
     }
+
+    /// check if new member
     if (checkIfNewMember(widget.member.joinDate)) {
-      return const Image(
-          width: 100,
-          image:
-          AssetImage('images/new-member.png') );
+      return Positioned(
+        top : 65,
+        left: 0,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.black, // Background color
+            // border: Border.all(color: Colors.red, width: 1), // Border
+            borderRadius: BorderRadius.circular(10), // Rounded corners
+          ),
+          padding: EdgeInsets.all(0), // Padding around the image
+          child: Image.asset(
+            'images/new-member.png', // Replace with your image path
+            width: 90, // Set width
+            height: 22, // Set height
+            //fit: BoxFit.cover, // Adjust the image fit
+          ),
+        ),
+      );
     }
+
+    /// dynamic banner
     if (!widget.member.banner!) {
       return const SizedBox.shrink();
     } else {
       /// banner is on
       /// show the banner from network
-      if (widget.member.bannerUri!=null && widget.member.bannerUri!='') {
+      if (widget.member.bannerUri != null && widget.member.bannerUri != '') {
         return Image.network(widget.member.bannerUri!);
       } else {
         return const SizedBox.shrink();
       }
     }
-
   }
 
   @override
@@ -123,7 +158,7 @@ class _ResultCardState extends State<ResultCard> {
               ),
               Column(
                 children: [
-                  ProfilePic(widget.member.profileImage ?? ''),
+                  BannerProfilePic(widget.member,widget.member.profileImage ?? ''),
                   Padding(
                     padding: const EdgeInsets.only(top: 10.0),
                     child: SizedBox(
@@ -138,7 +173,7 @@ class _ResultCardState extends State<ResultCard> {
               ),
             ],
           ),
-          getBanner()
+          //getBanner()
         ],
       ),
     );
@@ -147,14 +182,83 @@ class _ResultCardState extends State<ResultCard> {
 /////////////////
 ////////////////
 
-class ProfilePic extends StatelessWidget {
-  const ProfilePic(
+class BannerProfilePic extends StatelessWidget {
+  const BannerProfilePic(
+      this.member,
     this.uri, {
     super.key,
   });
 
   final String uri;
+  final Member member;
 
+  Widget getBanner() {
+    ///check if birthday today
+    if (checkIfTodayIsBirthday(
+        member.birthdate ?? Timestamp.fromMicrosecondsSinceEpoch(0))) {
+      return Positioned(
+        top: 70,
+        left: 0,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white, // Background color
+            // border: Border.all(color: Colors.red, width: 1), // Border
+            borderRadius: BorderRadius.circular(10), // Rounded corners
+          ),
+          padding: EdgeInsets.all(0), // Padding around the image
+          child: Image.asset(
+            'images/happy-birthday.png', // Replace with your image path
+            width: 90, // Set width
+            height: 22, // Set height
+            //fit: BoxFit.cover, // Adjust the image fit
+          ),
+        ),
+
+        /*
+            Container(
+              decoration: ,
+              color: Colors.black,
+                child: Image( width: 80, height: 80, image:AssetImage('images/happy-birthday.png'))),
+
+          */
+      );
+    }
+
+    /// check if new member
+    if (checkIfNewMember(member.joinDate)) {
+      return Positioned(
+        top : 65,
+        left: 0,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white, // Background color
+            border: Border.all(color: Colors.blue.shade900, width: 1), // Border
+            borderRadius: BorderRadius.circular(10), // Rounded corners
+          ),
+          padding: EdgeInsets.all(0), // Padding around the image
+          child: Image.asset(
+            'images/new-member.png', // Replace with your image path
+            width: 90, // Set width
+            height: 22, // Set height
+            //fit: BoxFit.cover, // Adjust the image fit
+          ),
+        ),
+      );
+    }
+
+    /// dynamic banner
+    if (!member.banner!) {
+      return const SizedBox.shrink();
+    } else {
+      /// banner is on
+      /// show the banner from network
+      if (member.bannerUri != null && member.bannerUri != '') {
+        return Image.network(member.bannerUri!);
+      } else {
+        return const SizedBox.shrink();
+      }
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -170,11 +274,38 @@ class ProfilePic extends StatelessWidget {
                       image:
                           AssetImage(uri != '' ? uri : 'images/profile0.jpg'))),
         ),
+        getBanner()
       ],
     );
   }
 }
+class ProfilePic extends StatelessWidget {
+  const ProfilePic(
+      this.uri, {
+        super.key,
+      });
 
+  final String uri;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        SizedBox(
+          width: 90,
+          height: 90,
+          child: ClipRRect(
+              borderRadius: BorderRadius.circular(100),
+              child: uri != ''
+                  ? Image.network(uri)
+                  : Image(
+                  image:
+                  AssetImage(uri != '' ? uri : 'images/profile0.jpg'))),
+        ),
+      ],
+    );
+  }
+}
 ///
 ///
 ///

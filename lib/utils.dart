@@ -9,7 +9,7 @@ void updateSplashScreenText(String message) {
 
 
 bool checkIfTodayIsBirthday(Timestamp birthdayTimestamp) {
-  print('in birth');
+  //print('in birth');
   DateTime today = DateTime.now();
   DateTime birthday = birthdayTimestamp.toDate();
   // Check if today is the birthday (ignoring the year)

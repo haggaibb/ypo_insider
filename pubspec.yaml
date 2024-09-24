@@ -45,7 +45,6 @@ dependencies:
   cloud_firestore: ^5.2.1
   firebase_auth: ^5.1.4
   firebase_ui_auth: ^1.15.0
-  password_strength_checker: ^1.2.4
   image_picker: ^1.1.2
   firebase_storage: ^12.1.3
   path_provider: ^2.1.4
@@ -98,7 +97,7 @@ flutter:
     - images/linkedin.png
     - images/instagram.png
     - images/facebook.png
-    - images/hb-banner.png
+    - images/happy-birthday.png
     - images/new-member.png
   #   - images/a_dot_ham.jpeg
 

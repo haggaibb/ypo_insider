@@ -116,8 +116,7 @@ class MembersController extends GetxController {
     CollectionReference membersRef = db.collection('Members');
     membersRef.doc(memberId).update({'onBoarding.boarded': true});
     currentMember.value.onBoarding!['boarded']=true;
-    /// print('{$currentMember.value.fullName()} has on Boarded' );
-    await AnalyticsEngine.logOnBoarding(user.email!,'start');
+    await AnalyticsEngine.logOnBoarding(user.email!,'finish');
     loading.value = false;
   }
 

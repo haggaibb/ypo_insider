@@ -70,7 +70,7 @@ class AnalyticsEngine {
   }
 
   static Future<void> logOnBoarding(String name, String status) async {
-    print('log --Onboarding --');
+    //print('log --Onboarding --');
     try {
       await _instance
           .logEvent(name: 'on_boarding', parameters: <String, Object>{
@@ -78,8 +78,8 @@ class AnalyticsEngine {
         'email' : name,
       });
     } catch (err) {
-      print('log to GA err: Onboarding');
-      print(err);
+      //print('log to GA err: Onboarding');
+      //print(err);
     }
   }
 
