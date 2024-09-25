@@ -89,9 +89,9 @@ class MembersController extends GetxController {
       'onBoarding.boarded': false,
     });
     DocumentSnapshot refreshedMember = await membersRef.doc(memberId).get();
-    setCurrentByMember(Member.fromDocumentSnapshot(refreshedMember));
-    /// print('Registration done - member is ${currentMember.value.fullName()}');
+    currentMember.value = Member.fromDocumentSnapshot(refreshedMember);
     await AnalyticsEngine.logMemberRegistered(currentMember.value.fullName());
+    print('Registration done - member is ${currentMember.value.fullName()}');
     return (memberSnapshot.docs.isNotEmpty);
   }
 
@@ -106,17 +106,17 @@ class MembersController extends GetxController {
   onBoardingFinished(User user) async {
     loadingStatus.value = 'Finished onBoarding.';
     loading.value = true;
-    /// print('finished onboarding');
+    print('finished onboarding');
     /// print(
      ///   'update full name to Auth User, this must be done as it acts as a flag for onboarding');
     loadingStatus.value = 'Updating authentication profile...';
-    /// print(currentMember.value.fullName());
+    print(currentMember.value.fullName());
     await FirebaseAuth.instance.currentUser!.updateDisplayName(currentMember.value.fullName());
     var memberId = currentMember.value.id;
     CollectionReference membersRef = db.collection('Members');
     membersRef.doc(memberId).update({'onBoarding.boarded': true});
     currentMember.value.onBoarding!['boarded']=true;
-    await AnalyticsEngine.logOnBoarding(user.email!,'finish');
+    await AnalyticsEngine.logOnBoarding(currentMember.value.fullName(),'finished');
     loading.value = false;
   }
 

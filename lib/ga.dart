@@ -18,15 +18,15 @@ class AnalyticsEngine {
   }
 
   static Future<void> logUserOpensApp(String fullName) async {
-    print('log -- user opens app --');
+    //print('log -- user opens app --');
     try {
       await _instance
           .logEvent(name: 'open_app', parameters: <String, Object>{
         "user" : fullName
       });
     } catch (err) {
-      print('log to GA err:  user opens app');
-      print(err);
+      //print('log to GA err:  user opens app');
+      //print(err);
     }
   }
 
@@ -75,7 +75,7 @@ class AnalyticsEngine {
       await _instance
           .logEvent(name: 'on_boarding', parameters: <String, Object>{
         'status' : status,
-        'email' : name,
+        'name' : name
       });
     } catch (err) {
       //print('log to GA err: Onboarding');
@@ -84,15 +84,15 @@ class AnalyticsEngine {
   }
 
   static Future<void> logMemberRegistered(String name) async {
-    print('log --Member Registered --');
+    //print('log --Member Registered --');
     try {
       await _instance
           .logEvent(name: 'member_registered', parameters: <String, Object>{
         "name" : name
       });
     } catch (err) {
-      print('log to GA err: Member Registered');
-      print(err);
+      ///print('log to GA err: Member Registered');
+      ///print(err);
     }
   }
 
