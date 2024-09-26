@@ -43,10 +43,9 @@ class MainController extends GetxController {
         .get();
     if (isAnd.value) {
       filteredMembers = membersQuery.docs.where((doc) {
-        // Safely cast the 'filter_tags' array to List<String>
+          // Safely cast the 'filter_tags' array to List<String>
         List<String> filterTags =
             List<String>.from(doc['filter_tags'] as List<dynamic>);
-
         // Check if all the selectedTags are in filterTags
         return selectedFilters.every((tag) => filterTags.contains(tag));
       }).toList();
