@@ -789,3 +789,62 @@ class _TestPageState extends State<TestPage> {
     ));
   }
 }
+
+
+class About extends StatelessWidget {
+  final String version;
+  const About({this.version = '' ,  super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 10, bottom: 0.0),
+              child: Image.network(
+                'assets/images/logo.png',
+                width: 200,
+                height: 200,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 0, bottom: 0.0),
+              child: Image.network(
+                'assets/images/logo-insider.png',
+                width: 200,
+                height: 200,
+              ),
+            ),
+            Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 0, bottom: 0.0),
+                  child: Text('ver:$version' , style: TextStyle(fontSize: 16),),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 0, bottom: 0.0),
+                  child: GestureDetector(
+                    onTap: () {
+                      _launchMailClient('support@raybar.co.il');
+                    },
+                      child: Text('contact support' ,
+                          style: TextStyle(fontSize: 16,
+                              color: Colors.blue.shade900
+                          )
+                      )
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

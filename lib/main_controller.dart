@@ -7,7 +7,8 @@ import 'package:firebase_auth/firebase_auth.dart'
     hide PhoneAuthProvider, EmailAuthProvider;
 import 'ga.dart';
 import 'utils.dart';
-
+import 'package:flutter/services.dart' show rootBundle;
+import 'dart:convert';
 
 
 class MainController extends GetxController {
@@ -258,13 +259,25 @@ class MainController extends GetxController {
     await AnalyticsEngine.logProfileEdit(fullName);
   }
 
+  Future<String> fetchVersionFromAssets() async {
+    try {
+      // Load the JSON file from assets
+      final String jsonString = await rootBundle.loadString('version.json');
+      // Parse the JSON string
+      final Map<String, dynamic> data = jsonDecode(jsonString);
+      return data['version'] ?? 'unknown';
+    } catch (e) {
+      // Return 'unknown' in case of error
+      return 'unknown';
+    }
+  }
 
   @override
   onInit() async {
     super.onInit();
     /// print('init - main Controller...');
     mainLoading.value = true;
-    //print(version);
+    version = await fetchVersionFromAssets();
     /// loadTags() should be first, it also gets the number of members data
     updateSplashScreenText('Loading Filter Tags...');
     await getSettings();

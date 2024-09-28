@@ -44,7 +44,6 @@ Future<String> fetchVersionFromAssets() async {
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final String appVersion = await fetchVersionFromAssets();
-  print(appVersion);
   updateSplashScreenText('Initializing...');
   updateSplashScreenVersionText(appVersion);
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
