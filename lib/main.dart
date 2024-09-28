@@ -28,7 +28,6 @@ final emailLinkProviderConfig = EmailLinkAuthProvider(
   actionCodeSettings: actionCodeSettings,
 );
 final membersController = Get.put(MembersController());
-final String appVersion = const String.fromEnvironment('APP_VERSION', defaultValue: 'unknown');
 Future<String> fetchVersionFromAssets() async {
   try {
     // Load the JSON file from assets
