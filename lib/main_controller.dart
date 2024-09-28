@@ -25,9 +25,20 @@ class MainController extends GetxController {
   RxBool mainLoading = false.obs;
   RxBool isAnd = true.obs;
   int numberOfMembers = 1;
+  int numberOfRandomMembers =10;
+  int newMemberThreshold = 12;
   final user = FirebaseAuth.instance.currentUser;
 
+  getSettings() async {
+    final settingsRef = db.collection("Settings").doc('results_settings');
+    final DocumentSnapshot membersQuery = await settingsRef.get();
+    var settingsData = membersQuery.data() as Map<String, dynamic>;
+    numberOfRandomMembers = settingsData['number_of_random_members'];
+    newMemberThreshold  = settingsData['new_member_threshold_in_months'];
+  }
+
   fetchFilteredMembers(List<String> selectedFilters) async {
+    resultsLoading.value = true;
     if (selectedFilters.isEmpty) {
       filteredResults.value = [];
 
@@ -35,7 +46,6 @@ class MainController extends GetxController {
       resultsLoading.value = false;
       return;
     }
-    resultsLoading.value = true;
     List<QueryDocumentSnapshot> filteredMembers;
     final membersRef = db.collection("Members");
     final QuerySnapshot membersQuery = await membersRef
@@ -81,11 +91,38 @@ class MainController extends GetxController {
     return freeTextTagsList.firstWhere((element) => element['key'] == key);
   }
 
+  bool checkIfNewMember(String joinDate) {
+    if (joinDate=='') return false;
+    DateTime today = DateTime.now();
+    DateTime memberSince = DateTime(int.parse(joinDate));
+    /// Calculate the total months for each date
+    int totalMonths1 = today.year * 12 + today.month;
+    int totalMonths2 = memberSince.year * 12 + memberSince.month;
+    if ((totalMonths2 - totalMonths1).abs() < newMemberThreshold) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  bool checkIfTodayIsBirthday(Timestamp birthdayTimestamp) {
+    DateTime today = DateTime.now();
+    DateTime birthday = birthdayTimestamp.toDate();
+    // Check if today is the birthday (ignoring the year)
+    if (today.month == birthday.month && today.day == birthday.day) {
+      //('Today is the birthday!');
+      return true;
+    } else {
+      //print('Today is not the birthday.');
+      return false;
+    }
+  }
+
   loadRandomResults(size) async {
     resultsLoading.value = true;
     List randomArr = [];
     final Random _random = Random();
-    for (int i = 0; i < 15; i++) {
+    for (int i = 0; i < numberOfRandomMembers; i++) {
       int _randomNumber = _random.nextInt(size);
       randomArr.add(_randomNumber);
     }
@@ -93,8 +130,19 @@ class MainController extends GetxController {
     QuerySnapshot membersSnapshot = await membersRef.get();
     List<QueryDocumentSnapshot> membersDocs = membersSnapshot.docs;
     filteredResults.value = [];
+    /// add birthdays
+    for (var member in membersDocs) {
+      var memberData = member.data() as Map<String, dynamic>;
+      if (memberData['birthdate']!=null) {
+        if (checkIfTodayIsBirthday(memberData['birthdate']))
+        filteredResults.add(Member.fromDocumentSnapshot(member));
+      }
+    }
+    /// add random
     for (var index in randomArr) {
-      filteredResults.add(Member.fromDocumentSnapshot(membersDocs[index]));
+      if (filteredResults.indexWhere((element) => element.id==membersDocs[index])<0){
+        filteredResults.add(Member.fromDocumentSnapshot(membersDocs[index]));
+      }
     }
     resultsLoading.value = false;
   }
@@ -216,6 +264,7 @@ class MainController extends GetxController {
 
     /// loadTags() should be first, it also gets the number of members data
     updateSplashScreenText('Loading Filter Tags...');
+    await getSettings();
     await loadTags();
     updateSplashScreenText('Loading Random Results...');
     await loadRandomResults(numberOfMembers);

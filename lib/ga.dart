@@ -35,7 +35,7 @@ class AnalyticsEngine {
     try {
       await _instance
           .logEvent(name: 'profile_view', parameters: <String, Object>{
-        //"profile_viewed" : fullName
+        "profile_viewed" : fullName
       });
     } catch (err) {
       //print('log to GA err:  Profile View');

@@ -7,6 +7,7 @@ import 'widgets.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'models.dart';
 import 'package:chips_choice/chips_choice.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 
 class ResultsPage extends StatefulWidget {
@@ -84,6 +85,7 @@ class _ResultsPageState extends State<ResultsPage> {
                     );
                   },
                 ),
+                /// selected Tags & Results
                 Padding(
                   padding: const EdgeInsets.only(top: 20.0),
                   child: Container(
@@ -127,8 +129,11 @@ class _ResultsPageState extends State<ResultsPage> {
                                                   child: SizedBox(
                                                     height: 200,
                                                     child: GestureDetector(
-                                                      child: ResultCard(mainController
-                                                          .filteredResults[index]),
+                                                      child: ResultCard(
+                                                        member: mainController.filteredResults[index],
+                                                        newMemberFlag: mainController.checkIfNewMember( mainController.filteredResults[index].joinDate),
+                                                        isBirthdayToday:  mainController.checkIfTodayIsBirthday(mainController.filteredResults[index].birthdate??Timestamp.fromMicrosecondsSinceEpoch(0)),
+                                                      ),
                                                       onTap: () => {
                                                         Navigator.of(context).push(
                                                           MaterialPageRoute(

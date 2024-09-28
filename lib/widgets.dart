@@ -8,15 +8,18 @@ import 'dart:html' as html;
 import 'RayBarFields.dart';
 import 'package:get/get.dart';
 import 'members_controller.dart';
-import 'utils.dart';
 
 class ResultCard extends StatefulWidget {
   final Member member;
+  final bool newMemberFlag;
+  final bool isBirthdayToday;
 
   const ResultCard(
-    this.member, {
+   { required this.member,
+     this.newMemberFlag = false,
+     this.isBirthdayToday = false,
     super.key,
-  });
+  } );
 
   @override
   _ResultCardState createState() => _ResultCardState();
@@ -25,8 +28,7 @@ class ResultCard extends StatefulWidget {
 class _ResultCardState extends State<ResultCard> {
   Widget getBanner() {
     ///check if birthday today
-    if (checkIfTodayIsBirthday(
-        widget.member.birthdate ?? Timestamp.fromMicrosecondsSinceEpoch(0))) {
+    if (widget.isBirthdayToday) {
       return Positioned(
         top: 65,
         left: 0,
@@ -55,8 +57,8 @@ class _ResultCardState extends State<ResultCard> {
       );
     }
 
-    /// check if new member
-    if (checkIfNewMember(widget.member.joinDate)) {
+    /// check if new member checkIfNewMember(widget.member.joinDate)
+    if (widget.newMemberFlag) {
       return Positioned(
         top : 65,
         left: 0,
@@ -114,7 +116,6 @@ class _ResultCardState extends State<ResultCard> {
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
           Row(
-            //mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Column(
@@ -158,7 +159,11 @@ class _ResultCardState extends State<ResultCard> {
               ),
               Column(
                 children: [
-                  BannerProfilePic(widget.member,widget.member.profileImage ?? ''),
+                  BannerProfilePic(
+                      widget.member,
+                      newMember: widget.newMemberFlag ,
+                      isBirthdayToday: widget.isBirthdayToday,
+                      uri:  widget.member.profileImage ?? ''),
                   Padding(
                     padding: const EdgeInsets.only(top: 10.0),
                     child: SizedBox(
@@ -185,17 +190,20 @@ class _ResultCardState extends State<ResultCard> {
 class BannerProfilePic extends StatelessWidget {
   const BannerProfilePic(
       this.member,
-    this.uri, {
-    super.key,
+     { this.uri ='',
+       this.newMember = false,
+       this.isBirthdayToday = false,
+       super.key,
   });
 
   final String uri;
   final Member member;
+  final bool newMember;
+  final bool isBirthdayToday;
 
   Widget getBanner() {
     ///check if birthday today
-    if (checkIfTodayIsBirthday(
-        member.birthdate ?? Timestamp.fromMicrosecondsSinceEpoch(0))) {
+    if (isBirthdayToday) {
       return Positioned(
         top: 70,
         left: 0,
@@ -213,19 +221,10 @@ class BannerProfilePic extends StatelessWidget {
             //fit: BoxFit.cover, // Adjust the image fit
           ),
         ),
-
-        /*
-            Container(
-              decoration: ,
-              color: Colors.black,
-                child: Image( width: 80, height: 80, image:AssetImage('images/happy-birthday.png'))),
-
-          */
       );
     }
-
     /// check if new member
-    if (checkIfNewMember(member.joinDate)) {
+    if (newMember) {
       return Positioned(
         top : 65,
         left: 0,
