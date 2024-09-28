@@ -445,18 +445,8 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
 
   checkEmailVerified() async {
     await FirebaseAuth.instance.currentUser?.reload();
-    setState(() {
-      isEmailVerified = FirebaseAuth.instance.currentUser!.emailVerified;
-    });
-
+    isEmailVerified = FirebaseAuth.instance.currentUser!.emailVerified;
     if (isEmailVerified) {
-      // analytics.logSignUp(
-      //   signUpMethod: "Firebase_Auth",
-      //   parameters: {
-      //     "user": FirebaseAuth.instance.currentUser!.email!,
-      //     "status" : "email verified"
-      //   },
-      // );
       await membersController.onVerify(FirebaseAuth.instance.currentUser!);
       Get.to(() => OnBoardingPage(user: FirebaseAuth.instance.currentUser));
       ScaffoldMessenger.of(context).showSnackBar(
