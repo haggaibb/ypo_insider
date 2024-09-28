@@ -1,6 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 import 'package:ypo_connect/models.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -336,8 +334,8 @@ class ProfileAppDrawer extends StatelessWidget {
                   member.email,
                   style: TextStyle(fontSize: 14),
                 ),
-                Text('Forum ' + member.forum.toString() ?? 'Not in a Forum',
-                    style: TextStyle(fontSize: 14)),
+                Text('Forum ${member.forum}',
+                    style: const TextStyle(fontSize: 14)),
               ],
             ),
           ),
@@ -545,8 +543,6 @@ class ProfileMenuWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var isDark = MediaQuery.of(context).platformBrightness == Brightness.dark;
-    var iconColor = isDark ? Colors.blue : Colors.greenAccent;
     return Column(children: [
       Row(children: [
         Icon(
@@ -637,13 +633,10 @@ PreferredChannelLabel getLabel(String txtLabel) {
   switch (txtLabel) {
     case 'Email':
       return PreferredChannelLabel.email;
-      break;
     case 'Pone':
       return PreferredChannelLabel.phone;
-      break;
     case 'Whatsapp':
       return PreferredChannelLabel.dm;
-      break;
   }
   return PreferredChannelLabel.email;
 }
