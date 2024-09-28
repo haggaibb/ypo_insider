@@ -60,6 +60,11 @@
       font-size: 16px;
       color: #555;
     }
+    .version-text {
+      margin-top: 0px;
+      font-size: 4px;
+      color: #555;
+    }
     .splash-screen.hidden {
       display: none;
     }
@@ -117,12 +122,19 @@
     <img src="icons/logo-insider.png" width="63" height="18" alt="App Logo" />
     <div class="spinner"></div> <!-- Spinner overlaid on the image -->
     <div class="status-text" id="status-text">Loading...</div>
+    <div class="status-text" id="version-text">Loading...</div>
   </div>
 </div>
 <script>
   // Function to update the status text on the splash screen
   function updateStatusText(message) {
     document.getElementById('status-text').textContent = message;
+  }
+</script>
+<script>
+  // Function to update the version text on the splash screen
+  function updateVersionText(version) {
+    document.getElementById('version-text').textContent = version;
   }
 </script>
   <script>

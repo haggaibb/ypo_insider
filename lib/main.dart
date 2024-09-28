@@ -14,6 +14,10 @@ import 'members_controller.dart';
 import 'dart:js' as js;
 import 'ga.dart';
 import 'utils.dart';
+import 'package:flutter/services.dart' show rootBundle;
+import 'dart:convert';
+
+
 
 final actionCodeSettings = ActionCodeSettings(
   url: 'https://ypodex.web.app/',
@@ -24,10 +28,25 @@ final emailLinkProviderConfig = EmailLinkAuthProvider(
   actionCodeSettings: actionCodeSettings,
 );
 final membersController = Get.put(MembersController());
-
+final String appVersion = const String.fromEnvironment('APP_VERSION', defaultValue: 'unknown');
+Future<String> fetchVersionFromAssets() async {
+  try {
+    // Load the JSON file from assets
+    final String jsonString = await rootBundle.loadString('version.json');
+    // Parse the JSON string
+    final Map<String, dynamic> data = jsonDecode(jsonString);
+    return data['version'] ?? 'unknown';
+  } catch (e) {
+    // Return 'unknown' in case of error
+    return 'unknown';
+  }
+}
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  final String appVersion = await fetchVersionFromAssets();
+  print(appVersion);
   updateSplashScreenText('Initializing...');
+  updateSplashScreenVersionText(appVersion);
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   final user = FirebaseAuth.instance.currentUser;
   //print('@@@@@@@@@@@@@@@@@@');

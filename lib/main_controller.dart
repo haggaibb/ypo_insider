@@ -9,6 +9,7 @@ import 'ga.dart';
 import 'utils.dart';
 
 
+
 class MainController extends GetxController {
   var db = FirebaseFirestore.instance;
   List<ResultRecord> allMembersFullName = [];
@@ -28,6 +29,8 @@ class MainController extends GetxController {
   int numberOfRandomMembers =10;
   int newMemberThreshold = 12;
   final user = FirebaseAuth.instance.currentUser;
+  late String version;
+
 
   getSettings() async {
     final settingsRef = db.collection("Settings").doc('results_settings');
@@ -261,7 +264,7 @@ class MainController extends GetxController {
     super.onInit();
     /// print('init - main Controller...');
     mainLoading.value = true;
-
+    //print(version);
     /// loadTags() should be first, it also gets the number of members data
     updateSplashScreenText('Loading Filter Tags...');
     await getSettings();
