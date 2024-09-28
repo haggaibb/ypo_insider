@@ -275,12 +275,23 @@ class _EmailRegisterFormState extends State<EmailRegisterForm> {
                     style: TextStyle(fontSize: 28),
                   ),
                 ),
-                const Padding(
+                Padding(
                   padding: EdgeInsets.only(
                       left: 18.0, right: 18.0, top: 8.0, bottom: 0),
-                  child: Text(
-                    'Please register using the email address associated with your YPO account. Password should be at least 6 characters long, an indicator will show you the strength of your password, you can submit weak passwords although that is not recommended!',
-                    style: TextStyle(fontSize: 14),
+                  child: RichText(
+                    text: TextSpan(
+                      text: 'Please register using the email address associated with your YPO account.',
+                      style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold , color: Colors.red),
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: 'Password should be at least 6 characters long, an indicator will show you the strength of your password, you can submit weak passwords although that is not recommended!',
+                          style: TextStyle( color: Colors.black, fontWeight: FontWeight.normal),
+                        ),
+                        TextSpan(
+                          text: '!',
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 Center(
