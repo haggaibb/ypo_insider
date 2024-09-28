@@ -437,9 +437,18 @@ Future<void> _launchInBrowser(String url) async {
 
 /// send email
 void _launchMailClient(String targetEmail) async {
+  String? encodeQueryParameters(Map<String, String> params) {
+    return params.entries
+        .map((MapEntry<String, String> e) =>
+    '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
+        .join('&');
+  }
   final Uri emailLaunchUri = Uri(
     scheme: 'mailto',
     path: targetEmail,
+    query: encodeQueryParameters(<String, String>{
+      'subject': 'Help needed with YPO Israel Insider App.',
+    }),
   );
   //print(await canLaunchUrl(emailLaunchUri));
   await launchUrl(emailLaunchUri);
