@@ -287,9 +287,6 @@ class _EmailRegisterFormState extends State<EmailRegisterForm> {
                           text: 'Password should be at least 6 characters long, an indicator will show you the strength of your password, you can submit weak passwords although that is not recommended!',
                           style: TextStyle( color: Colors.black, fontWeight: FontWeight.normal),
                         ),
-                        TextSpan(
-                          text: '!',
-                        ),
                       ],
                     ),
                   ),

@@ -277,6 +277,7 @@ class MainController extends GetxController {
     super.onInit();
     /// print('init - main Controller...');
     mainLoading.value = true;
+    js.context.callMethod('hideSplashScreen');
     version = await fetchVersionFromAssets();
     /// loadTags() should be first, it also gets the number of members data
     updateSplashScreenText('Loading Filter Tags...');
@@ -284,7 +285,7 @@ class MainController extends GetxController {
     await loadTags();
     updateSplashScreenText('Loading Random Results...');
     await loadRandomResults(numberOfMembers);
-    js.context.callMethod('hideSplashScreen');
+    //js.context.callMethod('hideSplashScreen');
     //await logUserLogsIn(user!.displayName??'NA');
     await logUserOpensApp(user!.displayName ?? 'NA');
     mainLoading.value = false;

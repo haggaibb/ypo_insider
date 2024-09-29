@@ -25,6 +25,7 @@ final emailLinkProviderConfig = EmailLinkAuthProvider(
   actionCodeSettings: actionCodeSettings,
 );
 final membersController = Get.put(MembersController());
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   updateSplashScreenText('Initializing...');
@@ -45,7 +46,7 @@ Future<void> main() async {
       membersController.loadingStatus.value = 'First timer, load onBoarding...';
       /// print('First timer, load onBoarding...');
       updateSplashScreenText('${user.displayName} first visit...');
-      js.context.callMethod('hideSplashxScreen');
+      js.context.callMethod('hideSplashScreen');
       runApp(OnBoardingPage(user: user));
     }
   }
