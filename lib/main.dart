@@ -34,7 +34,8 @@ Future<void> main() async {
   //print('@@@@@@@@@@@@@@@@@@');
   //print('main');
   runApp(MainLoading());
-  if (user!=null && user.emailVerified) {
+    if (user!=null) {
+  //if (user!=null && user.emailVerified) {
     /// print('root check - user verified....');
     if (user.displayName!=null) {
       updateSplashScreenText('${user.displayName} Verified..');
