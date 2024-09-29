@@ -313,8 +313,8 @@ class _EmailRegisterFormState extends State<EmailRegisterForm> {
                               ),
                               passwordController: _passwordController,
                               validationRules: {
-                                DigitValidationRule(),
-                                UppercaseValidationRule(),
+                                DigitValidationRule(customText: 'Has at least 1 digit'),
+                                UppercaseValidationRule(customText: 'Has at least 1 uppercase letter'),
                                 MinCharactersValidationRule(6),
                               },
                               validator: (value) {
