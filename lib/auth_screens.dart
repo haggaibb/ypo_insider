@@ -241,12 +241,7 @@ class _EmailRegisterFormState extends State<EmailRegisterForm> {
   @override
   void initState() {
     super.initState();
-
-    /// print('init reg');
-
-    /// print('init reg end');
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -279,7 +274,7 @@ class _EmailRegisterFormState extends State<EmailRegisterForm> {
                   padding: EdgeInsets.only(
                       left: 18.0, right: 18.0, top: 8.0, bottom: 0),
                   child: RichText(
-                    text: TextSpan(
+                    text: const TextSpan(
                       text: 'Please register using the email address associated with your YPO account.',
                       style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold , color: Colors.red),
                       children: <TextSpan>[
@@ -433,7 +428,6 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
   @override
   void initState() {
     super.initState();
-
     /// print('init Verification screen');
     FirebaseAuth.instance.currentUser?.sendEmailVerification();
     timer =
