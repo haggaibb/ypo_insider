@@ -215,7 +215,8 @@ class _EmailRegisterFormState extends State<EmailRegisterForm> {
           if (credentials.user != null) {
             await controller.onRegister(credentials.user!);
             controller.loading.value = false;
-            Get.to(() => const EmailVerificationScreen());
+            Get.to(() => OnBoardingPage(user: credentials.user!));
+            //Get.to(() => const EmailVerificationScreen());
           }
         } on FirebaseAuthException catch (e) {
           setState(() {
@@ -430,8 +431,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
     super.initState();
     /// print('init Verification screen');
     FirebaseAuth.instance.currentUser?.sendEmailVerification();
-    timer =
-        Timer.periodic(const Duration(seconds: 3), (_) => checkEmailVerified());
+    timer = Timer.periodic(const Duration(seconds: 3), (_) => checkEmailVerified());
   }
 
   checkEmailVerified() async {
@@ -475,6 +475,16 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                 child: Center(
                   child: Text(
                     'We have sent you a Email on ${FirebaseAuth.instance.currentUser?.email}',
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                child: Center(
+                  child: Text(
+                    style: TextStyle(color: Colors.red),
+                    'Note: check both Junk and Spam folders for email',
                     textAlign: TextAlign.center,
                   ),
                 ),
