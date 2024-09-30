@@ -10,3 +10,9 @@ void updateSplashScreenVersionText(String version) {
 }
 
 
+
+String labelToKey(String label) {
+  String key = label.toLowerCase();
+  key = key.replaceAll(' ', '_');
+  return key;
+}

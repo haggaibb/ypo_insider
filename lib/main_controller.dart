@@ -287,7 +287,34 @@ class MainController extends GetxController {
   }
 
   updateFilterTag(String category, String originalTag, String updatedTag) async {
+    Future<void> searchAndReplaceFilterTagInAllMembers(String oldString, String newString) async {
+      // Reference to the members collection in Firestore
+      CollectionReference membersRef = FirebaseFirestore.instance.collection('Members');
+      try {
+        // Use `where` clause to fetch only the members whose array contains the oldString
+        QuerySnapshot membersSnapshot = await membersRef
+            .where('filter_tags', arrayContains: oldString)
+            .get();
+        // Loop through each member document that contains the oldString
+        for (QueryDocumentSnapshot memberDoc in membersSnapshot.docs) {
+          // Fetch the array field from the document and safely cast it to List<String>
+          List<dynamic> memberArrayDynamic = memberDoc.get('filter_tags');
+          List<String> memberArray = memberArrayDynamic.cast<String>();
+          // Replace the old string with the new string
+          List<String> modifiedArray = memberArray.map((item) {
+            return item == oldString ? newString : item;
+          }).toList();
+          // Update the Firestore document with the modified array
+          await membersRef.doc(memberDoc.id).update({
+            'filter_tags': modifiedArray,
+          });
+        }
+      } catch (e) {
+        print("Error: $e");
+      }
+    }
     saving.value = true;
+    await searchAndReplaceFilterTagInAllMembers(originalTag,updatedTag);
     CollectionReference filtersRef = db.collection('FilterTags');
     final filtersQuery =
     await filtersRef.where("label", isEqualTo: category).get();
@@ -302,6 +329,53 @@ class MainController extends GetxController {
     saving.value = false;
   }
 
+  removeFilterTag(String category, String delTag) async {
+    Future<void> removeFilterTagInAllMembers(String delTag) async {
+      // Reference to the members collection in Firestore
+      CollectionReference membersRef = FirebaseFirestore.instance.collection('Members');
+      try {
+        // Use `where` clause to fetch only the members whose array contains the stringToRemove
+        QuerySnapshot membersSnapshot = await membersRef
+            .where('filter_tags', arrayContains: delTag)
+            .get();
+
+        // Loop through each member document that contains the stringToRemove
+        for (QueryDocumentSnapshot memberDoc in membersSnapshot.docs) {
+          // Use FieldValue.arrayRemove to remove the string directly
+          await membersRef.doc(memberDoc.id).update({
+            'filter_tags': FieldValue.arrayRemove([delTag]),
+          });
+        }
+      } catch (e) {
+        //print("Error: $e");
+      }
+    }
+    saving.value = true;
+    await removeFilterTagInAllMembers(delTag);
+    CollectionReference filtersRef = db.collection('FilterTags');
+    final filtersQuery =
+    await filtersRef.where("label", isEqualTo: category).get();
+    var id = filtersQuery.docs.first.id;
+    await filtersRef.doc(id).update({
+      "tags_list": FieldValue.arrayRemove([delTag]),
+    });
+    saving.value = false;
+  }
+
+  addNewFilterTagCategory(String category, String? hint) async {
+    saving.value = true;
+    CollectionReference filtersRef = db.collection('FilterTags');
+    var newTagData = {
+      'label' : category,
+      'key' : labelToKey(category),
+      'hint' : hint??'',
+      'show_order' : '6',
+      'tags_list' : []
+    };
+    //await filtersRef.add(newTagData);
+    filteredTagsList.add(newTagData);
+    saving.value = false;
+  }
 
 
 

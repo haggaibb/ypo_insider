@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'members_controller.dart';
 import 'main_controller.dart';
 import 'package:get/get.dart';
-import 'package:chips_choice/chips_choice.dart';
 
 class AddNewMember extends StatelessWidget {
   const AddNewMember({
@@ -689,6 +688,22 @@ class _ManageFilterTagsState extends State<ManageFilterTags> {
   late List filtersCategory;
   List<String> tags = [];
   bool editMode = false;
+  bool delMode = false;
+  final ScrollController tagsScrollCtrl = ScrollController();
+
+  // Function to scroll to the end
+  void _scrollToEnd() {
+    tagsScrollCtrl.animateTo(
+      tagsScrollCtrl.position.maxScrollExtent,
+      duration: Duration(milliseconds: 500),
+      curve: Curves.easeOut,
+    );
+  }
+
+  // Function to scroll immediately to the end
+  void _jumpToEnd() {
+    tagsScrollCtrl.jumpTo(tagsScrollCtrl.position.maxScrollExtent);
+  }
 
   List<String> getSelectedTagsInCategory(
       tagsInCategory, List<String> selectedTags) {
@@ -751,6 +766,7 @@ class _ManageFilterTagsState extends State<ManageFilterTags> {
                       child: Padding(
                         padding: const EdgeInsets.only(bottom: 8.0),
                         child: ListView(
+                          controller: tagsScrollCtrl,
                           children: List.generate(
                               filtersCategory.length,
                               (index) => Padding(
@@ -777,14 +793,39 @@ class _ManageFilterTagsState extends State<ManageFilterTags> {
                                                         CrossAxisAlignment
                                                             .start,
                                                     children: [
+                                                      /// actions
                                                       ListTile(
                                                         trailing: SizedBox(
-                                                          width: 100,
+                                                          width: 120,
                                                           child: Row(
                                                             mainAxisAlignment:
                                                                 MainAxisAlignment
                                                                     .spaceBetween,
                                                             children: [
+                                                              /// del tags
+                                                              Obx(() => mainController
+                                                                  .saving
+                                                                  .value
+                                                                  ? const CircularProgressIndicator()
+                                                                  : IconButton(
+                                                                  onPressed:
+                                                                      () async {
+                                                                    setState(
+                                                                            () {
+                                                                          delMode =
+                                                                          !delMode;
+                                                                        });
+                                                                  },
+                                                                  icon:
+                                                                  Icon(
+                                                                    delMode
+                                                                        ? null
+                                                                        : !editMode
+                                                                          ? Icons.delete
+                                                                          : null,
+                                                                    color: Colors
+                                                                        .white,
+                                                                  ))),
                                                               /// edit tags
                                                               Obx(() => mainController
                                                                       .saving
@@ -802,12 +843,13 @@ class _ManageFilterTagsState extends State<ManageFilterTags> {
                                                                       icon:
                                                                           Icon(
                                                                         editMode
-                                                                            ? Icons.close
-                                                                            : Icons.edit,
+                                                                            ? null
+                                                                            : !delMode
+                                                                              ? Icons.edit
+                                                                              : null,
                                                                         color: Colors
                                                                             .white,
                                                                       ))),
-
                                                               /// add tag
                                                               Obx(() => mainController
                                                                       .saving
@@ -816,6 +858,13 @@ class _ManageFilterTagsState extends State<ManageFilterTags> {
                                                                   : IconButton(
                                                                       onPressed:
                                                                           () async {
+                                                                        if (editMode || delMode) {
+                                                                          setState(() {
+                                                                            editMode=false;
+                                                                            delMode=false;
+                                                                          });
+                                                                          return;
+                                                                        }
                                                                         String? res = await showDialog<String>(
                                                                             context:
                                                                                 context,
@@ -833,9 +882,10 @@ class _ManageFilterTagsState extends State<ManageFilterTags> {
                                                                         }
                                                                       },
                                                                       icon:
-                                                                          const Icon(
-                                                                        Icons
-                                                                            .add,
+                                                                          Icon(
+                                                                            editMode||delMode
+                                                                                ? Icons.close
+                                                                                : Icons.add,
                                                                         color: Colors
                                                                             .white,
                                                                       )))
@@ -884,6 +934,23 @@ class _ManageFilterTagsState extends State<ManageFilterTags> {
                                                                         });
                                                                       }
                                                                     }
+                                                                    else if (delMode) {
+                                                                      /// dialog
+                                                                      bool? res = await showDialog<bool>(
+                                                                          context:
+                                                                          context,
+                                                                          builder: (BuildContext context) =>
+                                                                              EditFilterEntryDialog(tag: mainController.filteredTagsList[index]['tags_list'][tagIndex]));
+                                                                      if (res??false) {
+                                                                        await mainController.removeFilterTag(mainController.filteredTagsList[index]['label'],
+                                                                            mainController.filteredTagsList[index]['tags_list'][tagIndex]
+                                                                        );
+                                                                        setState(() {
+                                                                          /// remove the tag
+                                                                          //mainController.filteredTagsList[index]['tags_list'][tagIndex]=res;
+                                                                        });
+                                                                      }
+                                                                    }
                                                                   },
                                                                   avatar: editMode
                                                                       ? const Icon(
@@ -892,7 +959,14 @@ class _ManageFilterTagsState extends State<ManageFilterTags> {
                                                                           color:
                                                                               Colors.green,
                                                                         )
-                                                                      : null,
+                                                                      : delMode
+                                                                        ? const Icon(
+                                                                    Icons
+                                                                        .remove_circle_outline_sharp,
+                                                                    color:
+                                                                    Colors.red,
+                                                                  )
+                                                                        : null,
                                                                   selectedColor: Colors.white,
                                                                   showCheckmark: false,
                                                                   label: Text(mainController.filteredTagsList[index]['tags_list'][tagIndex]),
@@ -910,6 +984,31 @@ class _ManageFilterTagsState extends State<ManageFilterTags> {
                                   )),
                         ),
                       ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          //iconSize: 40,
+                          onPressed: () async {
+                            /// dialog
+                            String? res = await showDialog<String>(
+                                context: context,
+                                builder: (BuildContext context) => const AddNewFilterCategoryDialog());
+                            if (res != null) {
+                              /// add Filter Category
+                              mainController.addNewFilterTagCategory(res,'');
+                              _scrollToEnd();
+                              setState(() {
+
+                              });
+                            }
+                          },
+                          icon: const Icon(Icons.add),
+                          color: Colors.white,
+                        ),
+                        Text('Add a new Filter Tag Category' , style: TextStyle(fontSize: 12, color: Colors.white),)
+                      ],
                     ),
                     const SizedBox(
                       height: 50,
@@ -977,7 +1076,7 @@ class FilterEntryDialog extends StatelessWidget {
     );
   }
 }
-
+///
 class EditFilterEntryDialog extends StatelessWidget {
   final String tag;
   final double? fieldWidth;
@@ -1020,6 +1119,63 @@ class EditFilterEntryDialog extends StatelessWidget {
       actions: <Widget>[
         TextButton(
           onPressed: () => Navigator.pop(context, newTagCtrl.text),
+          child: const Text('Save'),
+        ),
+        TextButton(
+          onPressed: () => Navigator.pop(context, null),
+          child: const Text('Cancel'),
+        ),
+      ],
+    );
+  }
+}
+///
+class AddNewFilterCategoryDialog extends StatelessWidget {
+  const AddNewFilterCategoryDialog(
+      {super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    TextEditingController newFilterTagCategoryCtrl = TextEditingController();
+    return AlertDialog(
+      titlePadding: EdgeInsets.only(left: 80.0, top: 20),
+      title: const Text('Add a New Filter Tag Category'),
+      content: SizedBox(
+        width: 500,
+        height: 100,
+        child: Column(
+          children: [
+            SizedBox(
+              height: 10,
+            ),
+            Text('Label/Name of Category:'),
+            SizedBox(
+              height: 4,
+            ),
+            SizedBox(
+              width: 250,
+              child: TextField(
+                  controller: newFilterTagCategoryCtrl,
+                  decoration: InputDecoration(
+                    contentPadding: const EdgeInsets.only(
+                        left: 8, right: 8, top: 5, bottom: 8),
+                    isCollapsed: true,
+                    labelText: 'Category Name',
+                    //helperText: helperText:'',
+                    //hintText:   widget.hintText,
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(),
+                      borderRadius: BorderRadius.circular(5.0),
+                    ),
+                  )),
+            ),
+          ],
+        ),
+      ),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () => Navigator.pop(context, newFilterTagCategoryCtrl.text),
           child: const Text('Save'),
         ),
         TextButton(
