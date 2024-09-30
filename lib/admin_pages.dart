@@ -308,7 +308,6 @@ class AddNewForum extends StatelessWidget {
   }
 }
 
-
 class AddNewFreeText extends StatelessWidget {
 
   const AddNewFreeText({super.key, });
@@ -438,6 +437,109 @@ class AddNewFreeText extends StatelessWidget {
                   ],
                 )
               ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
+class SettingsScreen extends StatelessWidget {
+
+  const SettingsScreen({super.key, });
+
+
+  @override
+  Widget build(BuildContext context) {
+    final mainController = Get.put(MainController());
+    TextEditingController newMemberThresholdInMonthsCtrl = TextEditingController();
+    TextEditingController numberOfRandomResultsCtrl = TextEditingController();
+    newMemberThresholdInMonthsCtrl.text = mainController.newMemberThreshold.toString();
+    numberOfRandomResultsCtrl.text = mainController.numberOfRandomMembers.toString();
+    return MaterialApp(
+      home: Directionality(
+        textDirection: TextDirection.ltr,
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          body: Center(
+            child: SizedBox(
+              width: 350,
+              height: 750,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                //mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Image.network('assets/images/logo-insider.png' , height: 70,),
+                  SizedBox(height: 20,),
+                  Container(
+                    color: Colors.blueGrey.shade100,
+                    child: Column(
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.only(top:20, bottom: 10),
+                          child: Text('Results Page Settings' , style: TextStyle(fontSize: 24),),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left:18.0, top:20),
+                          child: Row(
+                            children: [
+                              const Text('New Member Thresholds in Months:', style: TextStyle(fontWeight: FontWeight.bold)),
+                              Padding(
+                                padding: const EdgeInsets.only(left :12.0),
+                                child: SizedBox(width: 50, height: 50, child: TextField(controller: newMemberThresholdInMonthsCtrl,)),
+                              )
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding:  const EdgeInsets.only(left:18.0, top:20, bottom: 50),
+                          child: Row(
+                            children: [
+                              Text('Number Of Random Results:', style: TextStyle(fontWeight: FontWeight.bold)),
+                              Padding(
+                                padding: const EdgeInsets.only(left :12.0),
+                                child: SizedBox(width: 50, height: 50, child: TextField(controller: numberOfRandomResultsCtrl,)),
+                              )
+                            ],
+                          ),
+                        ),
+                        /// Save and Cancel
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding:  const EdgeInsets.only(left:18.0, top:50, bottom: 50),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        ElevatedButton(
+                            onPressed: () async {
+                              /// print('save data');
+                              // mainController.(firstNameCtrl.text, lastNameCtrl.text, emailCtrl.text);
+                              const snackBar = SnackBar(
+                                content: Text('Settings Saved!' ,  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),),
+                              );
+                              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                              Get.back();
+                              Get.back();
+                            },
+                            child: Text('Save')
+                        ),
+                        ElevatedButton(
+                            onPressed: ()  {
+                              /// print('Cancel');
+                              Get.back();
+                              Get.back();
+                            },
+                            child: Text('Cancel')
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
         ),

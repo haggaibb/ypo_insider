@@ -86,7 +86,7 @@ class _HomeState extends State<Home> {
                   ),
                 ),
                 drawer: SizedBox(
-                  height: membersController.isAdmin.value?550:460,
+                  height: membersController.isAdmin.value?600:460,
                   child: Drawer(
                     shape: ContinuousRectangleBorder(
                         borderRadius: BorderRadius.circular(75),
@@ -137,7 +137,7 @@ class _HomeState extends State<Home> {
                               membersController.themeMode.value.name == 'dark'
                                   ? const Icon(Icons.dark_mode)
                                   : const Icon(Icons.light_mode),
-                          title: const Text('Settings'),
+                          title: const Text('Display Settings'),
                           children: <Widget>[
                             ChipsChoice<ThemeMode>.single(
                               //placeholderStyle: TextStyle(color: Colors.blue.shade900),
@@ -164,9 +164,10 @@ class _HomeState extends State<Home> {
                             ),
                           ],
                         ),
-                        /// Admin pages
                         const Divider(),
-                        ListTile(
+                        /// About
+                        /// Admin pages
+                        membersController.isAdmin.value?ListTile(
                           leading: const Icon(
                             Icons.info_outline,
                           ),
@@ -174,7 +175,7 @@ class _HomeState extends State<Home> {
                           onTap: () {
                             Get.to(() => About(version: mainController.version));
                           },
-                        ),
+                        ):const SizedBox(),
                         /// new member
                         membersController.isAdmin.value?ListTile(
                           leading: const Icon(
@@ -219,6 +220,16 @@ class _HomeState extends State<Home> {
                         //     );
                         //   },
                         // ):SizedBox(),
+                        /// Settings
+                        ListTile(
+                          leading: const Icon(
+                            Icons.settings,
+                          ),
+                          title: const Text('Settings'),
+                          onTap: () {
+                            Get.to(() => SettingsScreen());
+                          },
+                        ),
                       ],
                     ),
                   ),
