@@ -26,6 +26,7 @@ class MainController extends GetxController {
   RxBool resultsLoading = true.obs;
   RxBool mainLoading = false.obs;
   RxBool isAnd = true.obs;
+  RxBool saving = false.obs;
   int numberOfMembers = 1;
   int numberOfRandomMembers =10;
   int newMemberThreshold = 12;
@@ -271,6 +272,38 @@ class MainController extends GetxController {
       return 'unknown';
     }
   }
+
+  addNewFilterTag(String category, String newTag) async {
+    saving.value = true;
+    CollectionReference filtersRef = db.collection('FilterTags');
+    final filtersQuery =
+    await filtersRef.where("label", isEqualTo: category).get();
+    var id = filtersQuery.docs.first.id;
+    filtersRef.doc(id).update({
+      "tags_list": FieldValue.arrayUnion([newTag]),
+    });
+    //await loadTags();
+    saving.value = false;
+  }
+
+  updateFilterTag(String category, String originalTag, String updatedTag) async {
+    saving.value = true;
+    CollectionReference filtersRef = db.collection('FilterTags');
+    final filtersQuery =
+    await filtersRef.where("label", isEqualTo: category).get();
+    var id = filtersQuery.docs.first.id;
+    await filtersRef.doc(id).update({
+      "tags_list": FieldValue.arrayRemove([originalTag]),
+    });
+    await filtersRef.doc(id).update({
+      "tags_list": FieldValue.arrayUnion([updatedTag]),
+    });
+    //await loadTags();
+    saving.value = false;
+  }
+
+
+
 
   @override
   onInit() async {

@@ -86,7 +86,7 @@ class _HomeState extends State<Home> {
                   ),
                 ),
                 drawer: SizedBox(
-                  height: membersController.isAdmin.value?600:460,
+                  height: membersController.isAdmin.value?640:460,
                   child: Drawer(
                     shape: ContinuousRectangleBorder(
                         borderRadius: BorderRadius.circular(75),
@@ -209,6 +209,17 @@ class _HomeState extends State<Home> {
                             );
                           },
                         ):const SizedBox(),
+                        /// add Filter Tags
+                        membersController.isAdmin.value?ListTile(
+                          leading: const Icon(
+                            Icons.group_add,
+                          ),
+                          title: const Text('Manage Filter Tags'),
+                          onTap: () {
+                            Get.to(() => const ManageFilterTags()
+                            );
+                          },
+                        ):const SizedBox(),
                         /// add free text
                         // membersController.isAdmin.value?ListTile(
                         //   leading: const Icon(
@@ -221,7 +232,7 @@ class _HomeState extends State<Home> {
                         //   },
                         // ):SizedBox(),
                         /// Settings
-                        ListTile(
+                        membersController.isAdmin.value?ListTile(
                           leading: const Icon(
                             Icons.settings,
                           ),
@@ -229,7 +240,7 @@ class _HomeState extends State<Home> {
                           onTap: () {
                             Get.to(() => SettingsScreen());
                           },
-                        ),
+                        ):const SizedBox(),
                       ],
                     ),
                   ),
