@@ -25,6 +25,7 @@ class MainController extends GetxController {
   RxList<Member> filteredResults = RxList<Member>();
   RxBool resultsLoading = true.obs;
   RxBool mainLoading = false.obs;
+  Rx<String> loadingStatus = 'Loading....'.obs;
   RxBool isAnd = true.obs;
   RxBool saving = false.obs;
   int numberOfMembers = 1;
@@ -140,6 +141,15 @@ class MainController extends GetxController {
       filteredResults.add(Member.fromDocumentSnapshot(member));
     }
     filteredResults.sort((b, a) => a.getProfileScore().compareTo(b.getProfileScore()));
+    int startIndex = filteredResults.lastIndexWhere((element) => element.getProfileScore()>100);
+    int endIndex = filteredResults.indexWhere((element) => element.getProfileScore()<12);
+    List<Member> birthdayProfiles = filteredResults.sublist(0,startIndex+1);
+    List<Member> topProfiles = filteredResults.sublist(startIndex+1,endIndex);
+    List<Member> remainingProfiles = filteredResults.sublist(endIndex+1,filteredResults.length);
+    topProfiles.shuffle();
+    filteredResults.value = [];
+    filteredResults.value = birthdayProfiles + topProfiles + remainingProfiles ;
+
     /// add random
     // List randomArr = [];
     // final Random _random = Random();
@@ -431,9 +441,11 @@ class MainController extends GetxController {
     version = await fetchVersionFromAssets();
     /// loadTags() should be first, it also gets the number of members data
     updateSplashScreenText('Loading Filter Tags...');
+    loadingStatus.value = 'Loading Insider Home';
     await getSettings();
     await loadTags();
     updateSplashScreenText('Loading Random Results...');
+    loadingStatus.value = 'Loading $numberOfMembers Registered Members...';
     await loadRandomResults(numberOfMembers);
     //js.context.callMethod('hideSplashScreen');
     //await logUserLogsIn(user!.displayName??'NA');

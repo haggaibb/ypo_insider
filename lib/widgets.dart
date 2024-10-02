@@ -6,6 +6,7 @@ import 'dart:html' as html;
 import 'RayBarFields.dart';
 import 'package:get/get.dart';
 import 'members_controller.dart';
+import 'main_controller.dart';
 
 class ResultCard extends StatefulWidget {
   final Member member;
@@ -345,10 +346,12 @@ class ProfileAppDrawer extends StatelessWidget {
     );
   }
 }
-
+///
 class MainLoading extends StatelessWidget {
+  //final String status = 'Loading...';
   MainLoading({super.key});
-  final membersController = Get.put(MembersController());
+  //final membersController = Get.put(MembersController());
+  final mainController = Get.put(MainController());
 
   @override
   Widget build(BuildContext context) {
@@ -372,7 +375,7 @@ class MainLoading extends StatelessWidget {
                   size: 80.0,
                 ),
                 Obx(() => Text(
-                      membersController.loadingStatus.value,
+                      mainController.loadingStatus.value,
                       style: TextStyle(fontSize: 16),
                     ))
               ],
@@ -381,7 +384,7 @@ class MainLoading extends StatelessWidget {
         ));
   }
 }
-
+///
 class ResultsLoading extends StatelessWidget {
   final String statusMsg;
   const ResultsLoading({super.key, this.statusMsg = ''});
@@ -404,7 +407,7 @@ class ResultsLoading extends StatelessWidget {
     );
   }
 }
-
+///
 class ProfileImageLoading extends StatelessWidget {
   const ProfileImageLoading({super.key});
 
@@ -421,7 +424,6 @@ class ProfileImageLoading extends StatelessWidget {
     );
   }
 }
-
 /// open url in browser
 Future<void> _launchInBrowser(String url) async {
   /// print(url);
@@ -434,7 +436,6 @@ Future<void> _launchInBrowser(String url) async {
     throw Exception('Could not launch $_url');
   }
 }
-
 /// send email
 void _launchMailClient(String targetEmail) async {
   String? encodeQueryParameters(Map<String, String> params) {
@@ -454,21 +455,16 @@ void _launchMailClient(String targetEmail) async {
   await launchUrl(emailLaunchUri);
   //print('done');
 }
-
 /// make call
 void _launchPhoneClient(String targetPhone) async {
   final Uri telLaunchUri = Uri(scheme: 'tel', path: '+$targetPhone');
   await launchUrl(telLaunchUri);
 }
-
-///
 /// whatsapp
 void _launchWhatsappClient(String targetPhone) async {
   String webUrl = 'https://api.whatsapp.com/send/?phone=+$targetPhone&text=hi';
   await launchUrl(Uri.parse(webUrl), mode: LaunchMode.externalApplication);
 }
-
-///
 ///
 class SocialBar extends StatelessWidget {
   final String? linkedin;
@@ -530,8 +526,6 @@ class SocialBar extends StatelessWidget {
     );
   }
 }
-
-///
 ///
 class ProfileMenuWidget extends StatelessWidget {
   const ProfileMenuWidget(
@@ -622,9 +616,7 @@ class ProfileMenuWidget extends StatelessWidget {
     ]);
   }
 }
-
 ///
-
 enum PreferredChannelLabel {
   email('Email', Icons.email),
   phone(
@@ -637,7 +629,7 @@ enum PreferredChannelLabel {
   final String label;
   final IconData icon;
 }
-
+///
 PreferredChannelLabel getLabel(String txtLabel) {
   switch (txtLabel) {
     case 'Email':
@@ -649,7 +641,7 @@ PreferredChannelLabel getLabel(String txtLabel) {
   }
   return PreferredChannelLabel.email;
 }
-
+///
 class TestPage extends StatefulWidget {
   TestPage({
     super.key,
@@ -658,7 +650,7 @@ class TestPage extends StatefulWidget {
   @override
   State<TestPage> createState() => _TestPageState();
 }
-
+///
 class _TestPageState extends State<TestPage> {
   final TextEditingController controller = TextEditingController();
 
@@ -798,8 +790,7 @@ class _TestPageState extends State<TestPage> {
     ));
   }
 }
-
-
+///
 class About extends StatelessWidget {
   final String version;
   final String numberOfMembers;
