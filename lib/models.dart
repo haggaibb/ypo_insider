@@ -107,7 +107,29 @@ class Member {
   bool isBoarded() {
     return onBoarding!['boarded'];
   }
-
+  int getProfileScore() {
+    int score = 0;
+    if (!profileImage!.contains('profile0.jpg')) {
+      score = score + 10;
+    }
+    if (linkedin!='' || facebook!='' || linkedin!='') score = score + 5;
+    score = score + filterTags!.length;
+    score = score + freeTextTags!.length;
+    if (checkIfTodayIsBirthday(birthdate!)) score = score + 100;
+    return score;
+  }
+  bool checkIfTodayIsBirthday(Timestamp birthdayTimestamp) {
+    DateTime today = DateTime.now();
+    DateTime birthday = birthdayTimestamp.toDate();
+    // Check if today is the birthday (ignoring the year)
+    if (today.month == birthday.month && today.day == birthday.day) {
+      //('Today is the birthday!');
+      return true;
+    } else {
+      //print('Today is not the birthday.');
+      return false;
+    }
+  }
   Map<String, dynamic> toMap() {
     return {
       'id': id,
