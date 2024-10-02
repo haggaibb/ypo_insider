@@ -96,6 +96,11 @@ class MainController extends GetxController {
     return freeTextTagsList.firstWhere((element) => element['key'] == key);
   }
 
+  Map<String, dynamic> getFreeTextTagTemplate(templateId) {
+    return freeTextTagsList.firstWhere((element) => element['templateId'] == templateId);
+  }
+
+
   bool checkIfNewMember(String joinDate) {
     if (joinDate=='') return false;
     DateTime today = DateTime.now();
@@ -240,7 +245,9 @@ class MainController extends GetxController {
 
   addNewFreeTextField(Map<String,dynamic> freeTextData) async {
     CollectionReference freeTextTagsRef = db.collection('FreeTextTags');
-    freeTextTagsRef.add(freeTextData);
+    var res = await freeTextTagsRef.add(freeTextData);
+    print(res.id);
+    await freeTextTagsRef.doc(res.id).update({'templateId' : res.id});
   }
 
   /// GA events
@@ -372,11 +379,49 @@ class MainController extends GetxController {
       'show_order' : '6',
       'tags_list' : []
     };
-    //await filtersRef.add(newTagData);
+    await filtersRef.add(newTagData);
     filteredTagsList.add(newTagData);
     saving.value = false;
   }
 
+  removeFilterTagCategory(String category) async {
+    saving.value = true;
+    CollectionReference filtersRef = db.collection('FilterTags');
+    final filtersQuery = await filtersRef.where("label", isEqualTo: category).get();
+    var id = filtersQuery.docs.first.id;
+    await filtersRef.doc(id).delete();
+    saving.value = false;
+  }
+
+  removeFreeTextTag(String label, String templateId) async {
+    saving.value = true;
+    CollectionReference freeTextTagsRef = db.collection('FreeTextTags');
+    await freeTextTagsRef.doc(templateId).delete();
+    CollectionReference membersRef = db.collection('Members');
+    try {
+      // Get all member documents
+      QuerySnapshot membersSnapshot = await membersRef.get();
+      // Loop through each member document
+      for (QueryDocumentSnapshot memberDoc in membersSnapshot.docs) {
+        // Fetch the array of maps from the document and safely cast it to List<Map<String, dynamic>>
+        List<dynamic> mapsArrayDynamic = memberDoc.get('free_text_tags');
+        List<Map<String, dynamic>> mapsArray = mapsArrayDynamic.cast<Map<String, dynamic>>();
+
+        // Remove the map where the 'templateId' key matches the labelToMatch
+        mapsArray.removeWhere((map) => map['templateId'] == templateId);
+
+        // Update the document with the modified arrayOfMaps
+        await membersRef.doc(memberDoc.id).update({
+          'free_text_tags': mapsArray,
+        });
+        //print("Updated member: ${memberDoc.id}");
+      }
+      //print("All relevant members have been processed.");
+    } catch (e) {
+      //print("Error: $e");
+    }
+    saving.value = false;
+  }
 
 
   @override

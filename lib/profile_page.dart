@@ -98,9 +98,13 @@ class _ProfilePageState extends State<ProfilePage> {
     editedMember.freeTextTags = [];
     for (var i = 0; i < freeTextControls.length; i++) {
       if (freeTextControls[i].text != '') {
-        Map<String, dynamic> freeTextTag = mainController
+        Map<String, dynamic> freeTextTagTemplate = mainController
             .newFreeTextTag(mainController.freeTextTagsList[i]['key']);
-        freeTextTag['value'] = freeTextControls[i].text;
+        //freeTextTagTemplate['value'] = freeTextControls[i].text;
+        Map<String, dynamic> freeTextTag = {
+          'templateId' : freeTextTagTemplate['templateId'],
+          'value' : freeTextControls[i].text
+        };
         editedMember.freeTextTags?.add(freeTextTag);
       }
     }
@@ -137,8 +141,7 @@ class _ProfilePageState extends State<ProfilePage> {
     for (var i = 0; i < mainController.freeTextTagsList.length; i++) {
       freeTextControls.add(TextEditingController());
       //init ctrl with member value if pre exists
-      freeTextControls[i].text = widget.member
-          .getFreeTextTagValueByKey(mainController.freeTextTagsList[i]['key']);
+      freeTextControls[i].text = widget.member.getFreeTextTagValueByTemplateId(mainController.freeTextTagsList[i]['templateId']);
     }
 
     ///ProfileImage
@@ -899,19 +902,14 @@ class _ProfilePageState extends State<ProfilePage> {
                                                 bottom: 20.0),
                                             child: ProfileMenuWidget(
                                                 title:
-                                                    '${widget.member.freeTextTags![index]['label']}: ',
+                                                    '${mainController.getFreeTextTagTemplate(widget.member.freeTextTags![index]['templateId'])['label']}: ',
                                                 icon: IconData(
-                                                    int.parse(widget.member
-                                                            .freeTextTags![
-                                                        index]['icon_code']),
+                                                    int.parse(mainController.getFreeTextTagTemplate(widget.member.freeTextTags![index]['templateId'])['icon_code']),
                                                     fontFamily:
                                                         'MaterialIcons'),
                                                 value:
-                                                    widget.member.freeTextTags![
-                                                            index]['value'] ??
-                                                        '',
-                                                type: widget.member
-                                                        .freeTextTags![index]
+                                                widget.member.freeTextTags![index]['value'] ?? '',
+                                                type: mainController.getFreeTextTagTemplate(widget.member.freeTextTags![index]['templateId'])
                                                     ['type'],
                                                 onPress: () {}),
                                           );

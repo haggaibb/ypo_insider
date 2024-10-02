@@ -89,6 +89,14 @@ class Member {
     });
     return value;
   }
+  String getFreeTextTagValueByTemplateId(templateId) {
+    String value ='';
+    freeTextTags?.forEach((element) {
+      var foundKey = element['templateId']==templateId;
+      if (foundKey) value = element['value'];
+    });
+    return value;
+  }
   bool isVerified() {
     if(onBoarding!=null) {
       return (onBoarding!.containsKey(onBoarding!['verified']) == true);

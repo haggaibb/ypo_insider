@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:toggle_switch/toggle_switch.dart';
 import 'members_controller.dart';
 import 'main_controller.dart';
 import 'package:get/get.dart';
+import 'utils.dart';
+import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 
 class AddNewMember extends StatelessWidget {
   const AddNewMember({
@@ -370,19 +373,27 @@ class AddNewForum extends StatelessWidget {
   }
 }
 
-class AddNewFreeText extends StatelessWidget {
-  const AddNewFreeText({
+class ManageFreeTextTag extends StatefulWidget {
+  const ManageFreeTextTag({
     super.key,
   });
 
   @override
-  Widget build(BuildContext context) {
-    TextEditingController fieldNameCtrl = TextEditingController();
-    TextEditingController typeCtrl = TextEditingController();
-    TextEditingController hintCtrl = TextEditingController();
-    TextEditingController iconCodeCtrl = TextEditingController();
-    final mainController = Get.put(MainController());
+  State<ManageFreeTextTag> createState() => _ManageFreeTextTagState();
+}
 
+class _ManageFreeTextTagState extends State<ManageFreeTextTag> {
+  TextEditingController labelCtrl = TextEditingController();
+  TextEditingController typeCtrl = TextEditingController();
+  TextEditingController hintCtrl = TextEditingController();
+  TextEditingController iconCodeCtrl = TextEditingController();
+  TextEditingController freeTextTagCtrl = TextEditingController();
+  String templateId = '';
+  final mainController = Get.put(MainController());
+  bool addMode = true;
+
+  @override
+  Widget build(BuildContext context) {
     return MaterialApp(
       home: Directionality(
         textDirection: TextDirection.ltr,
@@ -399,14 +410,103 @@ class AddNewFreeText extends StatelessWidget {
                   'assets/images/logo-insider.png',
                   height: 100,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
-                Text(
-                  'Add a new Free Text Field',
+                const Text(
+                  'Manage Free Text Tags',
                   style: TextStyle(fontSize: 24),
                 ),
-
+                /// Add and Edit free text tags
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 15.0),
+                  child: SizedBox(
+                    child: AnimatedToggleSwitch<bool>.dual(
+                      current: addMode,
+                      first: false,
+                      second: true,
+                      spacing: 50.0,
+                      style: const ToggleStyle(
+                        borderColor: Colors.transparent,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black26,
+                            spreadRadius: 1,
+                            blurRadius: 2,
+                            offset: Offset(0, 1.5),
+                          ),
+                        ],
+                      ),
+                      borderWidth: 5.0,
+                      height: 55,
+                      onChanged: (b) {
+                        if (b) {
+                          labelCtrl.text = '';
+                          typeCtrl.text = '';
+                          hintCtrl.text = '';
+                          iconCodeCtrl.text = '';
+                        }
+                        setState(() => addMode = b);
+                        },
+                      styleBuilder: (b) => ToggleStyle(
+                          indicatorColor: b ? Colors.blue : Colors.green),
+                      iconBuilder: (value) => value
+                          ? const Icon(Icons.add)
+                          : const Icon(Icons.edit),
+                      textBuilder: (value) => value
+                          ? const Center(child: Text('Add '))
+                          : const Center(child: Text('Edit ')),
+                    ),
+                  ),
+                ),
+                /// Free Text Tags List
+                addMode?SizedBox.shrink():DropdownMenu(
+                  leadingIcon: Icon(
+                      color: Colors.blue.shade900,
+                      Icons.text_fields),
+                  label: const Text('Free Text Tags'),
+                  //initialSelection: widget.member.residence,
+                  inputDecorationTheme:
+                  const InputDecorationTheme(
+                    filled: false,
+                    isDense: true,
+                    border: OutlineInputBorder(
+                      //borderSide: BorderSide(color:  Colors.blue),
+                    ),
+                    contentPadding:
+                    EdgeInsets.symmetric(vertical: 5.0),
+                    //outlineBorder: BorderSide(color:  Colors.blue),
+                  ),
+                  dropdownMenuEntries: mainController
+                      .freeTextTagsList
+                      .map((tag) => tag['label'] as String)
+                      .toList()
+                      .map<DropdownMenuEntry<String>>(
+                          (String tag) {
+                        return DropdownMenuEntry<String>(
+                          value: tag,
+                          label: tag,
+                          style: MenuItemButton.styleFrom(
+                            foregroundColor: Colors.black,
+                          ),
+                        );
+                      }).toList(),
+                  controller: freeTextTagCtrl,
+                  onSelected: (label) {
+                    // Find the index of the item where the 'label' key has the target value
+                    int index = mainController.freeTextTagsList.indexWhere((tag) => tag['label'] == label);
+                    if (index != -1) {
+                      var tag = mainController.freeTextTagsList[index];
+                      labelCtrl.text = tag['label'];
+                      typeCtrl.text = tag['type'];
+                      hintCtrl.text = tag['hint'];
+                      iconCodeCtrl.text = tag['icon_code'];
+                      templateId = tag['templateId'];
+                    } else {
+                      //print('Label not found');
+                    }
+                  },
+                ),
                 ///name
                 Padding(
                   padding: const EdgeInsets.all(18.0),
@@ -420,7 +520,7 @@ class AddNewFreeText extends StatelessWidget {
                             width: 150,
                             height: 50,
                             child: TextField(
-                              controller: fieldNameCtrl,
+                              controller: labelCtrl,
                             )),
                       ),
                     ],
@@ -444,13 +544,13 @@ class AddNewFreeText extends StatelessWidget {
                               dropdownMenuEntries: const [
                                 DropdownMenuEntry(
                                     value: 'text',
-                                    label: 'Text Field (1-Line)'),
+                                    label: 'text'),
                                 DropdownMenuEntry(
                                     value: 'link',
-                                    label: 'Link Field (1-Line)'),
+                                    label: 'link'),
                                 DropdownMenuEntry(
                                     value: 'textbox',
-                                    label: 'Text Box (multi-Line)')
+                                    label: 'textbox')
                               ],
                             )),
                       ),
@@ -502,25 +602,30 @@ class AddNewFreeText extends StatelessWidget {
                   children: [
                     ElevatedButton(
                         onPressed: () async {
-                          await mainController.addNewFreeTextField({
-                            'key': fieldNameCtrl.text,
-                            'label': fieldNameCtrl.text,
-                            'type': typeCtrl.text,
-                            'hint': hintCtrl.text,
-                            'icon_code': iconCodeCtrl.text
-                          });
-                          const snackBar = SnackBar(
-                            content: Text(
-                              'Free Text Field Added!',
-                              style: TextStyle(
-                                  fontSize: 14, fontWeight: FontWeight.bold),
-                            ),
-                          );
-                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                          Get.back();
-                          Get.back();
+                          if(addMode) {
+                            ///add
+                            await mainController.addNewFreeTextField({
+                              'key': labelToKey(labelCtrl.text),
+                              'label': labelCtrl.text,
+                              'type': typeCtrl.text,
+                              'hint': hintCtrl.text,
+                              'icon_code': iconCodeCtrl.text
+                            });
+                            const snackBar = SnackBar(
+                              content: Text(
+                                'Free Text Field Added!',
+                                style: TextStyle(
+                                    fontSize: 14, fontWeight: FontWeight.bold),
+                              ),
+                            );
+                            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                            Get.back();Get.back();
+                          } else {
+                            ///update
+                          }
+
                         },
-                        child: const Text('Save')),
+                        child:  Text(addMode?'Add':'Update')),
                     ElevatedButton(
                         onPressed: () {
                           /// print('Cancel');
@@ -529,7 +634,28 @@ class AddNewFreeText extends StatelessWidget {
                         },
                         child: const Text('Cancel')),
                   ],
-                )
+                ),
+                const SizedBox(height: 20,),
+                !addMode?ElevatedButton(
+                    onPressed: () async {
+                      /// remove free text tag
+                      if (labelCtrl.text=='') return;
+                      /// dialog
+                      bool? res = await showDialog<bool>(
+                          context:
+                          context,
+                          builder: (BuildContext context) => ConfirmDialog(tag: (labelCtrl.text))
+                      );
+                      if (res??false) {
+                        await mainController.removeFreeTextTag(labelCtrl.text, templateId);
+                        setState(() {
+                          /// remove local
+                          mainController.freeTextTagsList;
+                        });
+                      }
+                    },
+                    child:  const Text('Remove Tag', style: TextStyle(color: Colors.red),)):const SizedBox.shrink(),
+                mainController.saving.value?const CircularProgressIndicator():const SizedBox.shrink()
               ],
             ),
           ),
@@ -771,8 +897,8 @@ class _ManageFilterTagsState extends State<ManageFilterTags> {
                               filtersCategory.length,
                               (index) => Padding(
                                     padding: const EdgeInsets.only(
-                                        left: 30.0,
-                                        right: 30.0,
+                                        left: 10.0,
+                                        right: 10.0,
                                         top: 8,
                                         bottom: 10),
                                     child: SizedBox(
@@ -793,16 +919,16 @@ class _ManageFilterTagsState extends State<ManageFilterTags> {
                                                         CrossAxisAlignment
                                                             .start,
                                                     children: [
-                                                      /// actions
+                                                      /// actions and Title
                                                       ListTile(
                                                         trailing: SizedBox(
-                                                          width: 120,
+                                                          width: 130,
                                                           child: Row(
                                                             mainAxisAlignment:
                                                                 MainAxisAlignment
                                                                     .spaceBetween,
                                                             children: [
-                                                              /// del tags
+                                                              /// del tags mode
                                                               Obx(() => mainController
                                                                   .saving
                                                                   .value
@@ -825,7 +951,8 @@ class _ManageFilterTagsState extends State<ManageFilterTags> {
                                                                           : null,
                                                                     color: Colors
                                                                         .white,
-                                                                  ))),
+                                                                  ))
+                                                              ),
                                                               /// edit tags
                                                               Obx(() => mainController
                                                                       .saving
@@ -849,7 +976,8 @@ class _ManageFilterTagsState extends State<ManageFilterTags> {
                                                                               : null,
                                                                         color: Colors
                                                                             .white,
-                                                                      ))),
+                                                                      ))
+                                                              ),
                                                               /// add tag
                                                               Obx(() => mainController
                                                                       .saving
@@ -892,16 +1020,46 @@ class _ManageFilterTagsState extends State<ManageFilterTags> {
                                                             ],
                                                           ),
                                                         ),
-                                                        title: Text(
-                                                          mainController
-                                                                  .filteredTagsList[
-                                                              index]['label'],
-                                                          style: const TextStyle(
-                                                              color:
-                                                                  Colors.white,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold),
+                                                        /// title
+                                                        title: Row(
+                                                          children: [
+                                                            Text(
+                                                              mainController
+                                                                      .filteredTagsList[
+                                                                  index]['label'],
+                                                              style: const TextStyle(
+                                                                  color:
+                                                                      Colors.white,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold),
+                                                            ),
+                                                            IconButton(
+                                                                onPressed: () async {
+                                                                  /// dialog
+                                                                  bool? res = await showDialog<bool>(
+                                                                      context:
+                                                                      context,
+                                                                      builder: (BuildContext context) =>
+                                                                          ConfirmDialog(tag: mainController.filteredTagsList[index]['label'])
+                                                                  );
+                                                                  if (res??false) {
+                                                                    await mainController.removeFilterTagCategory(mainController.filteredTagsList[index]['label']);
+                                                                    setState(() {
+                                                                      /// remove the category
+                                                                      mainController.filteredTagsList.removeAt(index);
+                                                                    });
+                                                                  }
+                                                                },
+                                                                icon:
+                                                                Icon(
+                                                                  delMode && mainController.filteredTagsList[index]['tags_list'].length<=0
+                                                                      ? Icons.delete
+                                                                      : null,
+                                                                  color: Colors
+                                                                      .white,
+                                                                ))
+                                                          ],
                                                         ),
                                                       ),
                                                       Padding(
@@ -940,14 +1098,15 @@ class _ManageFilterTagsState extends State<ManageFilterTags> {
                                                                           context:
                                                                           context,
                                                                           builder: (BuildContext context) =>
-                                                                              EditFilterEntryDialog(tag: mainController.filteredTagsList[index]['tags_list'][tagIndex]));
+                                                                              ConfirmDialog(tag: mainController.filteredTagsList[index]['tags_list'][tagIndex])
+                                                                      );
                                                                       if (res??false) {
                                                                         await mainController.removeFilterTag(mainController.filteredTagsList[index]['label'],
                                                                             mainController.filteredTagsList[index]['tags_list'][tagIndex]
                                                                         );
                                                                         setState(() {
                                                                           /// remove the tag
-                                                                          //mainController.filteredTagsList[index]['tags_list'][tagIndex]=res;
+                                                                          mainController.filteredTagsList[index]['tags_list'].removeAt(tagIndex);
                                                                         });
                                                                       }
                                                                     }
@@ -985,6 +1144,7 @@ class _ManageFilterTagsState extends State<ManageFilterTags> {
                         ),
                       ),
                     ),
+                    /// Add new filter category
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -1180,6 +1340,41 @@ class AddNewFilterCategoryDialog extends StatelessWidget {
         ),
         TextButton(
           onPressed: () => Navigator.pop(context, null),
+          child: const Text('Cancel'),
+        ),
+      ],
+    );
+  }
+}
+///
+class ConfirmDialog extends StatelessWidget {
+  final String tag;
+  const ConfirmDialog(
+      {required this.tag, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    TextEditingController newFilterTagCategoryCtrl = TextEditingController();
+    return AlertDialog(
+      titlePadding: EdgeInsets.only(left: 80.0, top: 20),
+      title: const Text('Approve Removal'),
+      content: SizedBox(
+        width: 500,
+        height: 100,
+        child:  Column(
+          children: [
+            Text('Are you sure you want to delete $tag?'),
+            const Text('This will permanently remove this tag from all members!')
+          ],
+        ),
+      ),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () => Navigator.pop(context, true),
+          child: const Text('Delete'),
+        ),
+        TextButton(
+          onPressed: () => Navigator.pop(context, false),
           child: const Text('Cancel'),
         ),
       ],

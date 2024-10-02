@@ -86,7 +86,7 @@ class _HomeState extends State<Home> {
                   ),
                 ),
                 drawer: SizedBox(
-                  height: membersController.isAdmin.value?640:460,
+                  height: membersController.isAdmin.value?700:460,
                   child: Drawer(
                     shape: ContinuousRectangleBorder(
                         borderRadius: BorderRadius.circular(75),
@@ -212,7 +212,7 @@ class _HomeState extends State<Home> {
                         /// add Filter Tags
                         membersController.isAdmin.value?ListTile(
                           leading: const Icon(
-                            Icons.group_add,
+                            Icons.filter_list_outlined,
                           ),
                           title: const Text('Manage Filter Tags'),
                           onTap: () {
@@ -221,16 +221,16 @@ class _HomeState extends State<Home> {
                           },
                         ):const SizedBox(),
                         /// add free text
-                        // membersController.isAdmin.value?ListTile(
-                        //   leading: const Icon(
-                        //     Icons.text_fields,
-                        //   ),
-                        //   title: const Text('Add a Free Text Field'),
-                        //   onTap: () {
-                        //     Get.to(() => AddNewFreeText()
-                        //     );
-                        //   },
-                        // ):SizedBox(),
+                        membersController.isAdmin.value?ListTile(
+                          leading: const Icon(
+                            Icons.text_fields,
+                          ),
+                          title: const Text('Manage Free Text Tags'),
+                          onTap: () {
+                            Get.to(() => const ManageFreeTextTag()
+                            );
+                          },
+                        ):SizedBox(),
                         /// Settings
                         membersController.isAdmin.value?ListTile(
                           leading: const Icon(

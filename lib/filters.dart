@@ -94,9 +94,8 @@ class _FiltersState extends State<Filters> {
                                           title:  Text(filtersCategory[index]['label'] ,style: Theme.of(context).textTheme.titleLarge),
                                           subtitle: Text((filtersCategory[index]['label']=='Forum' || filtersCategory[index]['label'] == 'Residence')?'Please select one option from the list below':'Please select all relevant' ),
                                         ),
-                                        Obx(() {
-                                          mainController.tags.isNotEmpty;
-                                          return ChipsChoice<String>.multiple(
+                                          mainController.getFilteredTagsFromCategory(filtersCategory[index]['key']).isNotEmpty?
+                                          ChipsChoice<String>.multiple(
                                           value: mainController.tags,
                                           onChanged: (val) {
                                             setState(()  {
@@ -114,7 +113,8 @@ class _FiltersState extends State<Filters> {
                                           choiceCheckmark: true,
                                           textDirection: TextDirection.ltr,
                                           wrapped: true,
-                                        );}),
+                                        ):SizedBox.shrink(),
+
                                       ],
                                     ),
                                   ),
