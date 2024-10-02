@@ -107,7 +107,7 @@ class Member {
   bool isBoarded() {
     return onBoarding!['boarded'];
   }
-  int getProfileScore() {
+  int getProfileScore(int newMemberThreshold) {
     int score = 0;
     if (!profileImage!.contains('profile0.jpg')) {
       score = score + 10;
@@ -116,6 +116,7 @@ class Member {
     score = score + filterTags!.length;
     score = score + freeTextTags!.length;
     if (checkIfTodayIsBirthday(birthdate!)) score = score + 100;
+    if (checkIfNewMember(newMemberThreshold)) score = score + 5;
     return score;
   }
   bool checkIfTodayIsBirthday(Timestamp birthdayTimestamp) {
@@ -130,6 +131,20 @@ class Member {
       return false;
     }
   }
+  bool checkIfNewMember(int newMemberThreshold) {
+    if (joinDate=='') return false;
+    DateTime today = DateTime.now();
+    DateTime memberSince = DateTime(int.parse(joinDate));
+    /// Calculate the total months for each date
+    int totalMonths1 = today.year * 12 + today.month;
+    int totalMonths2 = memberSince.year * 12 + memberSince.month;
+    if ((totalMonths2 - totalMonths1).abs() < newMemberThreshold) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   Map<String, dynamic> toMap() {
     return {
       'id': id,

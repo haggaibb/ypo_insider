@@ -136,20 +136,18 @@ class MainController extends GetxController {
     QuerySnapshot membersSnapshot = await membersRef.get();
     List<QueryDocumentSnapshot> membersDocs = membersSnapshot.docs;
     filteredResults.value = [];
-    /// add members with profile image
     for (var member in membersDocs) {
       filteredResults.add(Member.fromDocumentSnapshot(member));
     }
-    filteredResults.sort((b, a) => a.getProfileScore().compareTo(b.getProfileScore()));
-    int startIndex = filteredResults.lastIndexWhere((element) => element.getProfileScore()>100);
-    int endIndex = filteredResults.indexWhere((element) => element.getProfileScore()<12);
+    filteredResults.sort((b, a) => a.getProfileScore(newMemberThreshold).compareTo(b.getProfileScore(newMemberThreshold)));
+    int startIndex = filteredResults.lastIndexWhere((element) => element.getProfileScore(newMemberThreshold)>100);
+    int endIndex = filteredResults.indexWhere((element) => element.getProfileScore(newMemberThreshold)<12);
     List<Member> birthdayProfiles = filteredResults.sublist(0,startIndex+1);
     List<Member> topProfiles = filteredResults.sublist(startIndex+1,endIndex);
     List<Member> remainingProfiles = filteredResults.sublist(endIndex+1,filteredResults.length);
     topProfiles.shuffle();
     filteredResults.value = [];
-    filteredResults.value = birthdayProfiles + topProfiles + remainingProfiles ;
-
+    filteredResults.value = birthdayProfiles + topProfiles + remainingProfiles;
     /// add random
     // List randomArr = [];
     // final Random _random = Random();
@@ -436,13 +434,14 @@ class MainController extends GetxController {
   onInit() async {
     super.onInit();
     /// print('init - main Controller...');
+    loadingStatus.value = 'Loading Insider Home';
     mainLoading.value = true;
     js.context.callMethod('hideSplashScreen');
     version = await fetchVersionFromAssets();
     /// loadTags() should be first, it also gets the number of members data
     updateSplashScreenText('Loading Filter Tags...');
-    loadingStatus.value = 'Loading Insider Home';
     await getSettings();
+    loadingStatus.value = 'Loading Tags';
     await loadTags();
     updateSplashScreenText('Loading Random Results...');
     loadingStatus.value = 'Loading $numberOfMembers Registered Members...';
