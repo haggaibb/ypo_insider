@@ -27,6 +27,7 @@ class Member {
   Map? settings;
   bool? banner;
   String? bannerUri;
+  int newMemberThresholdInMonths;
 
   Member({
     required this.id,
@@ -55,7 +56,8 @@ class Member {
     },
     this.settings = const {},
     this.banner = false,
-    this.bannerUri
+    this.bannerUri,
+    this.newMemberThresholdInMonths = 12
   });
 
 
@@ -107,7 +109,7 @@ class Member {
   bool isBoarded() {
     return onBoarding!['boarded'];
   }
-  int getProfileScore(int newMemberThreshold) {
+  int getProfileScore() {
     int score = 0;
     if (!profileImage!.contains('profile0.jpg')) {
       score = score + 10;
@@ -116,7 +118,7 @@ class Member {
     score = score + filterTags!.length;
     score = score + freeTextTags!.length;
     if (checkIfTodayIsBirthday(birthdate!)) score = score + 100;
-    if (checkIfNewMember(newMemberThreshold)) score = score + 5;
+    if (checkIfNewMember()) score = score + 5;
     return score;
   }
   bool checkIfTodayIsBirthday(Timestamp birthdayTimestamp) {
@@ -131,14 +133,14 @@ class Member {
       return false;
     }
   }
-  bool checkIfNewMember(int newMemberThreshold) {
+  bool checkIfNewMember() {
     if (joinDate=='') return false;
     DateTime today = DateTime.now();
     DateTime memberSince = DateTime(int.parse(joinDate));
     /// Calculate the total months for each date
     int totalMonths1 = today.year * 12 + today.month;
     int totalMonths2 = memberSince.year * 12 + memberSince.month;
-    if ((totalMonths2 - totalMonths1).abs() < newMemberThreshold) {
+    if ((totalMonths2 - totalMonths1).abs() < newMemberThresholdInMonths) {
       return true;
     } else {
       return false;
@@ -208,9 +210,7 @@ class Member {
         bannerUri: data.containsKey('bannerUri') ? data['bannerUri'] as String : '',
 
     );
-
-
-        }
+  }
 
 
   factory Member.fromJson(Map<String, dynamic> json) {

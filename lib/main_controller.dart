@@ -33,7 +33,7 @@ class MainController extends GetxController {
   int newMemberThreshold = 12;
   final user = FirebaseAuth.instance.currentUser;
   late String version;
-
+  late Map<String, dynamic> memberConfig;
 
   getSettings() async {
     final settingsRef = db.collection("Settings").doc('results_settings');
@@ -138,10 +138,11 @@ class MainController extends GetxController {
     filteredResults.value = [];
     for (var member in membersDocs) {
       filteredResults.add(Member.fromDocumentSnapshot(member));
+      filteredResults[filteredResults.length-1].newMemberThresholdInMonths = newMemberThreshold;
     }
-    filteredResults.sort((b, a) => a.getProfileScore(newMemberThreshold).compareTo(b.getProfileScore(newMemberThreshold)));
-    int startIndex = filteredResults.lastIndexWhere((element) => element.getProfileScore(newMemberThreshold)>100);
-    int endIndex = filteredResults.indexWhere((element) => element.getProfileScore(newMemberThreshold)<12);
+    filteredResults.sort((b, a) => a.getProfileScore().compareTo(b.getProfileScore()));
+    int startIndex = filteredResults.lastIndexWhere((element) => element.getProfileScore()>100);
+    int endIndex = filteredResults.indexWhere((element) => element.getProfileScore()<12);
     List<Member> birthdayProfiles = filteredResults.sublist(0,startIndex+1);
     List<Member> topProfiles = filteredResults.sublist(startIndex+1,endIndex);
     List<Member> remainingProfiles = filteredResults.sublist(endIndex+1,filteredResults.length);
