@@ -116,6 +116,7 @@ class MainController extends GetxController {
   }
 
   bool checkIfTodayIsBirthday(Timestamp birthdayTimestamp) {
+    if (birthdayTimestamp==null) return false;
     DateTime today = DateTime.now();
     DateTime birthday = birthdayTimestamp.toDate();
     // Check if today is the birthday (ignoring the year)
@@ -130,25 +131,31 @@ class MainController extends GetxController {
 
   loadRandomResults(size) async {
     resultsLoading.value = true;
+    CollectionReference membersRef = db.collection('Members');
+    QuerySnapshot membersSnapshot = await membersRef.get();
+    List<QueryDocumentSnapshot> membersDocs = membersSnapshot.docs;
+    filteredResults.value = [];
+    /// add members with profile image
+    for (var member in membersDocs) {
+      var memberData = member.data() as Map<String, dynamic>;
+      if (memberData['birthdate']!=null) {
+        if (checkIfTodayIsBirthday(memberData['birthdate'])) {
+          filteredResults.insert(0,Member.fromDocumentSnapshot(member));
+        }
+      }
+      if (!memberData['profileImage'].contains('profile0.jpg')){
+        if (filteredResults.indexWhere((element) => element.id==member.id)<0){
+          filteredResults.add(Member.fromDocumentSnapshot(member));
+        }
+      }
+    }
+    /// add random
     List randomArr = [];
     final Random _random = Random();
     for (int i = 0; i < numberOfRandomMembers; i++) {
       int _randomNumber = _random.nextInt(size);
       randomArr.add(_randomNumber);
-    }
-    CollectionReference membersRef = db.collection('Members');
-    QuerySnapshot membersSnapshot = await membersRef.get();
-    List<QueryDocumentSnapshot> membersDocs = membersSnapshot.docs;
-    filteredResults.value = [];
-    /// add birthdays
-    for (var member in membersDocs) {
-      var memberData = member.data() as Map<String, dynamic>;
-      if (memberData['birthdate']!=null) {
-        if (checkIfTodayIsBirthday(memberData['birthdate']))
-        filteredResults.add(Member.fromDocumentSnapshot(member));
-      }
-    }
-    /// add random
+    };
     for (var index in randomArr) {
       if (filteredResults.indexWhere((element) => element.id==membersDocs[index])<0){
         filteredResults.add(Member.fromDocumentSnapshot(membersDocs[index]));

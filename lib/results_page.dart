@@ -169,8 +169,8 @@ class _ResultsPageState extends State<ResultsPage> {
                                         mainAxisAlignment:
                                         MainAxisAlignment.center,
                                         children: [
-                                          Text('You can use the filters below'),
-                                          Icon(Icons.filter_list_outlined)
+                                          Text('You can also use the filters below'),
+                                          //Icon(Icons.filter_list_outlined)
                                         ],
                                       )
                                     ],

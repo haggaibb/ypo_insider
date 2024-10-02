@@ -802,7 +802,8 @@ class _TestPageState extends State<TestPage> {
 
 class About extends StatelessWidget {
   final String version;
-  const About({this.version = '' ,  super.key});
+  final String numberOfMembers;
+  const About({this.numberOfMembers='', this.version = '' ,  super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -836,6 +837,10 @@ class About extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 0, bottom: 0.0),
                   child: Text('ver:$version' , style: TextStyle(fontSize: 16),),
                 ),
+                Text('${numberOfMembers} Registered Members' ,
+                    style: TextStyle(fontSize: 16,
+                        color: Colors.black
+                    )),
                 Padding(
                   padding: const EdgeInsets.only(top: 0, bottom: 0.0),
                   child: GestureDetector(

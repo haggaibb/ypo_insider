@@ -129,7 +129,7 @@ class _HomeState extends State<Home> {
                                 membersController.currentMember.value));
                           },
                         ),
-                        ExpansionTile(
+                        membersController.isAdmin.value?ExpansionTile(
                           //textColor: Colors.blue.shade900,
                           //iconColor: Colors.blue.shade900,
                           leading: const Icon(Icons.settings),
@@ -163,7 +163,7 @@ class _HomeState extends State<Home> {
                               ),
                             ),
                           ],
-                        ),
+                        ):const SizedBox(),
                         const Divider(),
                         /// About
                         /// Admin pages
@@ -173,7 +173,7 @@ class _HomeState extends State<Home> {
                           ),
                           title: const Text('About'),
                           onTap: () {
-                            Get.to(() => About(version: mainController.version));
+                            Get.to(() => About(version: mainController.version, numberOfMembers: mainController.numberOfMembers.toString(),));
                           },
                         ):const SizedBox(),
                         /// new member
@@ -253,23 +253,25 @@ class _HomeState extends State<Home> {
                         const ResultsPage(),
                         Obx(() => mainController.mainLoading.value
                             ? const ResultsLoading()
-                            : Sheet(
-                                shape: ContinuousRectangleBorder(
-                                  borderRadius: BorderRadius.circular(50),
+                            : SafeArea(
+                              child: Sheet(
+                                  shape: ContinuousRectangleBorder(
+                                    borderRadius: BorderRadius.circular(50),
+                                  ),
+                                  elevation: 0,
+                                  backgroundColor: Colors.transparent,
+                                  controller: sheetController,
+                                  minExtent: minSheetPos,
+                                  maxExtent: maxSheetPos,
+                                  initialExtent: initSheetPos,
+                                  fit: SheetFit.expand,
+                                  child: Padding(
+                                    padding:
+                                        const EdgeInsets.only(left: 20, right: 20),
+                                    child: Filters(() => sheetJumpFunction()),
+                                  ),
                                 ),
-                                elevation: 0,
-                                backgroundColor: Colors.transparent,
-                                controller: sheetController,
-                                minExtent: minSheetPos,
-                                maxExtent: maxSheetPos,
-                                initialExtent: initSheetPos,
-                                fit: SheetFit.expand,
-                                child: Padding(
-                                  padding:
-                                      const EdgeInsets.only(left: 20, right: 20),
-                                  child: Filters(() => sheetJumpFunction()),
-                                ),
-                              )),
+                            )),
                       ],
                     ),
                   ),

@@ -524,14 +524,31 @@ class Field{
   }
 }
 
-class EntryDialog extends StatelessWidget {
+class EntryDialog extends StatefulWidget {
   final List<String> keysPerEntry;
   final double? fieldWidth;
   const EntryDialog( {super.key, this.fieldWidth=100, required this.keysPerEntry});
   @override
+  State<EntryDialog> createState() => _EntryDialogState();
+}
+
+class _EntryDialogState extends State<EntryDialog> {
+  late List<TextEditingController> fieldsList;
+  @override
+  void initState() {
+    super.initState();
+    fieldsList = List.generate(
+        widget.keysPerEntry.length, (index) => TextEditingController());
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+
+  @override
   Widget build(BuildContext context) {
-    List<TextEditingController> fieldsList = List.generate(
-        keysPerEntry.length, (index) => TextEditingController());
 
     return AlertDialog(
       titlePadding: EdgeInsets.only(left: 80.0, top: 20),
@@ -539,10 +556,10 @@ class EntryDialog extends StatelessWidget {
       content:
       Row(
         mainAxisAlignment: MainAxisAlignment.start,
-        children: List.generate(keysPerEntry.length,
+        children: List.generate(widget.keysPerEntry.length,
                 (fieldIndex) =>
                 SizedBox(
-                  width: fieldWidth,
+                  width: widget.fieldWidth,
                   child: Padding(
                     padding: const EdgeInsets.only(right: 8.0),
                     child: TextField(
@@ -550,7 +567,7 @@ class EntryDialog extends StatelessWidget {
                         decoration: InputDecoration(
                           contentPadding: const EdgeInsets.only(left: 8, right: 8, top: 5, bottom: 8),
                           isCollapsed: true,
-                          labelText: keysPerEntry[fieldIndex],
+                          labelText: widget.keysPerEntry[fieldIndex],
                           //helperText: helperText:'',
                           //hintText:   widget.hintText,
                           floatingLabelBehavior: FloatingLabelBehavior.always,
