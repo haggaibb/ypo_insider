@@ -280,7 +280,11 @@ class _EmailRegisterFormState extends State<EmailRegisterForm> {
                       style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold , color: Colors.red),
                       children: <TextSpan>[
                         TextSpan(
-                          text: 'Password should be at least 6 characters long, an indicator will show you the strength of your password, you can submit weak passwords although that is not recommended!',
+                          text: 'Create a new Password, ',
+                          style: TextStyle( color: Colors.black, fontWeight: FontWeight.bold),
+                        ),
+                        TextSpan(
+                          text: 'it should be at least 6 characters long, an indicator will show you the strength of your password, you can submit weak passwords although that is not recommended!',
                           style: TextStyle( color: Colors.black, fontWeight: FontWeight.normal),
                         ),
                       ],

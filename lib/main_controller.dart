@@ -108,7 +108,6 @@ class MainController extends GetxController {
     return freeTextTagsList.firstWhere((element) => element['templateId'] == templateId);
   }
 
-
   bool checkIfNewMember(String joinDate) {
     if (joinDate=='') return false;
     DateTime today = DateTime.now();
@@ -438,6 +437,19 @@ class MainController extends GetxController {
     saving.value = false;
   }
 
+  updateProfileScoreSettings({birthdayScore,profileImageScore,newMemberScore,socialScore,topThreshold,bottomThreshold}) async {
+    saving.value = true;
+    DocumentReference profileScoreRef = db.collection('Settings').doc('profile_score');
+    await profileScoreRef.update({
+      'birthday_score' : birthdayScore,
+      'profile_image_score' : profileImageScore,
+      'new_member_score' : newMemberScore,
+      'social_score' : socialScore,
+      'top_threshold' : topThreshold,
+      'bottom_threshold' :bottomThreshold
+    });
+    saving.value = false;
+  }
 
   @override
   onInit() async {

@@ -828,10 +828,10 @@ class About extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 0, bottom: 0.0),
                   child: Text('ver:$version' , style: TextStyle(fontSize: 16),),
                 ),
-                Text('${numberOfMembers} Registered Members' ,
-                    style: TextStyle(fontSize: 16,
-                        color: Colors.black
-                    )),
+                // Text('${numberOfMembers} Registered Members' ,
+                //     style: TextStyle(fontSize: 16,
+                //         color: Colors.black
+                //     )),
                 Padding(
                   padding: const EdgeInsets.only(top: 0, bottom: 0.0),
                   child: GestureDetector(

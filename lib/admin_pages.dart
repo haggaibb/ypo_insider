@@ -24,175 +24,185 @@ class AddNewMember extends StatelessWidget {
       home: Directionality(
         textDirection: TextDirection.ltr,
         child: Scaffold(
-          backgroundColor: Colors.white,
-          body: SizedBox(
-            width: 350,
-            height: 750,
-            child: Column(
-              //crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+          appBar: AppBar(
+            leadingWidth: 125,
+            centerTitle: true,
+            leading: IconButton(
+              onPressed: () {
+                Get.back();
+              },
+              icon: const Icon(Icons.arrow_back),
+            ),
+            title: Column(
               children: [
-                Image.network(
-                  'assets/images/logo-insider.png',
-                  height: 100,
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                Text(
-                  'Add a new YPO member',
-                  style: TextStyle(fontSize: 24),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(18.0),
-                  child: Row(
-                    children: [
-                      Text('First Name:',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 12.0),
-                        child: SizedBox(
-                            width: 200,
-                            height: 50,
-                            child: TextField(
-                              controller: firstNameCtrl,
-                            )),
-                      )
-                    ],
+                Image.network(scale: 2, 'assets/images/logo-insider.png'),
+                Text('Administrator', style: TextStyle(fontSize: 16, color: Colors.blue.shade900, fontWeight: FontWeight.bold),)
+              ],
+            ),
+          ),
+          backgroundColor: Colors.white,
+          body: Padding(
+            padding: const EdgeInsets.only(left: 30, right:30, top: 80, bottom: 20),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.blueGrey.shade100, // Background color
+                // border: Border.all(color: Colors.red, width: 1), // Border
+                borderRadius: BorderRadius.circular(50), // Rounded corners
+              ),
+              child: Column(
+                //crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Text('Add a new YPO member', style: TextStyle(fontSize: 30, color: Colors.blue.shade900, fontWeight: FontWeight.bold)),
+                  Padding(
+                    padding: const EdgeInsets.all(18.0),
+                    child: Row(
+                      children: [
+                        Text('First Name:',
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 12.0),
+                          child: SizedBox(
+                              width: 200,
+                              height: 50,
+                              child: TextField(
+                                controller: firstNameCtrl,
+                              )),
+                        )
+                      ],
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(18.0),
-                  child: Row(
-                    children: [
-                      Text('Last Name:',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 12.0),
-                        child: SizedBox(
-                            width: 200,
-                            height: 50,
-                            child: TextField(
-                              controller: lastNameCtrl,
-                            )),
-                      )
-                    ],
+                  Padding(
+                    padding: const EdgeInsets.all(18.0),
+                    child: Row(
+                      children: [
+                        Text('Last Name:',
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 12.0),
+                          child: SizedBox(
+                              width: 200,
+                              height: 50,
+                              child: TextField(
+                                controller: lastNameCtrl,
+                              )),
+                        )
+                      ],
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(18.0),
-                  child: Row(
-                    children: [
-                      Text(
-                        'Email:',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 30.0),
-                        child: SizedBox(
-                            width: 200,
-                            height: 50,
-                            child: TextField(
-                              controller: emailCtrl,
-                            )),
-                      )
-                    ],
+                  Padding(
+                    padding: const EdgeInsets.all(18.0),
+                    child: Row(
+                      children: [
+                        Text(
+                          'Email:',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 30.0),
+                          child: SizedBox(
+                              width: 200,
+                              height: 50,
+                              child: TextField(
+                                controller: emailCtrl,
+                              )),
+                        )
+                      ],
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(18.0),
-                  child: Row(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 30.0),
-                        child: DropdownMenu(
-                          leadingIcon: Icon(Icons.location_city_sharp),
-                          label: Text('Residence'),
-                          initialSelection: mainController.residenceList[0],
-                          inputDecorationTheme: const InputDecorationTheme(
-                            filled: false,
-                            isDense: true,
-                            border: OutlineInputBorder(
-                                //borderSide: BorderSide(color:  Colors.blue),
+                  Padding(
+                    padding: const EdgeInsets.all(18.0),
+                    child: Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 30.0),
+                          child: DropdownMenu(
+                            leadingIcon: Icon(Icons.location_city_sharp),
+                            label: Text('Residence'),
+                            initialSelection: mainController.residenceList[0],
+                            inputDecorationTheme: const InputDecorationTheme(
+                              filled: false,
+                              isDense: true,
+                              border: OutlineInputBorder(
+                                  //borderSide: BorderSide(color:  Colors.blue),
+                                  ),
+                              contentPadding: EdgeInsets.symmetric(vertical: 5.0),
+                              //outlineBorder: BorderSide(color:  Colors.blue),
+                            ),
+                            dropdownMenuEntries: mainController.residenceList
+                                .map<DropdownMenuEntry<String>>((String city) {
+                              return DropdownMenuEntry<String>(
+                                value: city,
+                                label: city,
+                                style: MenuItemButton.styleFrom(
+                                  foregroundColor: Colors.black,
                                 ),
-                            contentPadding: EdgeInsets.symmetric(vertical: 5.0),
-                            //outlineBorder: BorderSide(color:  Colors.blue),
+                              );
+                            }).toList(),
+                            controller: residenceCtrl,
+                            enabled: true,
                           ),
-                          dropdownMenuEntries: mainController.residenceList
-                              .map<DropdownMenuEntry<String>>((String city) {
-                            return DropdownMenuEntry<String>(
-                              value: city,
-                              label: city,
-                              style: MenuItemButton.styleFrom(
-                                foregroundColor: Colors.black,
+                        )
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(18.0),
+                    child: DropdownMenu(
+                      leadingIcon: Icon(Icons.group),
+                      label: Text('Forum:'),
+                      initialSelection: mainController.forumList[0],
+                      inputDecorationTheme: const InputDecorationTheme(
+                        filled: false,
+                        isDense: true,
+                        border: OutlineInputBorder(),
+                        contentPadding: EdgeInsets.symmetric(vertical: 5.0),
+                      ),
+                      dropdownMenuEntries: mainController.forumList
+                          .map<DropdownMenuEntry<String>>((String city) {
+                        return DropdownMenuEntry<String>(
+                          value: city,
+                          label: city,
+                          style: MenuItemButton.styleFrom(
+                            foregroundColor: Colors.black,
+                          ),
+                        );
+                      }).toList(),
+                      controller: forumCtrl,
+                      enabled: true,
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton(
+                          onPressed: () async {
+                            /// print('save data');
+                            await membersController.addNewMember(
+                                firstNameCtrl.text,
+                                lastNameCtrl.text,
+                                emailCtrl.text);
+                            const snackBar = SnackBar(
+                              content: Text(
+                                'Member Added!',
+                                style: TextStyle(
+                                    fontSize: 14, fontWeight: FontWeight.bold),
                               ),
                             );
-                          }).toList(),
-                          controller: residenceCtrl,
-                          enabled: true,
-                        ),
-                      )
+                            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                            Get.back();
+                          },
+                          child: Text('Save')),
+                      ElevatedButton(
+                          onPressed: () {
+                            /// print('Cancel');
+                            Get.back();
+                          },
+                          child: Text('Cancel')),
                     ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(18.0),
-                  child: DropdownMenu(
-                    leadingIcon: Icon(Icons.group),
-                    label: Text('Forum:'),
-                    initialSelection: mainController.forumList[0],
-                    inputDecorationTheme: const InputDecorationTheme(
-                      filled: false,
-                      isDense: true,
-                      border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.symmetric(vertical: 5.0),
-                    ),
-                    dropdownMenuEntries: mainController.forumList
-                        .map<DropdownMenuEntry<String>>((String city) {
-                      return DropdownMenuEntry<String>(
-                        value: city,
-                        label: city,
-                        style: MenuItemButton.styleFrom(
-                          foregroundColor: Colors.black,
-                        ),
-                      );
-                    }).toList(),
-                    controller: forumCtrl,
-                    enabled: true,
-                  ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    ElevatedButton(
-                        onPressed: () async {
-                          /// print('save data');
-                          await membersController.addNewMember(
-                              firstNameCtrl.text,
-                              lastNameCtrl.text,
-                              emailCtrl.text);
-                          const snackBar = SnackBar(
-                            content: Text(
-                              'Member Added!',
-                              style: TextStyle(
-                                  fontSize: 14, fontWeight: FontWeight.bold),
-                            ),
-                          );
-                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                          Get.back();
-                          Get.back();
-                        },
-                        child: Text('Save')),
-                    ElevatedButton(
-                        onPressed: () {
-                          /// print('Cancel');
-                          Get.back();
-                          Get.back();
-                        },
-                        child: Text('Cancel')),
-                  ],
-                )
-              ],
+                  )
+                ],
+              ),
             ),
           ),
         ),
@@ -214,72 +224,86 @@ class AddNewResidence extends StatelessWidget {
       home: Directionality(
         textDirection: TextDirection.ltr,
         child: Scaffold(
-          backgroundColor: Colors.white,
-          body: SizedBox(
-            width: 350,
-            height: 500,
-            child: Column(
-              //crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+          appBar: AppBar(
+            leadingWidth: 125,
+            centerTitle: true,
+            leading: IconButton(
+              onPressed: () {
+                Get.back();
+              },
+              icon: const Icon(Icons.arrow_back),
+            ),
+            title: Column(
               children: [
-                Image.network(
-                  'assets/images/logo-insider.png',
-                  height: 100,
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                Text(
-                  'Add a new Residence/City',
-                  style: TextStyle(fontSize: 24),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(18.0),
-                  child: Row(
-                    children: [
-                      Text('Residence name:',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 12.0),
-                        child: SizedBox(
-                            width: 150,
-                            height: 50,
-                            child: TextField(
-                              controller: residenceCtrl,
-                            )),
-                      )
-                    ],
-                  ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    ElevatedButton(
-                        onPressed: () async {
-                          await mainController
-                              .addNewResidence(residenceCtrl.text);
-                          const snackBar = SnackBar(
-                            content: Text(
-                              'Residence Added!',
-                              style: TextStyle(
-                                  fontSize: 14, fontWeight: FontWeight.bold),
-                            ),
-                          );
-                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                          Get.back();
-                          Get.back();
-                        },
-                        child: const Text('Save')),
-                    ElevatedButton(
-                        onPressed: () {
-                          /// print('Cancel');
-                          Get.back();
-                          Get.back();
-                        },
-                        child: const Text('Cancel')),
-                  ],
-                )
+                Image.network(scale: 2, 'assets/images/logo-insider.png'),
+                Text('Administrator', style: TextStyle(fontSize: 16, color: Colors.blue.shade900, fontWeight: FontWeight.bold),)
               ],
+            ),
+          ),
+          backgroundColor: Colors.white,
+          body: Padding(
+            padding: const EdgeInsets.only(left: 30, right:30, top: 80, bottom: 20),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.blueGrey.shade100, // Background color
+                // border: Border.all(color: Colors.red, width: 1), // Border
+                borderRadius: BorderRadius.circular(50), // Rounded corners
+              ),
+              height: 500,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  //crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Text('Add a new Residence/City', style: TextStyle(fontSize: 30, color: Colors.blue.shade900, fontWeight: FontWeight.bold)),
+                    Padding(
+                      padding: const EdgeInsets.all(18.0),
+                      child: Row(
+                        children: [
+                          const Text('Residence name:',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 12.0),
+                            child: SizedBox(
+                                width: 150,
+                                height: 50,
+                                child: TextField(
+                                  controller: residenceCtrl,
+                                )),
+                          )
+                        ],
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        ElevatedButton(
+                            onPressed: () async {
+                              await mainController
+                                  .addNewResidence(residenceCtrl.text);
+                              const snackBar = SnackBar(
+                                content: Text(
+                                  'Residence Added!',
+                                  style: TextStyle(
+                                      fontSize: 14, fontWeight: FontWeight.bold),
+                                ),
+                              );
+                              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                              Get.back();
+                            },
+                            child: const Text('Save')),
+                        ElevatedButton(
+                            onPressed: () {
+                              /// print('Cancel');
+                              Get.back();
+                            },
+                            child: const Text('Cancel')),
+                      ],
+                    )
+                  ],
+                ),
+              ),
             ),
           ),
         ),
@@ -301,70 +325,85 @@ class AddNewForum extends StatelessWidget {
       home: Directionality(
         textDirection: TextDirection.ltr,
         child: Scaffold(
-          backgroundColor: Colors.white,
-          body: SizedBox(
-            width: 350,
-            height: 500,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+          appBar: AppBar(
+            leadingWidth: 125,
+            centerTitle: true,
+            leading: IconButton(
+              onPressed: () {
+                Get.back();
+              },
+              icon: const Icon(Icons.arrow_back),
+            ),
+            title: Column(
               children: [
-                Image.network(
-                  'assets/images/logo-insider.png',
-                  height: 100,
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                Text(
-                  'Add a new Forum',
-                  style: TextStyle(fontSize: 24),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(18.0),
-                  child: Row(
-                    children: [
-                      Text('Forum number/name:',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 12.0),
-                        child: SizedBox(
-                            width: 150,
-                            height: 50,
-                            child: TextField(
-                              controller: forumCtrl,
-                            )),
-                      )
-                    ],
-                  ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    ElevatedButton(
-                        onPressed: () async {
-                          await mainController.addNewForum(forumCtrl.text);
-                          const snackBar = SnackBar(
-                            content: Text(
-                              'Forum Added!',
-                              style: TextStyle(
-                                  fontSize: 14, fontWeight: FontWeight.bold),
-                            ),
-                          );
-                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                          Get.back();
-                          Get.back();
-                        },
-                        child: Text('Save')),
-                    ElevatedButton(
-                        onPressed: () {
-                          /// print('Cancel');
-                          Get.back();
-                          Get.back();
-                        },
-                        child: Text('Cancel')),
-                  ],
-                )
+                Image.network(scale: 2, 'assets/images/logo-insider.png'),
+                Text('Administrator', style: TextStyle(fontSize: 16, color: Colors.blue.shade900, fontWeight: FontWeight.bold),)
               ],
+            ),
+          ),
+          backgroundColor: Colors.white,
+          body: Padding(
+            padding: const EdgeInsets.only(left: 30, right:30, top: 20, bottom: 20),
+            child: Center(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.blueGrey.shade100, // Background color
+                  // border: Border.all(color: Colors.red, width: 1), // Border
+                  borderRadius: BorderRadius.circular(50), // Rounded corners
+                ),
+                height: 500,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Center(
+                      child: Text('Add a New Forum', style: TextStyle(fontSize: 32, color: Colors.blue.shade900, fontWeight: FontWeight.bold),),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(18.0),
+                      child: Row(
+                        children: [
+                          Text('Forum number/name:',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 12.0),
+                            child: SizedBox(
+                                width: 150,
+                                height: 50,
+                                child: TextField(
+                                  controller: forumCtrl,
+                                )),
+                          )
+                        ],
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        ElevatedButton(
+                            onPressed: () async {
+                              await mainController.addNewForum(forumCtrl.text);
+                              const snackBar = SnackBar(
+                                content: Text(
+                                  'Forum Added!',
+                                  style: TextStyle(
+                                      fontSize: 14, fontWeight: FontWeight.bold),
+                                ),
+                              );
+                              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                              Get.back();
+                            },
+                            child: Text('Save')),
+                        ElevatedButton(
+                            onPressed: () {
+                              /// print('Cancel');
+                              Get.back();
+                            },
+                            child: Text('Cancel')),
+                      ],
+                    )
+                  ],
+                ),
+              ),
             ),
           ),
         ),
@@ -398,265 +437,282 @@ class _ManageFreeTextTagState extends State<ManageFreeTextTag> {
       home: Directionality(
         textDirection: TextDirection.ltr,
         child: Scaffold(
-          backgroundColor: Colors.white,
-          body: SizedBox(
-            width: 350,
-            height: 800,
-            child: Column(
-              //crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+          appBar: AppBar(
+            leadingWidth: 125,
+            centerTitle: true,
+            leading: IconButton(
+              onPressed: () {
+                Get.back();
+              },
+              icon: const Icon(Icons.arrow_back),
+            ),
+            title: Column(
               children: [
-                Image.network(
-                  'assets/images/logo-insider.png',
-                  height: 100,
+                Image.network(scale: 2, 'assets/images/logo-insider.png'),
+                Text('Administrator', style: TextStyle(fontSize: 16, color: Colors.blue.shade900, fontWeight: FontWeight.bold),)
+              ],
+            ),
+          ),
+          backgroundColor: Colors.white,
+          body: Padding(
+            padding: const EdgeInsets.only(left: 30, right:30, top: 20, bottom: 20),
+            child: Center(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.blueGrey.shade100, // Background color
+                  // border: Border.all(color: Colors.red, width: 1), // Border
+                  borderRadius: BorderRadius.circular(50), // Rounded corners
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
-                const Text(
-                  'Manage Free Text Tags',
-                  style: TextStyle(fontSize: 24),
-                ),
-                /// Add and Edit free text tags
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 15.0),
-                  child: SizedBox(
-                    child: AnimatedToggleSwitch<bool>.dual(
-                      current: addMode,
-                      first: false,
-                      second: true,
-                      spacing: 50.0,
-                      style: const ToggleStyle(
-                        borderColor: Colors.transparent,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black26,
-                            spreadRadius: 1,
-                            blurRadius: 2,
-                            offset: Offset(0, 1.5),
+                height: 700,
+                child: Column(
+                  //crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    ///title
+                    Center(
+                      child: Text('Manage Free Text Tags', style: TextStyle(fontSize: 32, color: Colors.blue.shade900, fontWeight: FontWeight.bold),),
+                    ),
+                    /// Add and Edit free text tags
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 15.0),
+                      child: SizedBox(
+                        child: AnimatedToggleSwitch<bool>.dual(
+                          current: addMode,
+                          first: false,
+                          second: true,
+                          spacing: 50.0,
+                          style: const ToggleStyle(
+                            borderColor: Colors.transparent,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black26,
+                                spreadRadius: 1,
+                                blurRadius: 2,
+                                offset: Offset(0, 1.5),
+                              ),
+                            ],
+                          ),
+                          borderWidth: 5.0,
+                          height: 55,
+                          onChanged: (b) {
+                            if (b) {
+                              labelCtrl.text = '';
+                              typeCtrl.text = '';
+                              hintCtrl.text = '';
+                              iconCodeCtrl.text = '';
+                            }
+                            setState(() => addMode = b);
+                            },
+                          styleBuilder: (b) => ToggleStyle(
+                              indicatorColor: b ? Colors.blue : Colors.green),
+                          iconBuilder: (value) => value
+                              ? const Icon(Icons.add)
+                              : const Icon(Icons.edit),
+                          textBuilder: (value) => value
+                              ? const Center(child: Text('Add '))
+                              : const Center(child: Text('Edit ')),
+                        ),
+                      ),
+                    ),
+                    /// Free Text Tags List
+                    addMode?SizedBox.shrink():DropdownMenu(
+                      leadingIcon: Icon(
+                          color: Colors.blue.shade900,
+                          Icons.text_fields),
+                      label: const Text('Free Text Tags'),
+                      //initialSelection: widget.member.residence,
+                      inputDecorationTheme:
+                      const InputDecorationTheme(
+                        filled: false,
+                        isDense: true,
+                        border: OutlineInputBorder(
+                          //borderSide: BorderSide(color:  Colors.blue),
+                        ),
+                        contentPadding:
+                        EdgeInsets.symmetric(vertical: 5.0),
+                        //outlineBorder: BorderSide(color:  Colors.blue),
+                      ),
+                      dropdownMenuEntries: mainController
+                          .freeTextTagsList
+                          .map((tag) => tag['label'] as String)
+                          .toList()
+                          .map<DropdownMenuEntry<String>>(
+                              (String tag) {
+                            return DropdownMenuEntry<String>(
+                              value: tag,
+                              label: tag,
+                              style: MenuItemButton.styleFrom(
+                                foregroundColor: Colors.black,
+                              ),
+                            );
+                          }).toList(),
+                      controller: freeTextTagCtrl,
+                      onSelected: (label) {
+                        // Find the index of the item where the 'label' key has the target value
+                        int index = mainController.freeTextTagsList.indexWhere((tag) => tag['label'] == label);
+                        if (index != -1) {
+                          var tag = mainController.freeTextTagsList[index];
+                          labelCtrl.text = tag['label'];
+                          typeCtrl.text = tag['type'];
+                          hintCtrl.text = tag['hint'];
+                          iconCodeCtrl.text = tag['icon_code'];
+                          templateId = tag['templateId'];
+                        } else {
+                          //print('Label not found');
+                        }
+                      },
+                    ),
+                    ///name
+                    Padding(
+                      padding: const EdgeInsets.all(18.0),
+                      child: Row(
+                        children: [
+                          Text('field name:',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 12.0),
+                            child: SizedBox(
+                                width: 150,
+                                height: 50,
+                                child: TextField(
+                                  controller: labelCtrl,
+                                )),
                           ),
                         ],
                       ),
-                      borderWidth: 5.0,
-                      height: 55,
-                      onChanged: (b) {
-                        if (b) {
-                          labelCtrl.text = '';
-                          typeCtrl.text = '';
-                          hintCtrl.text = '';
-                          iconCodeCtrl.text = '';
-                        }
-                        setState(() => addMode = b);
-                        },
-                      styleBuilder: (b) => ToggleStyle(
-                          indicatorColor: b ? Colors.blue : Colors.green),
-                      iconBuilder: (value) => value
-                          ? const Icon(Icons.add)
-                          : const Icon(Icons.edit),
-                      textBuilder: (value) => value
-                          ? const Center(child: Text('Add '))
-                          : const Center(child: Text('Edit ')),
                     ),
-                  ),
-                ),
-                /// Free Text Tags List
-                addMode?SizedBox.shrink():DropdownMenu(
-                  leadingIcon: Icon(
-                      color: Colors.blue.shade900,
-                      Icons.text_fields),
-                  label: const Text('Free Text Tags'),
-                  //initialSelection: widget.member.residence,
-                  inputDecorationTheme:
-                  const InputDecorationTheme(
-                    filled: false,
-                    isDense: true,
-                    border: OutlineInputBorder(
-                      //borderSide: BorderSide(color:  Colors.blue),
-                    ),
-                    contentPadding:
-                    EdgeInsets.symmetric(vertical: 5.0),
-                    //outlineBorder: BorderSide(color:  Colors.blue),
-                  ),
-                  dropdownMenuEntries: mainController
-                      .freeTextTagsList
-                      .map((tag) => tag['label'] as String)
-                      .toList()
-                      .map<DropdownMenuEntry<String>>(
-                          (String tag) {
-                        return DropdownMenuEntry<String>(
-                          value: tag,
-                          label: tag,
-                          style: MenuItemButton.styleFrom(
-                            foregroundColor: Colors.black,
+
+                    ///type
+                    Padding(
+                      padding: const EdgeInsets.all(18.0),
+                      child: Row(
+                        children: [
+                          const Text('field type:',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 12.0),
+                            child: SizedBox(
+                                width: 150,
+                                height: 50,
+                                child: DropdownMenu(
+                                  controller: typeCtrl,
+                                  dropdownMenuEntries: const [
+                                    DropdownMenuEntry(
+                                        value: 'text',
+                                        label: 'text'),
+                                    DropdownMenuEntry(
+                                        value: 'link',
+                                        label: 'link'),
+                                    DropdownMenuEntry(
+                                        value: 'textbox',
+                                        label: 'textbox')
+                                  ],
+                                )),
                           ),
-                        );
-                      }).toList(),
-                  controller: freeTextTagCtrl,
-                  onSelected: (label) {
-                    // Find the index of the item where the 'label' key has the target value
-                    int index = mainController.freeTextTagsList.indexWhere((tag) => tag['label'] == label);
-                    if (index != -1) {
-                      var tag = mainController.freeTextTagsList[index];
-                      labelCtrl.text = tag['label'];
-                      typeCtrl.text = tag['type'];
-                      hintCtrl.text = tag['hint'];
-                      iconCodeCtrl.text = tag['icon_code'];
-                      templateId = tag['templateId'];
-                    } else {
-                      //print('Label not found');
-                    }
-                  },
-                ),
-                ///name
-                Padding(
-                  padding: const EdgeInsets.all(18.0),
-                  child: Row(
-                    children: [
-                      Text('field name:',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 12.0),
-                        child: SizedBox(
-                            width: 150,
-                            height: 50,
-                            child: TextField(
-                              controller: labelCtrl,
-                            )),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
+                    ),
 
-                ///type
-                Padding(
-                  padding: const EdgeInsets.all(18.0),
-                  child: Row(
-                    children: [
-                      const Text('field type:',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 12.0),
-                        child: SizedBox(
-                            width: 150,
-                            height: 50,
-                            child: DropdownMenu(
-                              controller: typeCtrl,
-                              dropdownMenuEntries: const [
-                                DropdownMenuEntry(
-                                    value: 'text',
-                                    label: 'text'),
-                                DropdownMenuEntry(
-                                    value: 'link',
-                                    label: 'link'),
-                                DropdownMenuEntry(
-                                    value: 'textbox',
-                                    label: 'textbox')
-                              ],
-                            )),
+                    ///hint
+                    Padding(
+                      padding: const EdgeInsets.all(18.0),
+                      child: Row(
+                        children: [
+                          Text('hint:',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 12.0),
+                            child: SizedBox(
+                                width: 250,
+                                height: 50,
+                                child: TextField(
+                                  controller: hintCtrl,
+                                )),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
+                    ),
 
-                ///hint
-                Padding(
-                  padding: const EdgeInsets.all(18.0),
-                  child: Row(
-                    children: [
-                      Text('hint:',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 12.0),
-                        child: SizedBox(
-                            width: 250,
-                            height: 50,
-                            child: TextField(
-                              controller: hintCtrl,
-                            )),
+                    ///Icon code
+                    Padding(
+                      padding: const EdgeInsets.all(18.0),
+                      child: Row(
+                        children: [
+                          const Text('icon code:',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 12.0),
+                            child: SizedBox(
+                                width: 150,
+                                height: 50,
+                                child: TextField(
+                                  controller: iconCodeCtrl,
+                                )),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        ElevatedButton(
+                            onPressed: () async {
+                              if(addMode) {
+                                ///add
+                                await mainController.addNewFreeTextField({
+                                  'key': labelToKey(labelCtrl.text),
+                                  'label': labelCtrl.text,
+                                  'type': typeCtrl.text,
+                                  'hint': hintCtrl.text,
+                                  'icon_code': iconCodeCtrl.text
+                                });
+                                const snackBar = SnackBar(
+                                  content: Text(
+                                    'Free Text Field Added!',
+                                    style: TextStyle(
+                                        fontSize: 14, fontWeight: FontWeight.bold),
+                                  ),
+                                );
+                                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                Get.back();
+                              } else {
+                                ///update
+                              }
 
-                ///Icon code
-                Padding(
-                  padding: const EdgeInsets.all(18.0),
-                  child: Row(
-                    children: [
-                      const Text('icon code:',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 12.0),
-                        child: SizedBox(
-                            width: 150,
-                            height: 50,
-                            child: TextField(
-                              controller: iconCodeCtrl,
-                            )),
-                      ),
-                    ],
-                  ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    ElevatedButton(
+                            },
+                            child:  Text(addMode?'Add':'Update')),
+                        ElevatedButton(
+                            onPressed: () {
+                              /// print('Cancel');
+                              Get.back();
+                            },
+                            child: const Text('Cancel')),
+                      ],
+                    ),
+                    const SizedBox(height: 20,),
+                    !addMode?ElevatedButton(
                         onPressed: () async {
-                          if(addMode) {
-                            ///add
-                            await mainController.addNewFreeTextField({
-                              'key': labelToKey(labelCtrl.text),
-                              'label': labelCtrl.text,
-                              'type': typeCtrl.text,
-                              'hint': hintCtrl.text,
-                              'icon_code': iconCodeCtrl.text
+                          /// remove free text tag
+                          if (labelCtrl.text=='') return;
+                          /// dialog
+                          bool? res = await showDialog<bool>(
+                              context:
+                              context,
+                              builder: (BuildContext context) => ConfirmDialog(tag: (labelCtrl.text))
+                          );
+                          if (res??false) {
+                            await mainController.removeFreeTextTag(labelCtrl.text, templateId);
+                            setState(() {
+                              /// remove local
+                              mainController.freeTextTagsList;
                             });
-                            const snackBar = SnackBar(
-                              content: Text(
-                                'Free Text Field Added!',
-                                style: TextStyle(
-                                    fontSize: 14, fontWeight: FontWeight.bold),
-                              ),
-                            );
-                            ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                            Get.back();Get.back();
-                          } else {
-                            ///update
                           }
-
                         },
-                        child:  Text(addMode?'Add':'Update')),
-                    ElevatedButton(
-                        onPressed: () {
-                          /// print('Cancel');
-                          Get.back();
-                          Get.back();
-                        },
-                        child: const Text('Cancel')),
+                        child:  const Text('Remove Tag', style: TextStyle(color: Colors.red),)):const SizedBox.shrink(),
+                    mainController.saving.value?const CircularProgressIndicator():const SizedBox.shrink()
                   ],
                 ),
-                const SizedBox(height: 20,),
-                !addMode?ElevatedButton(
-                    onPressed: () async {
-                      /// remove free text tag
-                      if (labelCtrl.text=='') return;
-                      /// dialog
-                      bool? res = await showDialog<bool>(
-                          context:
-                          context,
-                          builder: (BuildContext context) => ConfirmDialog(tag: (labelCtrl.text))
-                      );
-                      if (res??false) {
-                        await mainController.removeFreeTextTag(labelCtrl.text, templateId);
-                        setState(() {
-                          /// remove local
-                          mainController.freeTextTagsList;
-                        });
-                      }
-                    },
-                    child:  const Text('Remove Tag', style: TextStyle(color: Colors.red),)):const SizedBox.shrink(),
-                mainController.saving.value?const CircularProgressIndicator():const SizedBox.shrink()
-              ],
+              ),
             ),
           ),
         ),
@@ -665,131 +721,402 @@ class _ManageFreeTextTagState extends State<ManageFreeTextTag> {
   }
 }
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends StatefulWidget {
   const SettingsScreen({
     super.key,
   });
 
   @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+
+  final mainController = Get.put(MainController());
+  TextEditingController newMemberThresholdInMonthsCtrl = TextEditingController();
+  TextEditingController numberOfRandomResultsCtrl = TextEditingController();
+
+  TextEditingController newMemberScoreCtrl = TextEditingController();
+  TextEditingController birthdayScoreCtrl = TextEditingController();
+  TextEditingController socialScoreCtrl = TextEditingController();
+  TextEditingController profileImageScoreCtrl = TextEditingController();
+  TextEditingController topThresholdCtrl = TextEditingController();
+  TextEditingController bottomThresholdCtrl = TextEditingController();
+
+
+
+
+  bool profileScoreEditModeOn = false;
+
+  @override
+  void initState() {
+    super.initState();
+    newMemberThresholdInMonthsCtrl.text = mainController.newMemberThreshold.toString();
+    numberOfRandomResultsCtrl.text = mainController.numberOfRandomMembers.toString();
+    newMemberScoreCtrl.text = mainController.profileScore.newMemberScore.toString();
+    birthdayScoreCtrl.text =  mainController.profileScore.birthdayScore.toString();
+    socialScoreCtrl.text = mainController.profileScore.socialScore.toString();
+    profileImageScoreCtrl.text = mainController.profileScore.profileImageScore.toString();
+    topThresholdCtrl.text =  mainController.profileScore.topThreshold.toString();
+    bottomThresholdCtrl.text = mainController.profileScore.bottomThreshold.toString();
+  }
+  @override
   Widget build(BuildContext context) {
-    final mainController = Get.put(MainController());
-    TextEditingController newMemberThresholdInMonthsCtrl =
-        TextEditingController();
-    TextEditingController numberOfRandomResultsCtrl = TextEditingController();
-    newMemberThresholdInMonthsCtrl.text =
-        mainController.newMemberThreshold.toString();
-    numberOfRandomResultsCtrl.text =
-        mainController.numberOfRandomMembers.toString();
+
     return MaterialApp(
       home: Directionality(
         textDirection: TextDirection.ltr,
         child: Scaffold(
+          appBar: AppBar(
+            leadingWidth: 125,
+            centerTitle: true,
+            leading: IconButton(
+              onPressed: () {
+                Get.back();
+              },
+              icon: const Icon(Icons.arrow_back),
+            ),
+            title: Column(
+              children: [
+                Image.network(scale: 2, 'assets/images/logo-insider.png'),
+                Text('Administrator', style: TextStyle(fontSize: 16, color: Colors.blue.shade900, fontWeight: FontWeight.bold),)
+              ],
+            ),
+          ),
           backgroundColor: Colors.white,
           body: Center(
-            child: SizedBox(
-              width: 350,
-              height: 750,
+            child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 //mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  Image.network(
-                    'assets/images/logo-insider.png',
-                    height: 70,
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Container(
-                    color: Colors.blueGrey.shade100,
-                    child: Column(
-                      children: [
-                        const Padding(
-                          padding: EdgeInsets.only(top: 20, bottom: 10),
-                          child: Text(
-                            'Results Page Settings',
-                            style: TextStyle(fontSize: 24),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 18.0, top: 20),
-                          child: Row(
-                            children: [
-                              const Text('New Member Thresholds in Months:',
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold)),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 12.0),
-                                child: SizedBox(
-                                    width: 50,
-                                    height: 50,
-                                    child: TextField(
-                                      controller:
-                                          newMemberThresholdInMonthsCtrl,
-                                    )),
-                              )
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              left: 18.0, top: 20, bottom: 50),
-                          child: Row(
-                            children: [
-                              Text('Number Of Random Results:',
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold)),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 12.0),
-                                child: SizedBox(
-                                    width: 50,
-                                    height: 50,
-                                    child: TextField(
-                                      controller: numberOfRandomResultsCtrl,
-                                    )),
-                              )
-                            ],
-                          ),
-                        ),
-
-                        /// Save and Cancel
-                      ],
-                    ),
-                  ),
+                  /// title
+                  Center(child: Text('Settings', style: TextStyle(fontSize: 32, color: Colors.blue.shade900, fontWeight: FontWeight.bold),)),
+                  /// Profile Score
                   Padding(
-                    padding:
-                        const EdgeInsets.only(left: 18.0, top: 50, bottom: 50),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        ElevatedButton(
-                            onPressed: () async {
-                              /// print('save data');
-                              // mainController.(firstNameCtrl.text, lastNameCtrl.text, emailCtrl.text);
-                              const snackBar = SnackBar(
-                                content: Text(
-                                  'Settings Saved!',
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              );
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(snackBar);
-                              Get.back();
-                              Get.back();
-                            },
-                            child: Text('Save')),
-                        ElevatedButton(
-                            onPressed: () {
-                              /// print('Cancel');
-                              Get.back();
-                              Get.back();
-                            },
-                            child: Text('Cancel')),
-                      ],
+                    padding: const EdgeInsets.only(left: 30, right:30, top: 20, bottom: 20),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.blueGrey.shade100, // Background color
+                        // border: Border.all(color: Colors.red, width: 1), // Border
+                        borderRadius: BorderRadius.circular(50), // Rounded corners
+                      ),
+                      child: Column(
+                        children: [
+                          const Padding(
+                            padding: EdgeInsets.only(top: 20, bottom: 10),
+                            child: Text(
+                              'Profile Score Settings',
+                              style: TextStyle(fontSize: 24),
+                            ),
+                          ),
+                          /// profile image score
+                          Padding(
+                            padding: const EdgeInsets.only(left: 18.0, top: 4, bottom: 4),
+                            child: Row(
+                              children: [
+                                const Text('Profile Image Score:',
+                                    style: TextStyle(fontWeight: FontWeight.bold)),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 12.0),
+                                  child: SizedBox(
+                                      width: 50,
+                                      height: 50,
+                                      child: TextField(
+                                        enabled: profileScoreEditModeOn?true:false,
+                                        controller: profileImageScoreCtrl,
+                                      )),
+                                )
+                              ],
+                            ),
+                          ),
+                          /// new member score
+                          Padding(
+                            padding: const EdgeInsets.only(left: 18.0, top: 4 ,bottom: 4),
+                            child: Row(
+                              children: [
+                                const Text('New Member Score:',
+                                    style:
+                                    TextStyle(fontWeight: FontWeight.bold)),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 12.0),
+                                  child: SizedBox(
+                                      width: 50,
+                                      height: 50,
+                                      child: TextField(
+                                        enabled: profileScoreEditModeOn?true:false,
+                                        controller:
+                                        newMemberScoreCtrl,
+                                      )),
+                                )
+                              ],
+                            ),
+                          ),
+                          /// birthday score
+                          Padding(
+                            padding: const EdgeInsets.only(left: 18.0, top: 4 ,bottom: 4),
+                            child: Row(
+                              children: [
+                                const Text('Birthday Score:',
+                                    style:
+                                    TextStyle(fontWeight: FontWeight.bold)),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 12.0),
+                                  child: SizedBox(
+                                      width: 50,
+                                      height: 50,
+                                      child: TextField(
+                                        enabled: profileScoreEditModeOn?true:false,
+                                        controller:
+                                        birthdayScoreCtrl,
+                                      )),
+                                )
+                              ],
+                            ),
+                          ),
+                          /// social score
+                          Padding(
+                            padding: const EdgeInsets.only(left: 18.0, top: 4 ,bottom: 4),
+                            child: Row(
+                              children: [
+                                const Text('social Score:',
+                                    style:
+                                    TextStyle(fontWeight: FontWeight.bold)),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 12.0),
+                                  child: SizedBox(
+                                      width: 50,
+                                      height: 50,
+                                      child: TextField(
+                                        enabled: profileScoreEditModeOn?true:false,
+                                        controller:
+                                        socialScoreCtrl,
+                                      )),
+                                )
+                              ],
+                            ),
+                          ),
+                          /// top threshold
+                          Padding(
+                            padding: const EdgeInsets.only(left: 18.0, top: 4 ,bottom: 4),
+                            child: Row(
+                              children: [
+                                const Text('Top Threshold:',
+                                    style:
+                                    TextStyle(fontWeight: FontWeight.bold)),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 12.0),
+                                  child: SizedBox(
+                                      width: 50,
+                                      height: 50,
+                                      child: TextField(
+                                        enabled: profileScoreEditModeOn?true:false,
+                                        controller: topThresholdCtrl,
+                                      )),
+                                )
+                              ],
+                            ),
+                          ),
+                          /// bottom threshold
+                          Padding(
+                            padding: const EdgeInsets.only(left: 18.0, top: 4 ,bottom: 4),
+                            child: Row(
+                              children: [
+                                const Text('Bottom Threshold:',
+                                    style:
+                                    TextStyle(fontWeight: FontWeight.bold)),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 12.0),
+                                  child: SizedBox(
+                                      width: 50,
+                                      height: 50,
+                                      child: TextField(
+                                        enabled: profileScoreEditModeOn?true:false,
+                                        controller: bottomThresholdCtrl,
+                                      )),
+                                )
+                              ],
+                            ),
+                          ),
+                          /// actions
+                          profileScoreEditModeOn
+                              ? Padding(
+                            padding:
+                            const EdgeInsets.only(left: 18.0, top: 50, bottom: 50),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                ElevatedButton(
+                                    onPressed: () async {
+                                      /// print('save data');
+                                      setState(() {
+                                        mainController.saving.value = true;
+                                      });
+                                      await mainController.updateProfileScoreSettings(
+                                        birthdayScore: int.parse(birthdayScoreCtrl.text),
+                                        profileImageScore: int.parse(profileImageScoreCtrl.text),
+                                        newMemberScore: int.parse(newMemberScoreCtrl.text),
+                                        socialScore: int.parse(socialScoreCtrl.text),
+                                        topThreshold: int.parse(topThresholdCtrl.text),
+                                        bottomThreshold: int.parse(bottomThresholdCtrl.text)
+                                      );
+                                      const snackBar = SnackBar(
+                                        content: Text(
+                                          'Profile Score Settings Saved!',
+                                          style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      );
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(snackBar);
+                                      setState(() {
+                                        mainController.saving.value = false;
+                                        profileScoreEditModeOn = false;
+
+                                      });
+                                    },
+                                    child: const Text('Save')),
+                                ElevatedButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        profileScoreEditModeOn = false;
+                                      });
+                                    },
+                                    child: const Text('Cancel')),
+                              ],
+                            ),
+                          )
+                              : Padding(
+                            padding: const EdgeInsets.only(left: 18.0, top: 50, bottom: 50),
+                            child: ElevatedButton(
+                                onPressed: () {
+                                  setState(() {
+                                    profileScoreEditModeOn = true;
+                                  });
+                                },
+                                child: const Text('Edit')),
+                          ),
+                          mainController.saving.value
+                            ?LinearProgressIndicator(color: Colors.blue.shade900)
+                              : SizedBox.shrink()
+              
+                          /// Save and Cancel
+                        ],
+                      ),
                     ),
-                  )
+                  ),
+                  /// results page
+                  Padding(
+                    padding:  const EdgeInsets.only(left: 30, right:30, top: 20, bottom: 20),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.blueGrey.shade100, // Background color
+                        // border: Border.all(color: Colors.red, width: 1), // Border
+                        borderRadius: BorderRadius.circular(50), // Rounded corners
+                      ),
+                      child: Column(
+                        children: [
+                          const Padding(
+                            padding: EdgeInsets.only(top: 20, bottom: 10),
+                            child: Text(
+                              'Results Page Settings',
+                              style: TextStyle(fontSize: 24),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 18.0, top: 20),
+                            child: Row(
+                              children: [
+                                const Text('New Member Threshold in Months:',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold)),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 12.0),
+                                  child: SizedBox(
+                                      width: 50,
+                                      height: 50,
+                                      child: TextField(
+                                        enabled: profileScoreEditModeOn?true:false,
+                                        controller:
+                                            newMemberThresholdInMonthsCtrl,
+                                      )),
+                                )
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                left: 18.0, top: 20, bottom: 50),
+                            child: Row(
+                              children: [
+                                Text('Number Of Random Results:',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold)),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 12.0),
+                                  child: SizedBox(
+                                      width: 50,
+                                      height: 50,
+                                      child: TextField(
+                                        enabled: profileScoreEditModeOn?true:false,
+                                        controller: numberOfRandomResultsCtrl,
+                                      )),
+                                )
+                              ],
+                            ),
+                          ),
+                          /// actions
+                          profileScoreEditModeOn
+                              ? Padding(
+                            padding:
+                            const EdgeInsets.only(left: 18.0, top: 50, bottom: 50),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                ElevatedButton(
+                                    onPressed: () async {
+                                      /// print('save data');
+                                      // mainController.(firstNameCtrl.text, lastNameCtrl.text, emailCtrl.text);
+                                      const snackBar = SnackBar(
+                                        content: Text(
+                                          'Settings Saved!',
+                                          style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      );
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(snackBar);
+                                      Get.back();
+                                    },
+                                    child: const Text('Save')),
+                                ElevatedButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        profileScoreEditModeOn = false;
+                                      });
+                                    },
+                                    child: const Text('Cancel')),
+                              ],
+                            ),
+                          )
+                              : Padding(
+                                padding: const EdgeInsets.only(left: 18.0, top: 50, bottom: 50),
+                                child: ElevatedButton(
+                                onPressed: () {
+                                  setState(() {
+                                    profileScoreEditModeOn = true;
+                                  });
+                                },
+                                child: const Text('Edit')),
+                              )
+              
+                          /// Save and Cancel
+                        ],
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),

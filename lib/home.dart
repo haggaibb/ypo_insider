@@ -56,16 +56,14 @@ class _HomeState extends State<Home> {
             title: 'Insider',
             theme: InsiderTheme.lightThemeData(context),
             darkTheme: InsiderTheme.darkThemeData(),
-            themeMode: membersController.themeMode.value,
+            themeMode: ThemeMode.light,
             home: Scaffold(
                 appBar: AppBar(
                   centerTitle: true,
                   actions: [
                     Padding(
                       padding: const EdgeInsets.all(0.0),
-                      child: membersController.themeMode.value.name == 'dark'
-                          ? const SizedBox(width:1)// TODO replace with logo white
-                          : Image.network('assets/images/logo.png'),
+                      child: Image.network('assets/images/logo.png'),
                     )
                   ],
                   //backgroundColor: Colors.white,
@@ -95,21 +93,15 @@ class _HomeState extends State<Home> {
                     child: ListView(
                       children: [
                         Padding(
-                          padding: const EdgeInsets.only(bottom: 20.0),
+                          padding: const EdgeInsets.only(bottom: 0.0),
                           child: EndDrawerButton(
                             onPressed: () {
                               Get.back();
                             },
                             style: ButtonStyle(
-                                foregroundColor:
-                                membersController.themeMode.value.name == 'dark'
-                                    ? const MaterialStatePropertyAll<Color>(Colors.white)
-                                    : MaterialStatePropertyAll<Color>(Colors.blue.shade700)
+                                foregroundColor: MaterialStatePropertyAll<Color>(Colors.blue.shade700)
                             ),
                           ),
-                        ),
-                        const SizedBox(
-                          height: 8,
                         ),
                         DrawerHeader(
                           decoration: BoxDecoration(
@@ -236,7 +228,7 @@ class _HomeState extends State<Home> {
                           leading: const Icon(
                             Icons.settings,
                           ),
-                          title: const Text('Settings'),
+                          title: const Text('General Settings'),
                           onTap: () {
                             Get.to(() => SettingsScreen());
                           },
