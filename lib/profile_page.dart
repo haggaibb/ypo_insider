@@ -225,7 +225,11 @@ class _ProfilePageState extends State<ProfilePage> {
                                         true;
                                     profileImage = await picker.pickImage(
                                         source: ImageSource.gallery);
-                                    if (profileImage == null) return;
+                                    if (profileImage == null) {
+                                      memberController.loadingProfileImage.value =
+                                      false;
+                                      return;
+                                    }
                                     String url = await memberController
                                         .uploadProfileImage(
                                             profileImage!, widget.member.id);

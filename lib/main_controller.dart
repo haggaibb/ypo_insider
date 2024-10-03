@@ -453,7 +453,7 @@ class MainController extends GetxController {
     loadingStatus.value = 'Loading Tags';
     await loadTags();
     updateSplashScreenText('Loading Random Results...');
-    loadingStatus.value = 'Loading $numberOfMembers Registered Members...';
+    loadingStatus.value = 'Loading Registered Members...';
     await loadRandomResults(numberOfMembers);
     //js.context.callMethod('hideSplashScreen');
     //await logUserLogsIn(user!.displayName??'NA');
