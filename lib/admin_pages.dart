@@ -53,7 +53,7 @@ class AddNewMember extends StatelessWidget {
                 //crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  Text('Add a new YPO member', style: TextStyle(fontSize: 30, color: Colors.blue.shade900, fontWeight: FontWeight.bold)),
+                  Text('Add a new YPO member', style: TextStyle(fontSize: 24, color: Colors.blue.shade900, fontWeight: FontWeight.bold)),
                   Padding(
                     padding: const EdgeInsets.all(18.0),
                     child: Row(
@@ -356,7 +356,7 @@ class AddNewForum extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Center(
-                      child: Text('Add a New Forum', style: TextStyle(fontSize: 32, color: Colors.blue.shade900, fontWeight: FontWeight.bold),),
+                      child: Text('Add a New Forum', style: TextStyle(fontSize: 24, color: Colors.blue.shade900, fontWeight: FontWeight.bold),),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(18.0),
@@ -470,7 +470,7 @@ class _ManageFreeTextTagState extends State<ManageFreeTextTag> {
                   children: [
                     ///title
                     Center(
-                      child: Text('Manage Free Text Tags', style: TextStyle(fontSize: 32, color: Colors.blue.shade900, fontWeight: FontWeight.bold),),
+                      child: Text('Manage Free Text Tags', style: TextStyle(fontSize: 24, color: Colors.blue.shade900, fontWeight: FontWeight.bold),),
                     ),
                     /// Add and Edit free text tags
                     Padding(
