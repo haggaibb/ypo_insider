@@ -256,7 +256,7 @@ class AddNewResidence extends StatelessWidget {
                   //crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    Text('Add a new Residence/City', style: TextStyle(fontSize: 30, color: Colors.blue.shade900, fontWeight: FontWeight.bold)),
+                    Text('Add a new Residence/City', style: TextStyle(fontSize: 22, color: Colors.blue.shade900, fontWeight: FontWeight.bold)),
                     Padding(
                       padding: const EdgeInsets.all(18.0),
                       child: Row(
