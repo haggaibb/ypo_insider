@@ -28,6 +28,7 @@ class Member {
   bool? banner;
   String? bannerUri;
   int newMemberThresholdInMonths;
+  ProfileScore? profileScore;
 
   Member({
     required this.id,
@@ -57,7 +58,8 @@ class Member {
     this.settings = const {},
     this.banner = false,
     this.bannerUri,
-    this.newMemberThresholdInMonths = 12
+    this.newMemberThresholdInMonths = 12,
+    this.profileScore
   });
 
 
@@ -112,13 +114,13 @@ class Member {
   int getProfileScore() {
     int score = 0;
     if (!profileImage!.contains('profile0.jpg')) {
-      score = score + 10;
+      score = score + profileScore!.profileImageScore!;
     }
-    if (linkedin!='' || facebook!='' || linkedin!='') score = score + 5;
+    if (linkedin!='' || facebook!='' || linkedin!='') score = score + profileScore!.socialScore!;
     score = score + filterTags!.length;
     score = score + freeTextTags!.length;
-    if (checkIfTodayIsBirthday(birthdate!)) score = score + 100;
-    if (checkIfNewMember()) score = score + 5;
+    if (checkIfTodayIsBirthday(birthdate!)) score = score + profileScore!.birthdayScore!;
+    if (checkIfNewMember()) score = score + profileScore!.newMemberScore!;
     return score;
   }
   bool checkIfTodayIsBirthday(Timestamp birthdayTimestamp) {
@@ -146,7 +148,6 @@ class Member {
       return false;
     }
   }
-
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -176,7 +177,6 @@ class Member {
       'bannerUri' : bannerUri
     };
   }
-
   factory Member.fromDocumentSnapshot(DocumentSnapshot<Object?> doc){
     Map<String, dynamic>? data = doc.data() as Map<String, dynamic>?;
     if (data == null ) {
@@ -211,8 +211,6 @@ class Member {
 
     );
   }
-
-
   factory Member.fromJson(Map<String, dynamic> json) {
     return Member(
       id: json['id'],
@@ -264,7 +262,6 @@ class Member {
 
     );
   }
-
 }
 
 class ResultRecord {
@@ -275,3 +272,48 @@ class ResultRecord {
 
 }
 
+class ProfileScore {
+  final int? profileImageScore;
+  final int? birthdayScore;
+  final int? newMemberScore;
+  final int? socialScore;
+  final int? topThreshold;
+  final int? bottomThreshold;
+
+  const ProfileScore({
+    this.profileImageScore=10,
+    this.birthdayScore = 100,
+    this.newMemberScore = 5,
+    this.socialScore = 5,
+    this.topThreshold = 100,
+    this.bottomThreshold = 12,
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'profile_image_score': profileImageScore,
+      'birthday_score': birthdayScore,
+      'new_member': newMemberScore,
+      'social_score' : socialScore,
+      'top_threshold' : topThreshold,
+      'bottom_threshold' : bottomThreshold
+    };
+  }
+
+
+  factory ProfileScore.fromDocumentSnapshot(DocumentSnapshot<Object?> doc){
+    Map<String, dynamic>? data = doc.data() as Map<String, dynamic>?;
+    if (data == null ) {
+      throw Exception("Required fields are missing");
+    }
+    return ProfileScore(
+      profileImageScore : data.containsKey('profile_image_score') ? data['profile_image_score'] as int : 10,
+      birthdayScore : data.containsKey('birthday_score') ? data['birthday_score'] as int : 100,
+      newMemberScore : data.containsKey('new_member_score') ? data['new_member_score'] as int : 5,
+      socialScore: data.containsKey('social_score') ? data['social_score'] as int : 5,
+      topThreshold: data.containsKey('top_threshold') ? data['top_threshold'] as int : 100,
+      bottomThreshold: data.containsKey('bottom_threshold') ? data['bottom_threshold'] as int : 12,
+    );
+  }
+
+}

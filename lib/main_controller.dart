@@ -33,7 +33,7 @@ class MainController extends GetxController {
   int newMemberThreshold = 12;
   final user = FirebaseAuth.instance.currentUser;
   late String version;
-  late Map<String, dynamic> memberConfig;
+  late ProfileScore profileScore;
 
   getSettings() async {
     final settingsRef = db.collection("Settings").doc('results_settings');
@@ -41,6 +41,13 @@ class MainController extends GetxController {
     var settingsData = membersQuery.data() as Map<String, dynamic>;
     numberOfRandomMembers = settingsData['number_of_random_members'];
     newMemberThreshold  = settingsData['new_member_threshold_in_months'];
+    /// load profile score data
+    final profileScoreRef = db.collection("Settings").doc('profile_score');
+    final DocumentSnapshot profileScoreQuery = await profileScoreRef.get();
+    if (profileScoreQuery.exists) {
+      profileScore = ProfileScore.fromDocumentSnapshot(profileScoreQuery);
+    }
+
   }
 
   fetchFilteredMembers(List<String> selectedFilters) async {
@@ -139,10 +146,11 @@ class MainController extends GetxController {
     for (var member in membersDocs) {
       filteredResults.add(Member.fromDocumentSnapshot(member));
       filteredResults[filteredResults.length-1].newMemberThresholdInMonths = newMemberThreshold;
+      filteredResults[filteredResults.length-1].profileScore = profileScore;
     }
     filteredResults.sort((b, a) => a.getProfileScore().compareTo(b.getProfileScore()));
-    int startIndex = filteredResults.lastIndexWhere((element) => element.getProfileScore()>100);
-    int endIndex = filteredResults.indexWhere((element) => element.getProfileScore()<12);
+    int startIndex = filteredResults.lastIndexWhere((element) => element.getProfileScore()>profileScore.topThreshold!);
+    int endIndex = filteredResults.indexWhere((element) => element.getProfileScore()<profileScore.bottomThreshold!);
     List<Member> birthdayProfiles = filteredResults.sublist(0,startIndex+1);
     List<Member> topProfiles = filteredResults.sublist(startIndex+1,endIndex);
     List<Member> remainingProfiles = filteredResults.sublist(endIndex+1,filteredResults.length);
@@ -449,7 +457,7 @@ class MainController extends GetxController {
     await loadRandomResults(numberOfMembers);
     //js.context.callMethod('hideSplashScreen');
     //await logUserLogsIn(user!.displayName??'NA');
-    await logUserOpensApp(user!.displayName ?? 'NA');
+    if (user!=null) await logUserOpensApp(user!.displayName ?? 'NA');
     mainLoading.value = false;
     update();
     /// print('end - init main Controller');
