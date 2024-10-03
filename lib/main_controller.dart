@@ -451,6 +451,17 @@ class MainController extends GetxController {
     saving.value = false;
   }
 
+  updateResultsPageSettings({newMemberThresholdInMonths,numberOfRandomMembers}) async {
+    saving.value = true;
+    DocumentReference resultsSettingsRef = db.collection('Settings').doc('results_settings');
+    await resultsSettingsRef.update({
+      'new_member_threshold_in_months' : int.parse(newMemberThresholdInMonths),
+      'number_of_random_members' : int.parse(numberOfRandomMembers)
+    });
+    saving.value = false;
+  }
+
+
   @override
   onInit() async {
     super.onInit();

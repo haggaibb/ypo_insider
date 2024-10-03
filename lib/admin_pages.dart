@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:toggle_switch/toggle_switch.dart';
+import 'package:get_storage/get_storage.dart';
 import 'members_controller.dart';
 import 'main_controller.dart';
 import 'package:get/get.dart';
@@ -743,10 +743,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   TextEditingController topThresholdCtrl = TextEditingController();
   TextEditingController bottomThresholdCtrl = TextEditingController();
 
-
-
-
   bool profileScoreEditModeOn = false;
+  bool resultsPageEditModeOn = false;
 
   @override
   void initState() {
@@ -997,8 +995,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 },
                                 child: const Text('Edit')),
                           ),
-                          mainController.saving.value
-                            ?LinearProgressIndicator(color: Colors.blue.shade900)
+                          mainController.saving.value && profileScoreEditModeOn
+                            ?SizedBox(width: 200, child: LinearProgressIndicator(color: Colors.blue.shade900))
                               : SizedBox.shrink()
               
                           /// Save and Cancel
@@ -1037,7 +1035,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                       width: 50,
                                       height: 50,
                                       child: TextField(
-                                        enabled: profileScoreEditModeOn?true:false,
+                                        enabled: resultsPageEditModeOn?true:false,
                                         controller:
                                             newMemberThresholdInMonthsCtrl,
                                       )),
@@ -1059,7 +1057,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                       width: 50,
                                       height: 50,
                                       child: TextField(
-                                        enabled: profileScoreEditModeOn?true:false,
+                                        enabled: resultsPageEditModeOn?true:false,
                                         controller: numberOfRandomResultsCtrl,
                                       )),
                                 )
@@ -1067,7 +1065,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             ),
                           ),
                           /// actions
-                          profileScoreEditModeOn
+                          resultsPageEditModeOn
                               ? Padding(
                             padding:
                             const EdgeInsets.only(left: 18.0, top: 50, bottom: 50),
@@ -1077,7 +1075,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 ElevatedButton(
                                     onPressed: () async {
                                       /// print('save data');
-                                      // mainController.(firstNameCtrl.text, lastNameCtrl.text, emailCtrl.text);
+                                      setState(() {
+                                        mainController.saving.value = true;
+                                      });
+                                      await mainController.updateResultsPageSettings(
+                                        newMemberThresholdInMonths: newMemberThresholdInMonthsCtrl.text,
+                                        numberOfRandomMembers: numberOfRandomResultsCtrl.text
+                                      );
+                                      setState(() {
+                                        mainController.saving.value = false;
+                                        resultsPageEditModeOn = false;
+                                      });
                                       const snackBar = SnackBar(
                                         content: Text(
                                           'Settings Saved!',
@@ -1088,13 +1096,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                       );
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(snackBar);
-                                      Get.back();
                                     },
                                     child: const Text('Save')),
                                 ElevatedButton(
                                     onPressed: () {
                                       setState(() {
-                                        profileScoreEditModeOn = false;
+                                        resultsPageEditModeOn = false;
                                       });
                                     },
                                     child: const Text('Cancel')),
@@ -1106,11 +1113,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 child: ElevatedButton(
                                 onPressed: () {
                                   setState(() {
-                                    profileScoreEditModeOn = true;
+                                    resultsPageEditModeOn = true;
                                   });
                                 },
                                 child: const Text('Edit')),
-                              )
+                              ),
+                          mainController.saving.value && resultsPageEditModeOn
+                              ?SizedBox(width: 200, child: LinearProgressIndicator(color: Colors.blue.shade900))
+                              : SizedBox.shrink()
               
                           /// Save and Cancel
                         ],
