@@ -30,35 +30,75 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   updateSplashScreenText('Initializing...');
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  runApp(const Insider());
+}
+
+//Insider
+class Insider extends StatefulWidget {
+  const Insider({ super.key});
+  @override
+  State<Insider> createState() => _InsiderState();
+}
+class _InsiderState extends State<Insider> {
   final user = FirebaseAuth.instance.currentUser;
-  //print('@@@@@@@@@@@@@@@@@@');
-  //print('main');
-  runApp(MainLoading());
+  String initialRoute = '/front_gate';
+  @override
+  void initState()  {
+    super.initState();
+    ///print('init Insider');
     if (user!=null) {
-    /// print('root check - user verified....');
-    if (user.displayName!=null) {
-      updateSplashScreenText('${user.displayName} Verified..');
-      /// print('verified go to Home');
-      /// print(user.displayName);
-      membersController.loadingStatus.value = '${user.displayName} verified go to Home';
-      runApp(Home(user: user,));
-    } else {
-      membersController.loadingStatus.value = 'First timer, load onBoarding...';
-      /// print('First timer, load onBoarding...');
-      updateSplashScreenText('${user.displayName} first visit...');
+      ///print('root check - user verified....');
+      if (user?.displayName!=null) {
+        updateSplashScreenText('${user?.displayName} Verified..');
+        ///print('verified go to Home');
+        ///print(user?.displayName);
+        membersController.loadingStatus.value = '${user?.displayName} verified go to Home';
+        ///print('set init Route to Home');
+        initialRoute = '/home';
+      } else {
+        membersController.loadingStatus.value = 'First timer, load onBoarding...';
+        ///print('First timer, load onBoarding...');
+        updateSplashScreenText('${user?.displayName} first visit...');
+        js.context.callMethod('hideSplashScreen');
+        initialRoute = '/onboarding';
+      }
+    }
+    else {
+      ///print('root check - user either null or not verified');
       js.context.callMethod('hideSplashScreen');
-      runApp(OnBoardingPage(user: user));
+      initialRoute = 'front_gate';
     }
   }
-  else {
-    /// print('root check - user either null or not verified');
-    js.context.callMethod('hideSplashScreen');
-    runApp(FrontGate(user: user));
-  }
+  @override
+  Widget build(BuildContext context) {
+    return GetMaterialApp(
+      initialRoute: initialRoute,
+      getPages: [
+        GetPage(
+            name: '/home',
+            page: () => Home(user: user,),
+            transition: Transition.zoom
+        ),
+        GetPage(
+            name: '/front_gate',
+            page: () => FrontGate(user: user,),
+            transition: Transition.zoom
+        ),
+        GetPage(
+            name: '/onboarding',
+            page: () => OnBoardingPage(user: user,),
+            transition: Transition.zoom
+        ),
+      ],
+      themeMode: ThemeMode.light,
 
+    );
+  }
 }
 
 
+
+// FrontGate
 class FrontGate extends StatefulWidget {
   final User? user;
   FrontGate({  super.key, this.user});
@@ -105,7 +145,8 @@ class _FrontGateState extends State<FrontGate> {
           } else {
               /// print('first time, go to onBoarding');
               AnalyticsEngine.logOnBoarding(user.email!,'start');
-              runApp(OnBoardingPage(user: user));
+              Get.toNamed("/onboarding");
+              //runApp(OnBoardingPage(user: user));
           }
           //return Home(user: authController.auth.currentUser,);
         } else if (state is AuthFailed) {

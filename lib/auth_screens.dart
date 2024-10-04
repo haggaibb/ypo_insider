@@ -24,160 +24,153 @@ class EmailSignInForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-        //theme: InsiderTheme.lightThemeData(context),
-        //darkTheme: InsiderTheme.darkThemeData(),
-        themeMode: ThemeMode.light,
-        home: Directionality(
-          textDirection: TextDirection.ltr,
-          child: Scaffold(
-            body: SingleChildScrollView(
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(0.0),
-                    child: Image.network(
-                      'assets/images/logo-landscape.png',
-                      width: 300,
-                    ),
+    return Scaffold(
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(0.0),
+              child: Image.network(
+                'assets/images/logo-landscape.png',
+                width: 300,
+              ),
+            ),
+            Image.network(
+              scale: 2,
+              'assets/images/logo-insider.png',
+              width: 150,
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.all(18.0),
+                  child: Text(
+                    'Sign in',
+                    style: TextStyle(fontSize: 28),
                   ),
-                  Image.network(
-                    scale: 2,
-                    'assets/images/logo-insider.png',
-                    width: 150,
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(
+                      left: 18.0, right: 18.0, top: 8.0, bottom: 0),
+                  child: Text(
+                    'Welcome to YPO Israel Insider! sign in to continue..',
+                    style: TextStyle(fontSize: 14),
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(
+                      left: 18.0, right: 18.0, top: 8.0, bottom: 20),
+                  child: Row(
                     children: [
-                      const Padding(
-                        padding: EdgeInsets.all(18.0),
-                        child: Text(
-                          'Sign in',
-                          style: TextStyle(fontSize: 28),
-                        ),
+                      const Text(
+                        'Do not have an account yet?',
+                        style: TextStyle(fontSize: 14),
                       ),
-                      const Padding(
-                        padding: EdgeInsets.only(
-                            left: 18.0, right: 18.0, top: 8.0, bottom: 0),
-                        child: Text(
-                          'Welcome to YPO Israel Insider! sign in to continue..',
-                          style: TextStyle(fontSize: 14),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            left: 18.0, right: 18.0, top: 8.0, bottom: 20),
-                        child: Row(
-                          children: [
-                            const Text(
-                              'Do not have an account yet?',
-                              style: TextStyle(fontSize: 14),
+                      GestureDetector(
+                          onTap: () {
+                            Get.to(EmailRegisterForm(
+                                authController: authController));
+                          },
+                          child: const Text(
+                            ' Register',
+                            style: TextStyle(
+                                fontSize: 14, color: Colors.blue),
+                          )),
+                    ],
+                  ),
+                ),
+                Center(
+                  child: SizedBox(
+                    width: 350,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: TextField(
+                            controller: emailCtrl,
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              hintText: 'Enter your email',
                             ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: TextField(
+                            obscureText: true,
+                            controller: passwordCtrl,
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              hintText: 'Password',
+                            ),
+                          ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
                             GestureDetector(
-                                onTap: () {
-                                  Get.to(EmailRegisterForm(
-                                      authController: authController));
-                                },
-                                child: const Text(
-                                  ' Register',
-                                  style: TextStyle(
-                                      fontSize: 14, color: Colors.blue),
-                                )),
+                              child: const Text(
+                                'Forgotten password??',
+                                style: TextStyle(color: Colors.blueGrey),
+                              ),
+                              onTap: () {
+                                Get.to(ForgotPasswordScreen(
+                                  auth: authController.auth,
+                                  email: emailCtrl.text,
+                                  resizeToAvoidBottomInset: true,
+                                ));
+                              },
+                            ),
                           ],
                         ),
-                      ),
-                      Center(
-                        child: SizedBox(
-                          width: 350,
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: TextField(
-                                  controller: emailCtrl,
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    hintText: 'Enter your email',
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: TextField(
-                                  obscureText: true,
-                                  controller: passwordCtrl,
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    hintText: 'Password',
-                                  ),
-                                ),
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  GestureDetector(
-                                    child: const Text(
-                                      'Forgotten password??',
-                                      style: TextStyle(color: Colors.blueGrey),
-                                    ),
-                                    onTap: () {
-                                      Get.to(ForgotPasswordScreen(
-                                        auth: authController.auth,
-                                        email: emailCtrl.text,
-                                        resizeToAvoidBottomInset: true,
-                                      ));
-                                    },
-                                  ),
-                                ],
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  children: [
-                                    errMsg != ''
-                                        ? const Text(
-                                            'Authentication Failed!',
-                                            style: TextStyle(color: Colors.red),
-                                          )
-                                        : const SizedBox(
-                                            width: 1,
-                                          ),
-                                    Text(
-                                      errMsg,
-                                      style: const TextStyle(color: Colors.red),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              SizedBox(
-                                width: 350,
-                                height: 50,
-                                child: ElevatedButton(
-                                  onPressed: () async {
-                                    await signIn(context);
-                                  },
-                                  child: Text(
-                                    'Sign in',
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        color: Get.isDarkMode
-                                            ? Colors.blue
-                                            : Colors.black),
-                                  ),
-                                ),
+                              errMsg != ''
+                                  ? const Text(
+                                'Authentication Failed!',
+                                style: TextStyle(color: Colors.red),
                               )
+                                  : const SizedBox(
+                                width: 1,
+                              ),
+                              Text(
+                                errMsg,
+                                style: const TextStyle(color: Colors.red),
+                              ),
                             ],
                           ),
                         ),
-                      )
-                    ],
+                        SizedBox(
+                          width: 350,
+                          height: 50,
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              await signIn(context);
+                            },
+                            child: Text(
+                              'Sign in',
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  color: Get.isDarkMode
+                                      ? Colors.blue
+                                      : Colors.black),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
                   ),
-                ],
-              ),
+                )
+              ],
             ),
-          ),
-        ));
+          ],
+        ),
+      ),
+    );
   }
 }
 

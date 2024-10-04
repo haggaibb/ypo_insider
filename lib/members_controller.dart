@@ -104,20 +104,20 @@ class MembersController extends GetxController {
   }
 
   onBoardingFinished(User user) async {
-    loadingStatus.value = 'Finished onBoarding.';
-    loading.value = true;
+    //loadingStatus.value = 'Finished onBoarding.';
+    //loading.value = true;
     print('finished onboarding');
     /// print(
      ///   'update full name to Auth User, this must be done as it acts as a flag for onboarding');
-    loadingStatus.value = 'Updating authentication profile...';
-    print(currentMember.value.fullName());
+    //loadingStatus.value = 'Updating authentication profile...';
+    //print(currentMember.value.fullName());
     await FirebaseAuth.instance.currentUser!.updateDisplayName(currentMember.value.fullName());
     var memberId = currentMember.value.id;
     CollectionReference membersRef = db.collection('Members');
-    membersRef.doc(memberId).update({'onBoarding.boarded': true});
+    await membersRef.doc(memberId).update({'onBoarding.boarded': true});
     currentMember.value.onBoarding!['boarded']=true;
     await AnalyticsEngine.logOnBoarding(currentMember.value.fullName(),'finished');
-    loading.value = false;
+    //loading.value = false;
   }
 
   addNewMember(String firstName,String lastName,String email) async {
@@ -223,9 +223,9 @@ class MembersController extends GetxController {
   }
 
   saveThemeMode(themeMode) {
-    box.write('themeMode', themeMode);
-    var id = currentMember.value.id;
-    db.collection("Members").doc(id).update({'settings.theme_mode': themeMode});
+    //box.write('themeMode', themeMode);
+    //var id = currentMember.value.id;
+    //db.collection("Members").doc(id).update({'settings.theme_mode': themeMode});
   }
 
   @override

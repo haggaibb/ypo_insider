@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:get/get.dart';
+import 'package:ypo_connect/auth_screens.dart';
 import 'package:ypo_connect/members_controller.dart';
 import 'home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -51,9 +52,10 @@ class OnBoardingPageState extends State<OnBoardingPage> {
 
   }
 
-  void _onIntroEnd(context) async  {
+  Future<void> _onIntroEnd(context) async  {
     await membersController.onBoardingFinished(user!);
-    runApp(Home(user: user,));
+    //Get.replace(Home(user: user,));
+    //runApp(Home(user: user,));
   }
   Widget _buildFullscreenImage() {
     return Image.asset(
@@ -205,7 +207,11 @@ class OnBoardingPageState extends State<OnBoardingPage> {
                 reverse: true,
               ),
             ],
-            onDone: () => _onIntroEnd(context),
+            onDone: () async {
+              //await _onIntroEnd(context);
+              membersController.onBoardingFinished(user!);
+              Get.offAllNamed('/home');
+            },
             onSkip: () => _onIntroEnd(context), // You can override onSkip callback
             showSkipButton: false,
             skipOrBackFlex: 0,
