@@ -765,6 +765,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     profileImageScoreCtrl.text = mainController.profileScore.profileImageScore.toString();
     topThresholdCtrl.text =  mainController.profileScore.topThreshold.toString();
     bottomThresholdCtrl.text = mainController.profileScore.bottomThreshold.toString();
+    print( bottomThresholdCtrl.text);
   }
   @override
   Widget build(BuildContext context) {
