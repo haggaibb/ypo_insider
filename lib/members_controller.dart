@@ -205,7 +205,7 @@ class MembersController extends GetxController {
   }
 
   loadAdmins() async {
-    DocumentReference settingsRef = db.collection('Settings').doc('Admins');
+    DocumentReference settingsRef = db.collection('Settings').doc('system');
     settingsRef.get().then(
       (DocumentSnapshot doc) {
         final data = doc.data() as Map<String, dynamic>;
@@ -216,7 +216,9 @@ class MembersController extends GetxController {
         /// print('Member is $res for AdminUx');
         isAdmin.value=res;
       },
-      onError: (e) =>  print("Error getting document: $e"),
+      onError: (e) => {
+       // print("Error getting document: $e")
+      },
     );
   }
 

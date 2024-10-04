@@ -43,165 +43,168 @@ class AddNewMember extends StatelessWidget {
           backgroundColor: Colors.white,
           body: Padding(
             padding: const EdgeInsets.only(left: 30, right:30, top: 80, bottom: 20),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.blueGrey.shade100, // Background color
-                // border: Border.all(color: Colors.red, width: 1), // Border
-                borderRadius: BorderRadius.circular(50), // Rounded corners
-              ),
-              child: Column(
-                //crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Text('Add a new YPO member', style: TextStyle(fontSize: 24, color: Colors.blue.shade900, fontWeight: FontWeight.bold)),
-                  Padding(
-                    padding: const EdgeInsets.all(18.0),
-                    child: Row(
-                      children: [
-                        Text('First Name:',
-                            style: TextStyle(fontWeight: FontWeight.bold)),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 12.0),
-                          child: SizedBox(
-                              width: 200,
-                              height: 50,
-                              child: TextField(
-                                controller: firstNameCtrl,
-                              )),
-                        )
-                      ],
+            child: Center(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.blueGrey.shade100, // Background color
+                  // border: Border.all(color: Colors.red, width: 1), // Border
+                  borderRadius: BorderRadius.circular(50), // Rounded corners
+                ),
+                width: 500,
+                child: Column(
+                  //crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Text('Add a new YPO member', style: TextStyle(fontSize: 24, color: Colors.blue.shade900, fontWeight: FontWeight.bold)),
+                    Padding(
+                      padding: const EdgeInsets.all(18.0),
+                      child: Row(
+                        children: [
+                          Text('First Name:',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 12.0),
+                            child: SizedBox(
+                                width: 200,
+                                height: 50,
+                                child: TextField(
+                                  controller: firstNameCtrl,
+                                )),
+                          )
+                        ],
+                      ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(18.0),
-                    child: Row(
-                      children: [
-                        Text('Last Name:',
-                            style: TextStyle(fontWeight: FontWeight.bold)),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 12.0),
-                          child: SizedBox(
-                              width: 200,
-                              height: 50,
-                              child: TextField(
-                                controller: lastNameCtrl,
-                              )),
-                        )
-                      ],
+                    Padding(
+                      padding: const EdgeInsets.all(18.0),
+                      child: Row(
+                        children: [
+                          Text('Last Name:',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 12.0),
+                            child: SizedBox(
+                                width: 200,
+                                height: 50,
+                                child: TextField(
+                                  controller: lastNameCtrl,
+                                )),
+                          )
+                        ],
+                      ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(18.0),
-                    child: Row(
-                      children: [
-                        Text(
-                          'Email:',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 30.0),
-                          child: SizedBox(
-                              width: 200,
-                              height: 50,
-                              child: TextField(
-                                controller: emailCtrl,
-                              )),
-                        )
-                      ],
+                    Padding(
+                      padding: const EdgeInsets.all(18.0),
+                      child: Row(
+                        children: [
+                          Text(
+                            'Email:',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 30.0),
+                            child: SizedBox(
+                                width: 200,
+                                height: 50,
+                                child: TextField(
+                                  controller: emailCtrl,
+                                )),
+                          )
+                        ],
+                      ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(18.0),
-                    child: Row(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(left: 30.0),
-                          child: DropdownMenu(
-                            leadingIcon: Icon(Icons.location_city_sharp),
-                            label: Text('Residence'),
-                            initialSelection: mainController.residenceList[0],
-                            inputDecorationTheme: const InputDecorationTheme(
-                              filled: false,
-                              isDense: true,
-                              border: OutlineInputBorder(
-                                  //borderSide: BorderSide(color:  Colors.blue),
+                    Padding(
+                      padding: const EdgeInsets.all(18.0),
+                      child: Row(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 30.0),
+                            child: DropdownMenu(
+                              leadingIcon: Icon(Icons.location_city_sharp),
+                              label: Text('Residence'),
+                              initialSelection: mainController.residenceList[0],
+                              inputDecorationTheme: const InputDecorationTheme(
+                                filled: false,
+                                isDense: true,
+                                border: OutlineInputBorder(
+                                    //borderSide: BorderSide(color:  Colors.blue),
+                                    ),
+                                contentPadding: EdgeInsets.symmetric(vertical: 5.0),
+                                //outlineBorder: BorderSide(color:  Colors.blue),
+                              ),
+                              dropdownMenuEntries: mainController.residenceList
+                                  .map<DropdownMenuEntry<String>>((String city) {
+                                return DropdownMenuEntry<String>(
+                                  value: city,
+                                  label: city,
+                                  style: MenuItemButton.styleFrom(
+                                    foregroundColor: Colors.black,
                                   ),
-                              contentPadding: EdgeInsets.symmetric(vertical: 5.0),
-                              //outlineBorder: BorderSide(color:  Colors.blue),
+                                );
+                              }).toList(),
+                              controller: residenceCtrl,
+                              enabled: true,
                             ),
-                            dropdownMenuEntries: mainController.residenceList
-                                .map<DropdownMenuEntry<String>>((String city) {
-                              return DropdownMenuEntry<String>(
-                                value: city,
-                                label: city,
-                                style: MenuItemButton.styleFrom(
-                                  foregroundColor: Colors.black,
+                          )
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(18.0),
+                      child: DropdownMenu(
+                        leadingIcon: Icon(Icons.group),
+                        label: Text('Forum:'),
+                        initialSelection: mainController.forumList[0],
+                        inputDecorationTheme: const InputDecorationTheme(
+                          filled: false,
+                          isDense: true,
+                          border: OutlineInputBorder(),
+                          contentPadding: EdgeInsets.symmetric(vertical: 5.0),
+                        ),
+                        dropdownMenuEntries: mainController.forumList
+                            .map<DropdownMenuEntry<String>>((String city) {
+                          return DropdownMenuEntry<String>(
+                            value: city,
+                            label: city,
+                            style: MenuItemButton.styleFrom(
+                              foregroundColor: Colors.black,
+                            ),
+                          );
+                        }).toList(),
+                        controller: forumCtrl,
+                        enabled: true,
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        ElevatedButton(
+                            onPressed: () async {
+                              /// print('save data');
+                              await membersController.addNewMember(
+                                  firstNameCtrl.text,
+                                  lastNameCtrl.text,
+                                  emailCtrl.text);
+                              const snackBar = SnackBar(
+                                content: Text(
+                                  'Member Added!',
+                                  style: TextStyle(
+                                      fontSize: 14, fontWeight: FontWeight.bold),
                                 ),
                               );
-                            }).toList(),
-                            controller: residenceCtrl,
-                            enabled: true,
-                          ),
-                        )
+                              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                              Get.back();
+                            },
+                            child: Text('Save')),
+                        ElevatedButton(
+                            onPressed: () {
+                              /// print('Cancel');
+                              Get.back();
+                            },
+                            child: Text('Cancel')),
                       ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(18.0),
-                    child: DropdownMenu(
-                      leadingIcon: Icon(Icons.group),
-                      label: Text('Forum:'),
-                      initialSelection: mainController.forumList[0],
-                      inputDecorationTheme: const InputDecorationTheme(
-                        filled: false,
-                        isDense: true,
-                        border: OutlineInputBorder(),
-                        contentPadding: EdgeInsets.symmetric(vertical: 5.0),
-                      ),
-                      dropdownMenuEntries: mainController.forumList
-                          .map<DropdownMenuEntry<String>>((String city) {
-                        return DropdownMenuEntry<String>(
-                          value: city,
-                          label: city,
-                          style: MenuItemButton.styleFrom(
-                            foregroundColor: Colors.black,
-                          ),
-                        );
-                      }).toList(),
-                      controller: forumCtrl,
-                      enabled: true,
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      ElevatedButton(
-                          onPressed: () async {
-                            /// print('save data');
-                            await membersController.addNewMember(
-                                firstNameCtrl.text,
-                                lastNameCtrl.text,
-                                emailCtrl.text);
-                            const snackBar = SnackBar(
-                              content: Text(
-                                'Member Added!',
-                                style: TextStyle(
-                                    fontSize: 14, fontWeight: FontWeight.bold),
-                              ),
-                            );
-                            ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                            Get.back();
-                          },
-                          child: Text('Save')),
-                      ElevatedButton(
-                          onPressed: () {
-                            /// print('Cancel');
-                            Get.back();
-                          },
-                          child: Text('Cancel')),
-                    ],
-                  )
-                ],
+                    )
+                  ],
+                ),
               ),
             ),
           ),
@@ -243,65 +246,68 @@ class AddNewResidence extends StatelessWidget {
           backgroundColor: Colors.white,
           body: Padding(
             padding: const EdgeInsets.only(left: 30, right:30, top: 80, bottom: 20),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.blueGrey.shade100, // Background color
-                // border: Border.all(color: Colors.red, width: 1), // Border
-                borderRadius: BorderRadius.circular(50), // Rounded corners
-              ),
-              height: 500,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  //crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Text('Add a new Residence/City', style: TextStyle(fontSize: 22, color: Colors.blue.shade900, fontWeight: FontWeight.bold)),
-                    Padding(
-                      padding: const EdgeInsets.all(18.0),
-                      child: Row(
-                        children: [
-                          const Text('Residence name:',
-                              style: TextStyle(fontWeight: FontWeight.bold)),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 12.0),
-                            child: SizedBox(
-                                width: 150,
-                                height: 50,
-                                child: TextField(
-                                  controller: residenceCtrl,
-                                )),
-                          )
-                        ],
+            child: Center(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.blueGrey.shade100, // Background color
+                  // border: Border.all(color: Colors.red, width: 1), // Border
+                  borderRadius: BorderRadius.circular(50), // Rounded corners
+                ),
+                height: 500,
+                width: 500,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    //crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Text('Add a new Residence/City', style: TextStyle(fontSize: 22, color: Colors.blue.shade900, fontWeight: FontWeight.bold)),
+                      Padding(
+                        padding: const EdgeInsets.all(18.0),
+                        child: Row(
+                          children: [
+                            const Text('Residence name:',
+                                style: TextStyle(fontWeight: FontWeight.bold)),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 12.0),
+                              child: SizedBox(
+                                  width: 150,
+                                  height: 50,
+                                  child: TextField(
+                                    controller: residenceCtrl,
+                                  )),
+                            )
+                          ],
+                        ),
                       ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        ElevatedButton(
-                            onPressed: () async {
-                              await mainController
-                                  .addNewResidence(residenceCtrl.text);
-                              const snackBar = SnackBar(
-                                content: Text(
-                                  'Residence Added!',
-                                  style: TextStyle(
-                                      fontSize: 14, fontWeight: FontWeight.bold),
-                                ),
-                              );
-                              ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                              Get.back();
-                            },
-                            child: const Text('Save')),
-                        ElevatedButton(
-                            onPressed: () {
-                              /// print('Cancel');
-                              Get.back();
-                            },
-                            child: const Text('Cancel')),
-                      ],
-                    )
-                  ],
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          ElevatedButton(
+                              onPressed: () async {
+                                await mainController
+                                    .addNewResidence(residenceCtrl.text);
+                                const snackBar = SnackBar(
+                                  content: Text(
+                                    'Residence Added!',
+                                    style: TextStyle(
+                                        fontSize: 14, fontWeight: FontWeight.bold),
+                                  ),
+                                );
+                                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                Get.back();
+                              },
+                              child: const Text('Save')),
+                          ElevatedButton(
+                              onPressed: () {
+                                /// print('Cancel');
+                                Get.back();
+                              },
+                              child: const Text('Cancel')),
+                        ],
+                      )
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -352,6 +358,7 @@ class AddNewForum extends StatelessWidget {
                   borderRadius: BorderRadius.circular(50), // Rounded corners
                 ),
                 height: 500,
+                width: 500,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
@@ -464,6 +471,7 @@ class _ManageFreeTextTagState extends State<ManageFreeTextTag> {
                   borderRadius: BorderRadius.circular(50), // Rounded corners
                 ),
                 height: 700,
+                width: 500,
                 child: Column(
                   //crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -793,337 +801,343 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   /// Profile Score
                   Padding(
                     padding: const EdgeInsets.only(left: 30, right:30, top: 20, bottom: 20),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.blueGrey.shade100, // Background color
-                        // border: Border.all(color: Colors.red, width: 1), // Border
-                        borderRadius: BorderRadius.circular(50), // Rounded corners
-                      ),
-                      child: Column(
-                        children: [
-                          const Padding(
-                            padding: EdgeInsets.only(top: 20, bottom: 10),
-                            child: Text(
-                              'Profile Score Settings',
-                              style: TextStyle(fontSize: 24),
+                    child: Center(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.blueGrey.shade100, // Background color
+                          // border: Border.all(color: Colors.red, width: 1), // Border
+                          borderRadius: BorderRadius.circular(50), // Rounded corners
+                        ),
+                        width: 500,
+                        child: Column(
+                          children: [
+                            const Padding(
+                              padding: EdgeInsets.only(top: 20, bottom: 10),
+                              child: Text(
+                                'Profile Score Settings',
+                                style: TextStyle(fontSize: 24),
+                              ),
                             ),
-                          ),
-                          /// profile image score
-                          Padding(
-                            padding: const EdgeInsets.only(left: 18.0, top: 4, bottom: 4),
-                            child: Row(
-                              children: [
-                                const Text('Profile Image Score:',
-                                    style: TextStyle(fontWeight: FontWeight.bold)),
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 12.0),
-                                  child: SizedBox(
-                                      width: 50,
-                                      height: 50,
-                                      child: TextField(
-                                        enabled: profileScoreEditModeOn?true:false,
-                                        controller: profileImageScoreCtrl,
-                                      )),
-                                )
-                              ],
+                            /// profile image score
+                            Padding(
+                              padding: const EdgeInsets.only(left: 18.0, top: 4, bottom: 4),
+                              child: Row(
+                                children: [
+                                  const Text('Profile Image Score:',
+                                      style: TextStyle(fontWeight: FontWeight.bold)),
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 12.0),
+                                    child: SizedBox(
+                                        width: 50,
+                                        height: 50,
+                                        child: TextField(
+                                          enabled: profileScoreEditModeOn?true:false,
+                                          controller: profileImageScoreCtrl,
+                                        )),
+                                  )
+                                ],
+                              ),
                             ),
-                          ),
-                          /// new member score
-                          Padding(
-                            padding: const EdgeInsets.only(left: 18.0, top: 4 ,bottom: 4),
-                            child: Row(
-                              children: [
-                                const Text('New Member Score:',
-                                    style:
-                                    TextStyle(fontWeight: FontWeight.bold)),
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 12.0),
-                                  child: SizedBox(
-                                      width: 50,
-                                      height: 50,
-                                      child: TextField(
-                                        enabled: profileScoreEditModeOn?true:false,
-                                        controller:
-                                        newMemberScoreCtrl,
-                                      )),
-                                )
-                              ],
+                            /// new member score
+                            Padding(
+                              padding: const EdgeInsets.only(left: 18.0, top: 4 ,bottom: 4),
+                              child: Row(
+                                children: [
+                                  const Text('New Member Score:',
+                                      style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 12.0),
+                                    child: SizedBox(
+                                        width: 50,
+                                        height: 50,
+                                        child: TextField(
+                                          enabled: profileScoreEditModeOn?true:false,
+                                          controller:
+                                          newMemberScoreCtrl,
+                                        )),
+                                  )
+                                ],
+                              ),
                             ),
-                          ),
-                          /// birthday score
-                          Padding(
-                            padding: const EdgeInsets.only(left: 18.0, top: 4 ,bottom: 4),
-                            child: Row(
-                              children: [
-                                const Text('Birthday Score:',
-                                    style:
-                                    TextStyle(fontWeight: FontWeight.bold)),
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 12.0),
-                                  child: SizedBox(
-                                      width: 50,
-                                      height: 50,
-                                      child: TextField(
-                                        enabled: profileScoreEditModeOn?true:false,
-                                        controller:
-                                        birthdayScoreCtrl,
-                                      )),
-                                )
-                              ],
+                            /// birthday score
+                            Padding(
+                              padding: const EdgeInsets.only(left: 18.0, top: 4 ,bottom: 4),
+                              child: Row(
+                                children: [
+                                  const Text('Birthday Score:',
+                                      style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 12.0),
+                                    child: SizedBox(
+                                        width: 50,
+                                        height: 50,
+                                        child: TextField(
+                                          enabled: profileScoreEditModeOn?true:false,
+                                          controller:
+                                          birthdayScoreCtrl,
+                                        )),
+                                  )
+                                ],
+                              ),
                             ),
-                          ),
-                          /// social score
-                          Padding(
-                            padding: const EdgeInsets.only(left: 18.0, top: 4 ,bottom: 4),
-                            child: Row(
-                              children: [
-                                const Text('social Score:',
-                                    style:
-                                    TextStyle(fontWeight: FontWeight.bold)),
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 12.0),
-                                  child: SizedBox(
-                                      width: 50,
-                                      height: 50,
-                                      child: TextField(
-                                        enabled: profileScoreEditModeOn?true:false,
-                                        controller:
-                                        socialScoreCtrl,
-                                      )),
-                                )
-                              ],
+                            /// social score
+                            Padding(
+                              padding: const EdgeInsets.only(left: 18.0, top: 4 ,bottom: 4),
+                              child: Row(
+                                children: [
+                                  const Text('social Score:',
+                                      style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 12.0),
+                                    child: SizedBox(
+                                        width: 50,
+                                        height: 50,
+                                        child: TextField(
+                                          enabled: profileScoreEditModeOn?true:false,
+                                          controller:
+                                          socialScoreCtrl,
+                                        )),
+                                  )
+                                ],
+                              ),
                             ),
-                          ),
-                          /// top threshold
-                          Padding(
-                            padding: const EdgeInsets.only(left: 18.0, top: 4 ,bottom: 4),
-                            child: Row(
-                              children: [
-                                const Text('Top Threshold:',
-                                    style:
-                                    TextStyle(fontWeight: FontWeight.bold)),
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 12.0),
-                                  child: SizedBox(
-                                      width: 50,
-                                      height: 50,
-                                      child: TextField(
-                                        enabled: profileScoreEditModeOn?true:false,
-                                        controller: topThresholdCtrl,
-                                      )),
-                                )
-                              ],
+                            /// top threshold
+                            Padding(
+                              padding: const EdgeInsets.only(left: 18.0, top: 4 ,bottom: 4),
+                              child: Row(
+                                children: [
+                                  const Text('Top Threshold:',
+                                      style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 12.0),
+                                    child: SizedBox(
+                                        width: 50,
+                                        height: 50,
+                                        child: TextField(
+                                          enabled: profileScoreEditModeOn?true:false,
+                                          controller: topThresholdCtrl,
+                                        )),
+                                  )
+                                ],
+                              ),
                             ),
-                          ),
-                          /// bottom threshold
-                          Padding(
-                            padding: const EdgeInsets.only(left: 18.0, top: 4 ,bottom: 4),
-                            child: Row(
-                              children: [
-                                const Text('Bottom Threshold:',
-                                    style:
-                                    TextStyle(fontWeight: FontWeight.bold)),
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 12.0),
-                                  child: SizedBox(
-                                      width: 50,
-                                      height: 50,
-                                      child: TextField(
-                                        enabled: profileScoreEditModeOn?true:false,
-                                        controller: bottomThresholdCtrl,
-                                      )),
-                                )
-                              ],
+                            /// bottom threshold
+                            Padding(
+                              padding: const EdgeInsets.only(left: 18.0, top: 4 ,bottom: 4),
+                              child: Row(
+                                children: [
+                                  const Text('Bottom Threshold:',
+                                      style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 12.0),
+                                    child: SizedBox(
+                                        width: 50,
+                                        height: 50,
+                                        child: TextField(
+                                          enabled: profileScoreEditModeOn?true:false,
+                                          controller: bottomThresholdCtrl,
+                                        )),
+                                  )
+                                ],
+                              ),
                             ),
-                          ),
-                          /// actions
-                          profileScoreEditModeOn
-                              ? Padding(
-                            padding:
-                            const EdgeInsets.only(left: 18.0, top: 50, bottom: 50),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                ElevatedButton(
-                                    onPressed: () async {
-                                      /// print('save data');
-                                      setState(() {
-                                        mainController.saving.value = true;
-                                      });
-                                      await mainController.updateProfileScoreSettings(
-                                        birthdayScore: int.parse(birthdayScoreCtrl.text),
-                                        profileImageScore: int.parse(profileImageScoreCtrl.text),
-                                        newMemberScore: int.parse(newMemberScoreCtrl.text),
-                                        socialScore: int.parse(socialScoreCtrl.text),
-                                        topThreshold: int.parse(topThresholdCtrl.text),
-                                        bottomThreshold: int.parse(bottomThresholdCtrl.text)
-                                      );
-                                      const snackBar = SnackBar(
-                                        content: Text(
-                                          'Profile Score Settings Saved!',
-                                          style: TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      );
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(snackBar);
-                                      setState(() {
-                                        mainController.saving.value = false;
-                                        profileScoreEditModeOn = false;
+                            /// actions
+                            profileScoreEditModeOn
+                                ? Padding(
+                              padding:
+                              const EdgeInsets.only(left: 18.0, top: 50, bottom: 50),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  ElevatedButton(
+                                      onPressed: () async {
+                                        /// print('save data');
+                                        setState(() {
+                                          mainController.saving.value = true;
+                                        });
+                                        await mainController.updateProfileScoreSettings(
+                                          birthdayScore: int.parse(birthdayScoreCtrl.text),
+                                          profileImageScore: int.parse(profileImageScoreCtrl.text),
+                                          newMemberScore: int.parse(newMemberScoreCtrl.text),
+                                          socialScore: int.parse(socialScoreCtrl.text),
+                                          topThreshold: int.parse(topThresholdCtrl.text),
+                                          bottomThreshold: int.parse(bottomThresholdCtrl.text)
+                                        );
+                                        const snackBar = SnackBar(
+                                          content: Text(
+                                            'Profile Score Settings Saved!',
+                                            style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        );
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(snackBar);
+                                        setState(() {
+                                          mainController.saving.value = false;
+                                          profileScoreEditModeOn = false;
 
-                                      });
-                                    },
-                                    child: const Text('Save')),
-                                ElevatedButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        profileScoreEditModeOn = false;
-                                      });
-                                    },
-                                    child: const Text('Cancel')),
-                              ],
+                                        });
+                                      },
+                                      child: const Text('Save')),
+                                  ElevatedButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          profileScoreEditModeOn = false;
+                                        });
+                                      },
+                                      child: const Text('Cancel')),
+                                ],
+                              ),
+                            )
+                                : Padding(
+                              padding: const EdgeInsets.only(left: 18.0, top: 50, bottom: 50),
+                              child: ElevatedButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      profileScoreEditModeOn = true;
+                                    });
+                                  },
+                                  child: const Text('Edit')),
                             ),
-                          )
-                              : Padding(
-                            padding: const EdgeInsets.only(left: 18.0, top: 50, bottom: 50),
-                            child: ElevatedButton(
-                                onPressed: () {
-                                  setState(() {
-                                    profileScoreEditModeOn = true;
-                                  });
-                                },
-                                child: const Text('Edit')),
-                          ),
-                          mainController.saving.value && profileScoreEditModeOn
-                            ?SizedBox(width: 200, child: LinearProgressIndicator(color: Colors.blue.shade900))
-                              : SizedBox.shrink()
-              
-                          /// Save and Cancel
-                        ],
+                            mainController.saving.value && profileScoreEditModeOn
+                              ?SizedBox(width: 200, child: LinearProgressIndicator(color: Colors.blue.shade900))
+                                : SizedBox.shrink()
+
+                            /// Save and Cancel
+                          ],
+                        ),
                       ),
                     ),
                   ),
                   /// results page
                   Padding(
                     padding:  const EdgeInsets.only(left: 30, right:30, top: 20, bottom: 20),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.blueGrey.shade100, // Background color
-                        // border: Border.all(color: Colors.red, width: 1), // Border
-                        borderRadius: BorderRadius.circular(50), // Rounded corners
-                      ),
-                      child: Column(
-                        children: [
-                          const Padding(
-                            padding: EdgeInsets.only(top: 20, bottom: 10),
-                            child: Text(
-                              'Results Page Settings',
-                              style: TextStyle(fontSize: 24),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 18.0, top: 20),
-                            child: Row(
-                              children: [
-                                const Text('New Member Threshold in Months:',
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold)),
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 12.0),
-                                  child: SizedBox(
-                                      width: 50,
-                                      height: 50,
-                                      child: TextField(
-                                        enabled: resultsPageEditModeOn?true:false,
-                                        controller:
-                                            newMemberThresholdInMonthsCtrl,
-                                      )),
-                                )
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                left: 18.0, top: 20, bottom: 50),
-                            child: Row(
-                              children: [
-                                Text('Number Of Random Results:',
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold)),
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 12.0),
-                                  child: SizedBox(
-                                      width: 50,
-                                      height: 50,
-                                      child: TextField(
-                                        enabled: resultsPageEditModeOn?true:false,
-                                        controller: numberOfRandomResultsCtrl,
-                                      )),
-                                )
-                              ],
-                            ),
-                          ),
-                          /// actions
-                          resultsPageEditModeOn
-                              ? Padding(
-                            padding:
-                            const EdgeInsets.only(left: 18.0, top: 50, bottom: 50),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                ElevatedButton(
-                                    onPressed: () async {
-                                      /// print('save data');
-                                      setState(() {
-                                        mainController.saving.value = true;
-                                      });
-                                      await mainController.updateResultsPageSettings(
-                                        newMemberThresholdInMonths: newMemberThresholdInMonthsCtrl.text,
-                                        numberOfRandomMembers: numberOfRandomResultsCtrl.text
-                                      );
-                                      setState(() {
-                                        mainController.saving.value = false;
-                                        resultsPageEditModeOn = false;
-                                      });
-                                      const snackBar = SnackBar(
-                                        content: Text(
-                                          'Settings Saved!',
-                                          style: TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      );
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(snackBar);
-                                    },
-                                    child: const Text('Save')),
-                                ElevatedButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        resultsPageEditModeOn = false;
-                                      });
-                                    },
-                                    child: const Text('Cancel')),
-                              ],
-                            ),
-                          )
-                              : Padding(
-                                padding: const EdgeInsets.only(left: 18.0, top: 50, bottom: 50),
-                                child: ElevatedButton(
-                                onPressed: () {
-                                  setState(() {
-                                    resultsPageEditModeOn = true;
-                                  });
-                                },
-                                child: const Text('Edit')),
+                    child: Center(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.blueGrey.shade100, // Background color
+                          // border: Border.all(color: Colors.red, width: 1), // Border
+                          borderRadius: BorderRadius.circular(50), // Rounded corners
+                        ),
+                        width: 500,
+                        child: Column(
+                          children: [
+                            const Padding(
+                              padding: EdgeInsets.only(top: 20, bottom: 10),
+                              child: Text(
+                                'Results Page Settings',
+                                style: TextStyle(fontSize: 24),
                               ),
-                          mainController.saving.value && resultsPageEditModeOn
-                              ?SizedBox(width: 200, child: LinearProgressIndicator(color: Colors.blue.shade900))
-                              : SizedBox.shrink()
-              
-                          /// Save and Cancel
-                        ],
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 18.0, top: 20),
+                              child: Row(
+                                children: [
+                                  const Text('New Member Threshold in Months:',
+                                      style:
+                                          TextStyle(fontWeight: FontWeight.bold)),
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 12.0),
+                                    child: SizedBox(
+                                        width: 50,
+                                        height: 50,
+                                        child: TextField(
+                                          enabled: resultsPageEditModeOn?true:false,
+                                          controller:
+                                              newMemberThresholdInMonthsCtrl,
+                                        )),
+                                  )
+                                ],
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 18.0, top: 20, bottom: 50),
+                              child: Row(
+                                children: [
+                                  Text('Number Of Random Results:',
+                                      style:
+                                          TextStyle(fontWeight: FontWeight.bold)),
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 12.0),
+                                    child: SizedBox(
+                                        width: 50,
+                                        height: 50,
+                                        child: TextField(
+                                          enabled: resultsPageEditModeOn?true:false,
+                                          controller: numberOfRandomResultsCtrl,
+                                        )),
+                                  )
+                                ],
+                              ),
+                            ),
+                            /// actions
+                            resultsPageEditModeOn
+                                ? Padding(
+                              padding:
+                              const EdgeInsets.only(left: 18.0, top: 50, bottom: 50),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  ElevatedButton(
+                                      onPressed: () async {
+                                        /// print('save data');
+                                        setState(() {
+                                          mainController.saving.value = true;
+                                        });
+                                        await mainController.updateResultsPageSettings(
+                                          newMemberThresholdInMonths: newMemberThresholdInMonthsCtrl.text,
+                                          numberOfRandomMembers: numberOfRandomResultsCtrl.text
+                                        );
+                                        setState(() {
+                                          mainController.saving.value = false;
+                                          resultsPageEditModeOn = false;
+                                        });
+                                        const snackBar = SnackBar(
+                                          content: Text(
+                                            'Settings Saved!',
+                                            style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        );
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(snackBar);
+                                      },
+                                      child: const Text('Save')),
+                                  ElevatedButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          resultsPageEditModeOn = false;
+                                        });
+                                      },
+                                      child: const Text('Cancel')),
+                                ],
+                              ),
+                            )
+                                : Padding(
+                                  padding: const EdgeInsets.only(left: 18.0, top: 50, bottom: 50),
+                                  child: ElevatedButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      resultsPageEditModeOn = true;
+                                    });
+                                  },
+                                  child: const Text('Edit')),
+                                ),
+                            mainController.saving.value && resultsPageEditModeOn
+                                ?SizedBox(width: 200, child: LinearProgressIndicator(color: Colors.blue.shade900))
+                                : SizedBox.shrink()
+
+                            /// Save and Cancel
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -1194,323 +1208,333 @@ class _ManageFilterTagsState extends State<ManageFilterTags> {
   Widget build(BuildContext context) {
     return Directionality(
         textDirection: TextDirection.ltr,
-        child: Padding(
-          padding: const EdgeInsets.only(top: 60.0),
-          child: Container(
-            decoration: const BoxDecoration(
-              border: Border.fromBorderSide(BorderSide(width: 0.5)),
-              borderRadius: BorderRadius.only(
-                topRight: Radius.circular(200),
-                topLeft: Radius.circular(200),
-              ),
-              color: Color(0xff2e4074),
+        child: Scaffold(
+          appBar: AppBar(
+            leadingWidth: 125,
+            centerTitle: true,
+            leading: IconButton(
+              onPressed: () {
+                Get.back();
+              },
+              icon: const Icon(Icons.arrow_back),
             ),
-            child: Padding(
-              padding: const EdgeInsets.only(top: 0.0),
-              child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  //mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    SizedBox(height: 50),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 0.0),
-                      child: IconButton(
-                        iconSize: 40,
-                        onPressed: () => Navigator.pop(context),
-                        icon: const Icon(Icons.close),
-                        color: Colors.white,
-                      ),
-                    ),
-                    SizedBox(height: 50),
-                    Expanded(
-                      flex: 1,
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
-                        child: ListView(
-                          controller: tagsScrollCtrl,
-                          children: List.generate(
-                              filtersCategory.length,
-                              (index) => Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 10.0,
-                                        right: 10.0,
-                                        top: 8,
-                                        bottom: 10),
-                                    child: SizedBox(
-                                      width: 800,
-                                      child:
-                                          (mainController.filteredTagsList[
-                                                          index]['key'] !=
-                                                      'residence' &&
-                                                  mainController
-                                                              .filteredTagsList[
-                                                          index]['key'] !=
-                                                      'forum')
-                                              ? Card(
-                                                  color: Colors.blue.shade900,
-                                                  elevation: 10,
-                                                  child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      /// actions and Title
-                                                      ListTile(
-                                                        trailing: SizedBox(
-                                                          width: 130,
-                                                          child: Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .spaceBetween,
+            title: Column(
+              children: [
+                Image.network(scale: 2, 'assets/images/logo-insider.png'),
+                Text('Administrator', style: TextStyle(fontSize: 16, color: Colors.blue.shade900, fontWeight: FontWeight.bold),)
+              ],
+            ),
+          ),
+          backgroundColor: Colors.white,
+          body: Padding(
+            padding: const EdgeInsets.only(top: 0.0),
+            child: Container(
+              decoration: const BoxDecoration(
+                border: Border.fromBorderSide(BorderSide(width: 0.5)),
+                borderRadius: BorderRadius.only(
+                  topRight: Radius.circular(200),
+                  topLeft: Radius.circular(200),
+                ),
+                color: Color(0xff2e4074),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.only(top: 0.0),
+                child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    //mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      SizedBox(height: 80),
+                      Center(child: Text('Manage Filter Tags', style: TextStyle(fontSize: 24, color: Colors.white, fontWeight: FontWeight.bold),)),
+                      SizedBox(height: 10),
+                      Expanded(
+                        flex: 1,
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 8.0),
+                          child: ListView(
+                            controller: tagsScrollCtrl,
+                            children: List.generate(
+                                filtersCategory.length,
+                                (index) => Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 10.0,
+                                          right: 10.0,
+                                          top: 8,
+                                          bottom: 10),
+                                      child: SizedBox(
+                                        child:
+                                            (mainController.filteredTagsList[
+                                                            index]['key'] !=
+                                                        'residence' &&
+                                                    mainController
+                                                                .filteredTagsList[
+                                                            index]['key'] !=
+                                                        'forum')
+                                                ? Card(
+                                                    color: Colors.blue.shade900,
+                                                    elevation: 10,
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        /// actions and Title
+                                                        ListTile(
+                                                          trailing: SizedBox(
+                                                            width: 130,
+                                                            child: Row(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .spaceBetween,
+                                                              children: [
+                                                                /// del tags mode
+                                                                Obx(() => mainController
+                                                                    .saving
+                                                                    .value
+                                                                    ? const CircularProgressIndicator()
+                                                                    : IconButton(
+                                                                    onPressed:
+                                                                        () async {
+                                                                      setState(
+                                                                              () {
+                                                                            delMode =
+                                                                            !delMode;
+                                                                          });
+                                                                    },
+                                                                    icon:
+                                                                    Icon(
+                                                                      delMode
+                                                                          ? null
+                                                                          : !editMode
+                                                                            ? Icons.delete
+                                                                            : null,
+                                                                      color: Colors
+                                                                          .white,
+                                                                    ))
+                                                                ),
+                                                                /// edit tags
+                                                                Obx(() => mainController
+                                                                        .saving
+                                                                        .value
+                                                                    ? const CircularProgressIndicator()
+                                                                    : IconButton(
+                                                                        onPressed:
+                                                                            () async {
+                                                                          setState(
+                                                                              () {
+                                                                            editMode =
+                                                                                !editMode;
+                                                                          });
+                                                                        },
+                                                                        icon:
+                                                                            Icon(
+                                                                          editMode
+                                                                              ? null
+                                                                              : !delMode
+                                                                                ? Icons.edit
+                                                                                : null,
+                                                                          color: Colors
+                                                                              .white,
+                                                                        ))
+                                                                ),
+                                                                /// add tag
+                                                                Obx(() => mainController
+                                                                        .saving
+                                                                        .value
+                                                                    ? CircularProgressIndicator()
+                                                                    : IconButton(
+                                                                        onPressed:
+                                                                            () async {
+                                                                          if (editMode || delMode) {
+                                                                            setState(() {
+                                                                              editMode=false;
+                                                                              delMode=false;
+                                                                            });
+                                                                            return;
+                                                                          }
+                                                                          String? res = await showDialog<String>(
+                                                                              context:
+                                                                                  context,
+                                                                              builder: (BuildContext context) =>
+                                                                                  FilterEntryDialog(category: mainController.filteredTagsList[index]['label']));
+                                                                          if (res !=
+                                                                              null) {
+                                                                            await mainController.addNewFilterTag(
+                                                                                mainController.filteredTagsList[index]['label'],
+                                                                                res);
+                                                                            setState(
+                                                                                () {
+                                                                              mainController.filteredTagsList[index]['tags_list'].add(res);
+                                                                            });
+                                                                          }
+                                                                        },
+                                                                        icon:
+                                                                            Icon(
+                                                                              editMode||delMode
+                                                                                  ? Icons.close
+                                                                                  : Icons.add,
+                                                                          color: Colors
+                                                                              .white,
+                                                                        )))
+                                                              ],
+                                                            ),
+                                                          ),
+                                                          /// title
+                                                          title: Row(
                                                             children: [
-                                                              /// del tags mode
-                                                              Obx(() => mainController
-                                                                  .saving
-                                                                  .value
-                                                                  ? const CircularProgressIndicator()
-                                                                  : IconButton(
-                                                                  onPressed:
-                                                                      () async {
-                                                                    setState(
-                                                                            () {
-                                                                          delMode =
-                                                                          !delMode;
-                                                                        });
+                                                              Text(
+                                                                mainController
+                                                                        .filteredTagsList[
+                                                                    index]['label'],
+                                                                style: const TextStyle(
+                                                                    color:
+                                                                        Colors.white,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold),
+                                                              ),
+                                                              IconButton(
+                                                                  onPressed: () async {
+                                                                    /// dialog
+                                                                    bool? res = await showDialog<bool>(
+                                                                        context:
+                                                                        context,
+                                                                        builder: (BuildContext context) =>
+                                                                            ConfirmDialog(tag: mainController.filteredTagsList[index]['label'])
+                                                                    );
+                                                                    if (res??false) {
+                                                                      await mainController.removeFilterTagCategory(mainController.filteredTagsList[index]['label']);
+                                                                      setState(() {
+                                                                        /// remove the category
+                                                                        mainController.filteredTagsList.removeAt(index);
+                                                                      });
+                                                                    }
                                                                   },
                                                                   icon:
                                                                   Icon(
-                                                                    delMode
-                                                                        ? null
-                                                                        : !editMode
-                                                                          ? Icons.delete
-                                                                          : null,
+                                                                    delMode && mainController.filteredTagsList[index]['tags_list'].length<=0
+                                                                        ? Icons.delete
+                                                                        : null,
                                                                     color: Colors
                                                                         .white,
                                                                   ))
-                                                              ),
-                                                              /// edit tags
-                                                              Obx(() => mainController
-                                                                      .saving
-                                                                      .value
-                                                                  ? const CircularProgressIndicator()
-                                                                  : IconButton(
-                                                                      onPressed:
-                                                                          () async {
-                                                                        setState(
-                                                                            () {
-                                                                          editMode =
-                                                                              !editMode;
-                                                                        });
-                                                                      },
-                                                                      icon:
-                                                                          Icon(
-                                                                        editMode
-                                                                            ? null
-                                                                            : !delMode
-                                                                              ? Icons.edit
-                                                                              : null,
-                                                                        color: Colors
-                                                                            .white,
-                                                                      ))
-                                                              ),
-                                                              /// add tag
-                                                              Obx(() => mainController
-                                                                      .saving
-                                                                      .value
-                                                                  ? CircularProgressIndicator()
-                                                                  : IconButton(
-                                                                      onPressed:
-                                                                          () async {
-                                                                        if (editMode || delMode) {
-                                                                          setState(() {
-                                                                            editMode=false;
-                                                                            delMode=false;
-                                                                          });
-                                                                          return;
-                                                                        }
-                                                                        String? res = await showDialog<String>(
-                                                                            context:
-                                                                                context,
-                                                                            builder: (BuildContext context) =>
-                                                                                FilterEntryDialog(category: mainController.filteredTagsList[index]['label']));
-                                                                        if (res !=
-                                                                            null) {
-                                                                          await mainController.addNewFilterTag(
-                                                                              mainController.filteredTagsList[index]['label'],
-                                                                              res);
-                                                                          setState(
-                                                                              () {
-                                                                            mainController.filteredTagsList[index]['tags_list'].add(res);
-                                                                          });
-                                                                        }
-                                                                      },
-                                                                      icon:
-                                                                          Icon(
-                                                                            editMode||delMode
-                                                                                ? Icons.close
-                                                                                : Icons.add,
-                                                                        color: Colors
-                                                                            .white,
-                                                                      )))
                                                             ],
                                                           ),
                                                         ),
-                                                        /// title
-                                                        title: Row(
-                                                          children: [
-                                                            Text(
-                                                              mainController
-                                                                      .filteredTagsList[
-                                                                  index]['label'],
-                                                              style: const TextStyle(
-                                                                  color:
-                                                                      Colors.white,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold),
-                                                            ),
-                                                            IconButton(
-                                                                onPressed: () async {
-                                                                  /// dialog
-                                                                  bool? res = await showDialog<bool>(
-                                                                      context:
-                                                                      context,
-                                                                      builder: (BuildContext context) =>
-                                                                          ConfirmDialog(tag: mainController.filteredTagsList[index]['label'])
-                                                                  );
-                                                                  if (res??false) {
-                                                                    await mainController.removeFilterTagCategory(mainController.filteredTagsList[index]['label']);
-                                                                    setState(() {
-                                                                      /// remove the category
-                                                                      mainController.filteredTagsList.removeAt(index);
-                                                                    });
-                                                                  }
-                                                                },
-                                                                icon:
-                                                                Icon(
-                                                                  delMode && mainController.filteredTagsList[index]['tags_list'].length<=0
-                                                                      ? Icons.delete
-                                                                      : null,
-                                                                  color: Colors
-                                                                      .white,
-                                                                ))
-                                                          ],
-                                                        ),
-                                                      ),
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(8.0),
-                                                        child: Wrap(
-                                                          runSpacing: 8,
-                                                          spacing: 8,
-                                                          children: List.generate(
-                                                              mainController.filteredTagsList[index]['tags_list'].length,
-                                                              (tagIndex) => ChoiceChip(
-                                                                  onSelected: (val) async {
-                                                                    if (editMode) {
-                                                                      /// dialog
-                                                                      String? res = await showDialog<String>(
-                                                                          context:
-                                                                          context,
-                                                                          builder: (BuildContext context) =>
-                                                                              EditFilterEntryDialog(tag: mainController.filteredTagsList[index]['tags_list'][tagIndex]));
-                                                                      if (res != null) {
-                                                                        await mainController.updateFilterTag(mainController
-                                                                            .filteredTagsList[
-                                                                        index]['label'],
-                                                                            mainController.filteredTagsList[index]['tags_list'][tagIndex],
-                                                                          res
-                                                                        );
-                                                                        setState(() {
-                                                                          mainController.filteredTagsList[index]['tags_list'][tagIndex]=res;
-                                                                        });
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(8.0),
+                                                          child: Wrap(
+                                                            runSpacing: 8,
+                                                            spacing: 8,
+                                                            children: List.generate(
+                                                                mainController.filteredTagsList[index]['tags_list'].length,
+                                                                (tagIndex) => ChoiceChip(
+                                                                    onSelected: (val) async {
+                                                                      if (editMode) {
+                                                                        /// dialog
+                                                                        String? res = await showDialog<String>(
+                                                                            context:
+                                                                            context,
+                                                                            builder: (BuildContext context) =>
+                                                                                EditFilterEntryDialog(tag: mainController.filteredTagsList[index]['tags_list'][tagIndex]));
+                                                                        if (res != null) {
+                                                                          await mainController.updateFilterTag(mainController
+                                                                              .filteredTagsList[
+                                                                          index]['label'],
+                                                                              mainController.filteredTagsList[index]['tags_list'][tagIndex],
+                                                                            res
+                                                                          );
+                                                                          setState(() {
+                                                                            mainController.filteredTagsList[index]['tags_list'][tagIndex]=res;
+                                                                          });
+                                                                        }
                                                                       }
-                                                                    }
-                                                                    else if (delMode) {
-                                                                      /// dialog
-                                                                      bool? res = await showDialog<bool>(
-                                                                          context:
-                                                                          context,
-                                                                          builder: (BuildContext context) =>
-                                                                              ConfirmDialog(tag: mainController.filteredTagsList[index]['tags_list'][tagIndex])
-                                                                      );
-                                                                      if (res??false) {
-                                                                        await mainController.removeFilterTag(mainController.filteredTagsList[index]['label'],
-                                                                            mainController.filteredTagsList[index]['tags_list'][tagIndex]
+                                                                      else if (delMode) {
+                                                                        /// dialog
+                                                                        bool? res = await showDialog<bool>(
+                                                                            context:
+                                                                            context,
+                                                                            builder: (BuildContext context) =>
+                                                                                ConfirmDialog(tag: mainController.filteredTagsList[index]['tags_list'][tagIndex])
                                                                         );
-                                                                        setState(() {
-                                                                          /// remove the tag
-                                                                          mainController.filteredTagsList[index]['tags_list'].removeAt(tagIndex);
-                                                                        });
+                                                                        if (res??false) {
+                                                                          await mainController.removeFilterTag(mainController.filteredTagsList[index]['label'],
+                                                                              mainController.filteredTagsList[index]['tags_list'][tagIndex]
+                                                                          );
+                                                                          setState(() {
+                                                                            /// remove the tag
+                                                                            mainController.filteredTagsList[index]['tags_list'].removeAt(tagIndex);
+                                                                          });
+                                                                        }
                                                                       }
-                                                                    }
-                                                                  },
-                                                                  avatar: editMode
-                                                                      ? const Icon(
-                                                                          Icons
-                                                                              .edit,
-                                                                          color:
-                                                                              Colors.green,
-                                                                        )
-                                                                      : delMode
+                                                                    },
+                                                                    avatar: editMode
                                                                         ? const Icon(
-                                                                    Icons
-                                                                        .remove_circle_outline_sharp,
-                                                                    color:
-                                                                    Colors.red,
-                                                                  )
-                                                                        : null,
-                                                                  selectedColor: Colors.white,
-                                                                  showCheckmark: false,
-                                                                  label: Text(mainController.filteredTagsList[index]['tags_list'][tagIndex]),
-                                                                  labelStyle: const TextStyle(fontWeight: FontWeight.w900, overflow: TextOverflow.clip),
-                                                                  selected: true)),
-                                                        ),
-                                                      )
-                                                    ],
+                                                                            Icons
+                                                                                .edit,
+                                                                            color:
+                                                                                Colors.green,
+                                                                          )
+                                                                        : delMode
+                                                                          ? const Icon(
+                                                                      Icons
+                                                                          .remove_circle_outline_sharp,
+                                                                      color:
+                                                                      Colors.red,
+                                                                    )
+                                                                          : null,
+                                                                    selectedColor: Colors.white,
+                                                                    showCheckmark: false,
+                                                                    label: Text(mainController.filteredTagsList[index]['tags_list'][tagIndex]),
+                                                                    labelStyle: const TextStyle(fontWeight: FontWeight.w900, overflow: TextOverflow.clip),
+                                                                    selected: true)),
+                                                          ),
+                                                        )
+                                                      ],
+                                                    ),
+                                                  )
+                                                : const SizedBox(
+                                                    height: 10,
                                                   ),
-                                                )
-                                              : const SizedBox(
-                                                  height: 10,
-                                                ),
-                                    ),
-                                  )),
+                                      ),
+                                    )),
+                          ),
                         ),
                       ),
-                    ),
-                    /// Add new filter category
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        IconButton(
-                          //iconSize: 40,
-                          onPressed: () async {
-                            /// dialog
-                            String? res = await showDialog<String>(
-                                context: context,
-                                builder: (BuildContext context) => const AddNewFilterCategoryDialog());
-                            if (res != null) {
-                              /// add Filter Category
-                              mainController.addNewFilterTagCategory(res,'');
-                              _scrollToEnd();
-                              setState(() {
+                      /// Add new filter category
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          IconButton(
+                            //iconSize: 40,
+                            onPressed: () async {
+                              /// dialog
+                              String? res = await showDialog<String>(
+                                  context: context,
+                                  builder: (BuildContext context) => const AddNewFilterCategoryDialog());
+                              if (res != null) {
+                                /// add Filter Category
+                                mainController.addNewFilterTagCategory(res,'');
+                                _scrollToEnd();
+                                setState(() {
 
-                              });
-                            }
-                          },
-                          icon: const Icon(Icons.add),
-                          color: Colors.white,
-                        ),
-                        Text('Add a new Filter Tag Category' , style: TextStyle(fontSize: 12, color: Colors.white),)
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 50,
-                    )
-                  ]),
+                                });
+                              }
+                            },
+                            icon: const Icon(Icons.add),
+                            color: Colors.white,
+                          ),
+                          Text('Add a new Filter Tag Category' , style: TextStyle(fontSize: 12, color: Colors.white),)
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 50,
+                      )
+                    ]),
+              ),
             ),
           ),
         ));
