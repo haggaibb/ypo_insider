@@ -158,10 +158,7 @@ class _ProfilePageState extends State<ProfilePage> {
     return Directionality(
       textDirection: TextDirection.ltr,
       child: Scaffold(
-        backgroundColor:
-        memberController.themeMode.value.name == 'dark'
-            ? Colors.black
-            : Colors.blueGrey.shade50,
+        backgroundColor: Colors.blueGrey.shade50,
         appBar: AppBar(
           leading: editModeOn
               ? const SizedBox(
