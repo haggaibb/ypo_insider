@@ -53,7 +53,8 @@ class _InsiderState extends State<Insider> {
         ///print('verified go to Home');
         ///print(user?.displayName);
         membersController.loadingStatus.value = '${user?.displayName} verified go to Home';
-        ///print('set init Route to Home');
+        js.context.callMethod('hideSplashScreen');
+        //print('set init Route to Home');
         initialRoute = '/home';
       } else {
         membersController.loadingStatus.value = 'First timer, load onBoarding...';
@@ -76,7 +77,7 @@ class _InsiderState extends State<Insider> {
       getPages: [
         GetPage(
             name: '/home',
-            page: () => Home(user: user,),
+            page: () => Home(user: user),
             transition: Transition.zoom
         ),
         GetPage(
@@ -96,8 +97,6 @@ class _InsiderState extends State<Insider> {
   }
 }
 
-
-
 // FrontGate
 class FrontGate extends StatefulWidget {
   final User? user;
@@ -109,55 +108,61 @@ class _FrontGateState extends State<FrontGate> {
 
   @override
   void initState()  {
-    /// print('init FrontGate');
     super.initState();
   }
   @override
   Widget build(BuildContext context) {
-    return AuthFlowBuilder<EmailAuthController>(
-      listener: (oldState, state, authController) async {
-        //print('listen state msg:');print(state);
-        if (state is SignedIn) {
-          //print('signed in');
-          }
-      },
-      builder: (context, state, authController, _) {
-        /// print('build state msg:');print(state);
-        if (state is AwaitingEmailAndPassword) {
-          return EmailSignInForm(authController:  authController);
-        } else if (state is SigningIn) {
-          return MainLoading();
-        } else if (state is SigningUp) {
-          return MainLoading();
-        } else if (state is SignedIn) {
-          /// print('signed in');
-          User user = authController.auth.currentUser!;
-          if (user.displayName!=null) {
-            try {
-              AnalyticsEngine.userLogsIn('firebase_auth',user.displayName!);
-              /// print('logged to GA -signed_in');
-            } catch(err){
-              /// print('log to GA err - signed_in:');
-              /// print(err);
-            }
-             /// print('has ObBoarded go to Home...');
-              runApp(Home(user: user,));
-          } else {
-              /// print('first time, go to onBoarding');
-              AnalyticsEngine.logOnBoarding(user.email!,'start');
-              Get.toNamed("/onboarding");
-              //runApp(OnBoardingPage(user: user));
-          }
-          //return Home(user: authController.auth.currentUser,);
-        } else if (state is AuthFailed) {
-          /// print(state.exception);
-          /// add errmsg to signin, add a err parm
-          return EmailSignInForm(authController:  authController, errMsg: state.exception.toString());
-          //return ErrorText(exception: state.exception);
-        }
-        return MainLoading();
-      },
-    );
+    print(widget.user);
+    if (widget.user!=null) {
+       return Home(user: widget.user);
+     }
+     else {
+       return AuthFlowBuilder<EmailAuthController>(
+         listener: (oldState, state, authController) async {
+           //print('listen state msg:');print(state);
+           if (state is SignedIn) {
+             print('state signed in');
+             Get.toNamed('/home');
+           }
+         },
+         builder: (context, state, authController, _) {
+           /// print('build state msg:');print(state);
+           if (state is AwaitingEmailAndPassword) {
+             return EmailSignInForm(authController:  authController);
+           } else if (state is SigningIn) {
+             return MainLoading();
+           } else if (state is SigningUp) {
+             return MainLoading();
+           } else if (state is SignedIn) {
+             print('signed in');
+             User user = authController.auth.currentUser!;
+             if (user.displayName!=null) {
+               try {
+                 AnalyticsEngine.userLogsIn('firebase_auth',user.displayName!);
+                 /// print('logged to GA -signed_in');
+               } catch(err){
+                 /// print('log to GA err - signed_in:');
+                 /// print(err);
+               }
+               print('has ObBoarded go to Home...');
+               //Get.toNamed('/home');
+             } else {
+               ///print('first time, go to onBoarding');
+               AnalyticsEngine.logOnBoarding(user.email!,'start');
+               Get.toNamed("/onboarding");
+               //runApp(OnBoardingPage(user: user));
+             }
+             //Get.offAllNamed('/home');
+           } else if (state is AuthFailed) {
+             /// print(state.exception);
+             /// add errmsg to signin, add a err parm
+             return EmailSignInForm(authController:  authController, errMsg: state.exception.toString());
+             //return ErrorText(exception: state.exception);
+           }
+           return MainLoading();
+         },
+       );
+     }
   }
 }
 

@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:sheet/sheet.dart';
+import 'package:ypo_connect/main.dart';
 import 'package:ypo_connect/profile_page.dart';
 import 'filters.dart';
 import 'main_controller.dart';
@@ -30,6 +31,7 @@ class _HomeState extends State<Home> {
   var maxSheetPos = 800.0;
   var openSheetPos = 700.0;
   var initSheetPos = 100.0;
+  final user = FirebaseAuth.instance.currentUser;
 
   void sheetJumpFunction() {
     sheetController.offset <= initSheetPos
@@ -42,230 +44,239 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
-    /// print('init home');
+    print('init home');
     updateSplashScreenText('Loading Insider Home...');
     membersController.loadingStatus.value = 'Loading Insider Home';
-    if (membersController.currentMember.value.id == 'NA') membersController.setCurrentByUid(widget.user);
+    if (membersController.currentMember.value.id == 'NA') membersController.setCurrentByUid(user);
     /// print('init home end');
   }
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() => !mainController.mainLoading.value
-        ? Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          actions: [
-            Padding(
-              padding: const EdgeInsets.all(0.0),
-              child: Image.network('assets/images/logo.png'),
-            )
-          ],
-          //backgroundColor: Colors.white,
-          title: Column(
-            children: [
-              Image.network(
-                  color:
-                  membersController.themeMode.value.name == 'dark'
-                      ? Colors.white
-                      : Colors.blue.shade900,
-                  colorBlendMode:
-                  membersController.themeMode.value.name == 'dark'
-                      ? BlendMode.srcIn
-                      : null,
-                  scale: 2,
-                  'assets/images/logo-insider.png'),
-            ],
-          ),
-        ),
-        drawer: SizedBox(
-          height: membersController.isAdmin.value?700:460,
-          child: Drawer(
-            shape: ContinuousRectangleBorder(
-                borderRadius: BorderRadius.circular(75),
-                side:
-                BorderSide(color: Colors.blue.shade900, width: 5)),
-            child: ListView(
-              children: [
+    print('build home');
+    if (user!=null) {
+      return Obx(() => !mainController.mainLoading.value
+          ? Directionality(
+            textDirection: TextDirection.ltr,
+            child: Scaffold(
+            appBar: AppBar(
+              centerTitle: true,
+              actions: [
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 0.0),
-                  child: EndDrawerButton(
-                    onPressed: () {
-                      Get.back();
-                    },
-                    style: ButtonStyle(
-                        foregroundColor: MaterialStatePropertyAll<Color>(Colors.blue.shade700)
-                    ),
-                  ),
-                ),
-                DrawerHeader(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(150),
-                    //color: Colors.blue.shade50,
-                  ),
-                  child: Obx(() => ProfileAppDrawer(
-                      membersController.currentMember.value)),
-                ),
-                ListTile(
-                  leading: const Icon(
-                    Icons.person,
-                  ),
-                  title: const Text('My Profile'),
-                  onTap: () {
-                    Get.to(() => ProfilePage(
-                        membersController.currentMember.value));
-                  },
-                ),
-                membersController.isAdmin.value?ExpansionTile(
-                  //textColor: Colors.blue.shade900,
-                  //iconColor: Colors.blue.shade900,
-                  leading: const Icon(Icons.settings),
-                  trailing:
-                  membersController.themeMode.value.name == 'dark'
-                      ? const Icon(Icons.dark_mode)
-                      : const Icon(Icons.light_mode),
-                  title: const Text('Display Settings'),
-                  children: <Widget>[
-                    ChipsChoice<ThemeMode>.single(
-                      //placeholderStyle: TextStyle(color: Colors.blue.shade900),
-                      value: membersController.themeMode.value,
-                      onChanged: (val) {
-                        setState(() {
-                          membersController.saveThemeMode(val.name);
-                          membersController.themeMode.value = val;
-                          /// print('change theme mode');
-                          Get.changeTheme(val.name == 'dark'
-                              ? ThemeData.dark()
-                              : ThemeData.light());
-                        });
-                      },
-                      choiceItems: C2Choice.listFrom<ThemeMode,
-                          Map<dynamic, dynamic>>(
-                        source: [
-                          {'label': 'Light', 'mode': ThemeMode.light},
-                          {'label': 'Dark', 'mode': ThemeMode.dark},
-                        ],
-                        value: (index, item) => item['mode']!,
-                        label: (index, item) => item['label']!,
+                  padding: const EdgeInsets.all(0.0),
+                  child: Image.network('assets/images/logo.png'),
+                )
+              ],
+              //backgroundColor: Colors.white,
+              title: Column(
+                children: [
+                  Image.network(
+                      color:
+                      membersController.themeMode.value.name == 'dark'
+                          ? Colors.white
+                          : Colors.blue.shade900,
+                      colorBlendMode:
+                      membersController.themeMode.value.name == 'dark'
+                          ? BlendMode.srcIn
+                          : null,
+                      scale: 2,
+                      'assets/images/logo-insider.png'),
+                ],
+              ),
+            ),
+            drawer: SizedBox(
+              height: membersController.isAdmin.value?700:460,
+              child: Drawer(
+                shape: ContinuousRectangleBorder(
+                    borderRadius: BorderRadius.circular(75),
+                    side:
+                    BorderSide(color: Colors.blue.shade900, width: 5)),
+                child: ListView(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 0.0),
+                      child: EndDrawerButton(
+                        onPressed: () {
+                          Get.back();
+                        },
+                        style: ButtonStyle(
+                            foregroundColor: MaterialStatePropertyAll<Color>(Colors.blue.shade700)
+                        ),
                       ),
                     ),
+                    DrawerHeader(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(150),
+                        //color: Colors.blue.shade50,
+                      ),
+                      child: Obx(() => ProfileAppDrawer(
+                          membersController.currentMember.value)),
+                    ),
+                    ListTile(
+                      leading: const Icon(
+                        Icons.person,
+                      ),
+                      title: const Text('My Profile'),
+                      onTap: () {
+                        Get.to(() => ProfilePage(
+                            membersController.currentMember.value));
+                      },
+                    ),
+                    membersController.isAdmin.value?ExpansionTile(
+                      //textColor: Colors.blue.shade900,
+                      //iconColor: Colors.blue.shade900,
+                      leading: const Icon(Icons.settings),
+                      trailing:
+                      membersController.themeMode.value.name == 'dark'
+                          ? const Icon(Icons.dark_mode)
+                          : const Icon(Icons.light_mode),
+                      title: const Text('Display Settings'),
+                      children: <Widget>[
+                        ChipsChoice<ThemeMode>.single(
+                          //placeholderStyle: TextStyle(color: Colors.blue.shade900),
+                          value: membersController.themeMode.value,
+                          onChanged: (val) {
+                            setState(() {
+                              membersController.saveThemeMode(val.name);
+                              membersController.themeMode.value = val;
+                              /// print('change theme mode');
+                              Get.changeTheme(val.name == 'dark'
+                                  ? ThemeData.dark()
+                                  : ThemeData.light());
+                            });
+                          },
+                          choiceItems: C2Choice.listFrom<ThemeMode,
+                              Map<dynamic, dynamic>>(
+                            source: [
+                              {'label': 'Light', 'mode': ThemeMode.light},
+                              {'label': 'Dark', 'mode': ThemeMode.dark},
+                            ],
+                            value: (index, item) => item['mode']!,
+                            label: (index, item) => item['label']!,
+                          ),
+                        ),
+                      ],
+                    ):const SizedBox(),
+                    const Divider(),
+                    /// About
+                    /// Admin pages
+                    membersController.isAdmin.value?ListTile(
+                      leading: const Icon(
+                        Icons.info_outline,
+                      ),
+                      title: const Text('About'),
+                      onTap: () {
+                        Get.to(() => About(version: mainController.version, numberOfMembers: mainController.numberOfMembers.toString(),));
+                      },
+                    ):const SizedBox(),
+                    /// new member
+                    membersController.isAdmin.value?ListTile(
+                      leading: const Icon(
+                        Icons.person,
+                      ),
+                      title: const Text('Add a new Member'),
+                      onTap: () {
+                        Get.to(() => const AddNewMember()
+                        );
+                      },
+                    ):const SizedBox(),
+                    /// new residence
+                    membersController.isAdmin.value?ListTile(
+                      leading: const Icon(
+                        Icons.house_outlined,
+                      ),
+                      title: const Text('Add a new Residence'),
+                      onTap: () {
+                        Get.to(() => const AddNewResidence()
+                        );
+                      },
+                    ):const SizedBox(),
+                    /// new forum
+                    membersController.isAdmin.value?ListTile(
+                      leading: const Icon(
+                        Icons.group_add,
+                      ),
+                      title: const Text('Add a new Forum'),
+                      onTap: () {
+                        Get.to(() => const AddNewForum()
+                        );
+                      },
+                    ):const SizedBox(),
+                    /// add Filter Tags
+                    membersController.isAdmin.value?ListTile(
+                      leading: const Icon(
+                        Icons.filter_list_outlined,
+                      ),
+                      title: const Text('Manage Filter Tags'),
+                      onTap: () {
+                        Get.to(() => const ManageFilterTags()
+                        );
+                      },
+                    ):const SizedBox(),
+                    /// add free text
+                    membersController.isAdmin.value?ListTile(
+                      leading: const Icon(
+                        Icons.text_fields,
+                      ),
+                      title: const Text('Manage Free Text Tags'),
+                      onTap: () {
+                        Get.to(() => const ManageFreeTextTag()
+                        );
+                      },
+                    ):SizedBox(),
+                    /// Settings
+                    membersController.isAdmin.value?ListTile(
+                      leading: const Icon(
+                        Icons.settings,
+                      ),
+                      title: const Text('General Settings'),
+                      onTap: () {
+                        Get.to(() => SettingsScreen());
+                      },
+                    ):const SizedBox(),
                   ],
-                ):const SizedBox(),
-                const Divider(),
-                /// About
-                /// Admin pages
-                membersController.isAdmin.value?ListTile(
-                  leading: const Icon(
-                    Icons.info_outline,
-                  ),
-                  title: const Text('About'),
-                  onTap: () {
-                    Get.to(() => About(version: mainController.version, numberOfMembers: mainController.numberOfMembers.toString(),));
-                  },
-                ):const SizedBox(),
-                /// new member
-                membersController.isAdmin.value?ListTile(
-                  leading: const Icon(
-                    Icons.person,
-                  ),
-                  title: const Text('Add a new Member'),
-                  onTap: () {
-                    Get.to(() => const AddNewMember()
-                    );
-                  },
-                ):const SizedBox(),
-                /// new residence
-                membersController.isAdmin.value?ListTile(
-                  leading: const Icon(
-                    Icons.house_outlined,
-                  ),
-                  title: const Text('Add a new Residence'),
-                  onTap: () {
-                    Get.to(() => const AddNewResidence()
-                    );
-                  },
-                ):const SizedBox(),
-                /// new forum
-                membersController.isAdmin.value?ListTile(
-                  leading: const Icon(
-                    Icons.group_add,
-                  ),
-                  title: const Text('Add a new Forum'),
-                  onTap: () {
-                    Get.to(() => const AddNewForum()
-                    );
-                  },
-                ):const SizedBox(),
-                /// add Filter Tags
-                membersController.isAdmin.value?ListTile(
-                  leading: const Icon(
-                    Icons.filter_list_outlined,
-                  ),
-                  title: const Text('Manage Filter Tags'),
-                  onTap: () {
-                    Get.to(() => const ManageFilterTags()
-                    );
-                  },
-                ):const SizedBox(),
-                /// add free text
-                membersController.isAdmin.value?ListTile(
-                  leading: const Icon(
-                    Icons.text_fields,
-                  ),
-                  title: const Text('Manage Free Text Tags'),
-                  onTap: () {
-                    Get.to(() => const ManageFreeTextTag()
-                    );
-                  },
-                ):SizedBox(),
-                /// Settings
-                membersController.isAdmin.value?ListTile(
-                  leading: const Icon(
-                    Icons.settings,
-                  ),
-                  title: const Text('General Settings'),
-                  onTap: () {
-                    Get.to(() => SettingsScreen());
-                  },
-                ):const SizedBox(),
-              ],
+                ),
+              ),
             ),
-          ),
-        ),
-        body: Center(
-          child: SizedBox(
-            width: MediaQuery.of(context).size.width>600?600: MediaQuery.of(context).size.width,
-            child: Stack(
-              children: [
-                const ResultsPage(),
-                Obx(() => mainController.mainLoading.value
-                    ? const ResultsLoading()
-                    : SafeArea(
-                  child: Sheet(
-                    shape: ContinuousRectangleBorder(
-                      borderRadius: BorderRadius.circular(50),
-                    ),
-                    elevation: 0,
-                    backgroundColor: Colors.transparent,
-                    controller: sheetController,
-                    minExtent: minSheetPos,
-                    maxExtent: maxSheetPos,
-                    initialExtent: initSheetPos,
-                    fit: SheetFit.expand,
-                    child: Padding(
-                      padding:
-                      const EdgeInsets.only(left: 20, right: 20),
-                      child: Filters(() => sheetJumpFunction()),
-                    ),
-                  ),
-                )),
-              ],
-            ),
-          ),
-        )
-      // This trailing comma makes auto-formatting nicer for build methods.
+            body: Center(
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width>600?600: MediaQuery.of(context).size.width,
+                child: Stack(
+                  children: [
+                    const ResultsPage(),
+                    Obx(() => mainController.mainLoading.value
+                        ? const ResultsLoading()
+                        : SafeArea(
+                      child: Sheet(
+                        shape: ContinuousRectangleBorder(
+                          borderRadius: BorderRadius.circular(50),
+                        ),
+                        elevation: 0,
+                        backgroundColor: Colors.transparent,
+                        controller: sheetController,
+                        minExtent: minSheetPos,
+                        maxExtent: maxSheetPos,
+                        initialExtent: initSheetPos,
+                        fit: SheetFit.expand,
+                        child: Padding(
+                          padding:
+                          const EdgeInsets.only(left: 20, right: 20),
+                          child: Filters(() => sheetJumpFunction()),
+                        ),
+                      ),
+                    )),
+                  ],
+                ),
+              ),
+            )
+                    // This trailing comma makes auto-formatting nicer for build methods.
 
-    )
-        : MainLoading());
+                  ),
+          )
+          : MainLoading());
+    }  else {
+      return FrontGate(user: user);
+    }
+
   }
 }
