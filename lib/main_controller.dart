@@ -534,7 +534,7 @@ class MainController extends GetxController {
     if (user!=null) await logUserOpensApp(user!.displayName ?? 'NA');
     mainLoading.value = false;
     update();
-    updateMemberWebDeviceInfo(user!.displayName?? 'NA');
+    await updateMemberWebDeviceInfo(user!.displayName?? 'NA');
     /// print('end - init main Controller');
   }
 }
