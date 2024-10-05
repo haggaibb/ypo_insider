@@ -310,6 +310,11 @@ class MainController extends GetxController {
     await freeTextTagsRef.doc(res.id).update({'templateId' : res.id});
   }
 
+  updateFreeTextField(Map<String,dynamic> freeTextData) async {
+    CollectionReference freeTextTagsRef = db.collection('FreeTextTags');
+    await freeTextTagsRef.doc(freeTextData['templateId']).update(freeTextData);
+  }
+
   /// GA events
   logUserLogsIn(String fullName) async {
     await AnalyticsEngine.userLogsIn('firebase_auth', fullName);

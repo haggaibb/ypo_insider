@@ -684,7 +684,24 @@ class _ManageFreeTextTagState extends State<ManageFreeTextTag> {
                                 ScaffoldMessenger.of(context).showSnackBar(snackBar);
                                 Get.back();
                               } else {
-                                ///update
+                                /// update free text tag
+                                await mainController.updateFreeTextField({
+                                  'templateId' : templateId,
+                                  'key': labelToKey(labelCtrl.text),
+                                  'label': labelCtrl.text,
+                                  'type': typeCtrl.text,
+                                  'hint': hintCtrl.text,
+                                  'icon_code': iconCodeCtrl.text
+                                });
+                                const snackBar = SnackBar(
+                                  content: Text(
+                                    'Free Text Field Updated!',
+                                    style: TextStyle(
+                                        fontSize: 14, fontWeight: FontWeight.bold),
+                                  ),
+                                );
+                                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                Get.back();
                               }
 
                             },
