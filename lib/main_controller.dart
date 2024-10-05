@@ -34,6 +34,7 @@ class MainController extends GetxController {
   final user = FirebaseAuth.instance.currentUser;
   late String version;
   late ProfileScore profileScore;
+  late bool isIOS;
 
   getSettings() async {
     final settingsRef = db.collection("Settings").doc('results_settings');
@@ -47,7 +48,7 @@ class MainController extends GetxController {
     if (profileScoreQuery.exists) {
       profileScore = ProfileScore.fromDocumentSnapshot(profileScoreQuery);
     }
-
+    isIOS = await isDeviceIOS();
   }
 
   fetchFilteredMembersOld(List<String> selectedFilters) async {

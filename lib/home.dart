@@ -23,12 +23,13 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+
   List selectedFiltersList = [];
   SheetController sheetController = SheetController();
   final membersController = Get.put(MembersController());
   final mainController = Get.put(MainController());
-  var minSheetPos = 100.0;
-  var maxSheetPos = 800.0;
+  var minSheetPos =100.0;
+  var maxSheetPos = 850.0;
   var openSheetPos = 700.0;
   var initSheetPos = 100.0;
   final user = FirebaseAuth.instance.currentUser;
@@ -50,6 +51,8 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
+    //initSheetPos = mainController.isIOS?150.0:100;
+    //minSheetPos = mainController.isIOS?150.0:100;
     //print('init home');
     updateSplashScreenText('Loading Insider Home...');
     membersController.loadingStatus.value = 'Loading Insider Home';
@@ -261,9 +264,9 @@ class _HomeState extends State<Home> {
                           elevation: 0,
                           backgroundColor: Colors.transparent,
                           controller: sheetController,
-                          minExtent: minSheetPos,
+                          minExtent: mainController.isIOS?minSheetPos+50:minSheetPos,
                           maxExtent: maxSheetPos,
-                          initialExtent: initSheetPos,
+                          initialExtent: mainController.isIOS?minSheetPos+50:minSheetPos,
                           fit: SheetFit.expand,
                           child: Padding(
                             padding:
