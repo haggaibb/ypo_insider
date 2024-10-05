@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'main_controller.dart';
 import 'members_controller.dart';
@@ -150,20 +151,31 @@ class _ResultsPageState extends State<ResultsPage> {
                                   padding: const EdgeInsets.all(20.0),
                                   child: Column(
                                     children: [
-                                      const Text('No results found.'),
-                                      Row(
-                                        mainAxisAlignment:
-                                        MainAxisAlignment.center,
-                                        children: [
-                                          const Text('Click to shuffle '),
-                                          IconButton(
-                                              onPressed: () => {
+                                      const Text('No results found.', style: TextStyle(fontWeight: FontWeight.bold),),
+                                      Padding(
+                                        padding: const EdgeInsets.only(top:20.0),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                          children: [
+                                            GestureDetector(
+                                                child: const Text('Click to shuffle ',style: TextStyle(color: Colors.blue,), ),
+                                              onTap: () => {
                                                 mainController.loadRandomResults(
                                                     mainController
                                                         .numberOfMembers)
                                               },
-                                              icon: Icon(Icons.shuffle)),
-                                        ],
+                                            ),
+                                            IconButton(
+                                              color: Colors.blue,
+                                                onPressed: () => {
+                                                  mainController.loadRandomResults(
+                                                      mainController
+                                                          .numberOfMembers)
+                                                },
+                                                icon: Icon(Icons.shuffle)),
+                                          ],
+                                        ),
                                       ),
                                       const Row(
                                         mainAxisAlignment:

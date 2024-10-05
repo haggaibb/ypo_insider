@@ -35,10 +35,11 @@ class _HomeState extends State<Home> {
   final user = FirebaseAuth.instance.currentUser;
 
   void sheetJumpFunction() {
-    sheetController.offset <= initSheetPos
+    double fixedInitSheetPos = mainController.isIOS?initSheetPos+50:initSheetPos;
+    sheetController.offset <= fixedInitSheetPos
         ? sheetController.animateTo(openSheetPos,
             duration: const Duration(milliseconds: 500), curve: Curves.easeIn)
-        : sheetController.animateTo(initSheetPos,
+        : sheetController.animateTo(fixedInitSheetPos,
             duration: const Duration(milliseconds: 500), curve: Curves.easeIn);
   }
 
@@ -266,7 +267,7 @@ class _HomeState extends State<Home> {
                           controller: sheetController,
                           minExtent: mainController.isIOS?minSheetPos+50:minSheetPos,
                           maxExtent: maxSheetPos,
-                          initialExtent: mainController.isIOS?minSheetPos+50:minSheetPos,
+                          initialExtent: mainController.isIOS?initSheetPos+50:initSheetPos,
                           fit: SheetFit.expand,
                           child: Padding(
                             padding:
