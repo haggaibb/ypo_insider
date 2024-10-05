@@ -1,6 +1,5 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:ypo_connect/RayBarFields.dart';
 import 'package:ypo_connect/members_controller.dart';

@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'models.dart';
 import 'package:get/get.dart';
-import 'dart:math';
 import 'dart:js' as js;
 import 'package:firebase_auth/firebase_auth.dart'
     hide PhoneAuthProvider, EmailAuthProvider;

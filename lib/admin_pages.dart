@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get_storage/get_storage.dart';
 import 'members_controller.dart';
 import 'main_controller.dart';
 import 'package:get/get.dart';
@@ -684,13 +683,6 @@ class _ManageFreeTextTagState extends State<ManageFreeTextTag> {
                                   'hint': hintCtrl.text,
                                   'icon_code': iconCodeCtrl.text
                                 });
-                                const snackBar = SnackBar(
-                                  content: Text(
-                                    'Free Text Field Added!',
-                                    style: TextStyle(
-                                        fontSize: 14, fontWeight: FontWeight.bold),
-                                  ),
-                                );
                               } else {
                                 /// update free text tag
                                 await mainController.updateFreeTextField({
@@ -1754,7 +1746,6 @@ class ConfirmDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController newFilterTagCategoryCtrl = TextEditingController();
     return AlertDialog(
       titlePadding: EdgeInsets.only(left: 80.0, top: 20),
       title: const Text('Approve Removal'),

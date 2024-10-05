@@ -5,7 +5,6 @@ import 'package:url_launcher/url_launcher.dart';
 import 'dart:html' as html;
 import 'RayBarFields.dart';
 import 'package:get/get.dart';
-import 'members_controller.dart';
 import 'main_controller.dart';
 
 class ResultCard extends StatefulWidget {
