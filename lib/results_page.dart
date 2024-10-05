@@ -159,7 +159,7 @@ class _ResultsPageState extends State<ResultsPage> {
                                           MainAxisAlignment.center,
                                           children: [
                                             GestureDetector(
-                                                child: const Text('Click to shuffle ',style: TextStyle(color: Colors.blue,), ),
+                                                child: const Text('To continue please press the shuffle icon',style: TextStyle(color: Colors.blue,), ),
                                               onTap: () => {
                                                 mainController.loadRandomResults(
                                                     mainController
@@ -181,7 +181,7 @@ class _ResultsPageState extends State<ResultsPage> {
                                         mainAxisAlignment:
                                         MainAxisAlignment.center,
                                         children: [
-                                          Text('You can also use the filters below'),
+                                          Text('or you can also use the filters below'),
                                           //Icon(Icons.filter_list_outlined)
                                         ],
                                       )
