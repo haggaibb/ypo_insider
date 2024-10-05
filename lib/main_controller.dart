@@ -311,8 +311,10 @@ class MainController extends GetxController {
   }
 
   updateFreeTextField(Map<String,dynamic> freeTextData) async {
+    saving.value = true;
     CollectionReference freeTextTagsRef = db.collection('FreeTextTags');
     await freeTextTagsRef.doc(freeTextData['templateId']).update(freeTextData);
+    saving.value = false;
   }
 
   /// GA events

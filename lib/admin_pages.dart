@@ -6,11 +6,16 @@ import 'package:get/get.dart';
 import 'utils.dart';
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 
-class AddNewMember extends StatelessWidget {
+class AddNewMember extends StatefulWidget {
   const AddNewMember({
     super.key,
   });
 
+  @override
+  State<AddNewMember> createState() => _AddNewMemberState();
+}
+
+class _AddNewMemberState extends State<AddNewMember> {
   @override
   Widget build(BuildContext context) {
     final membersController = Get.put(MembersController());
@@ -180,18 +185,17 @@ class AddNewMember extends StatelessWidget {
                         ElevatedButton(
                             onPressed: () async {
                               /// print('save data');
+                              setState(() {
+                                mainController.saving.value = true;
+                              });
                               await membersController.addNewMember(
                                   firstNameCtrl.text,
                                   lastNameCtrl.text,
-                                  emailCtrl.text);
-                              const snackBar = SnackBar(
-                                content: Text(
-                                  'Member Added!',
-                                  style: TextStyle(
-                                      fontSize: 14, fontWeight: FontWeight.bold),
-                                ),
+                                  emailCtrl.text
                               );
-                              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                              setState(() {
+                                mainController.saving.value = false;
+                              });
                               Get.back();
                             },
                             child: Text('Save')),
@@ -202,7 +206,8 @@ class AddNewMember extends StatelessWidget {
                             },
                             child: Text('Cancel')),
                       ],
-                    )
+                    ),
+                    mainController.saving.value?const SizedBox(width: 200, child: LinearProgressIndicator()):const SizedBox.shrink()
                   ],
                 ),
               ),
@@ -305,7 +310,8 @@ class AddNewResidence extends StatelessWidget {
                               },
                               child: const Text('Cancel')),
                         ],
-                      )
+                      ),
+                      mainController.saving.value?const SizedBox(width: 200, child: LinearProgressIndicator()):const SizedBox.shrink()
                     ],
                   ),
                 ),
@@ -407,7 +413,8 @@ class AddNewForum extends StatelessWidget {
                             },
                             child: Text('Cancel')),
                       ],
-                    )
+                    ),
+                    mainController.saving.value?const SizedBox(width: 200, child: LinearProgressIndicator()):const SizedBox.shrink()
                   ],
                 ),
               ),
@@ -665,6 +672,9 @@ class _ManageFreeTextTagState extends State<ManageFreeTextTag> {
                       children: [
                         ElevatedButton(
                             onPressed: () async {
+                              setState(() {
+                                mainController.saving.value = true;
+                              });
                               if(addMode) {
                                 ///add
                                 await mainController.addNewFreeTextField({
@@ -681,8 +691,6 @@ class _ManageFreeTextTagState extends State<ManageFreeTextTag> {
                                         fontSize: 14, fontWeight: FontWeight.bold),
                                   ),
                                 );
-                                ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                                Get.back();
                               } else {
                                 /// update free text tag
                                 await mainController.updateFreeTextField({
@@ -693,17 +701,11 @@ class _ManageFreeTextTagState extends State<ManageFreeTextTag> {
                                   'hint': hintCtrl.text,
                                   'icon_code': iconCodeCtrl.text
                                 });
-                                const snackBar = SnackBar(
-                                  content: Text(
-                                    'Free Text Field Updated!',
-                                    style: TextStyle(
-                                        fontSize: 14, fontWeight: FontWeight.bold),
-                                  ),
-                                );
-                                ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                                Get.back();
                               }
-
+                              setState(() {
+                                mainController.saving.value = false;
+                              });
+                              Get.back();
                             },
                             child:  Text(addMode?'Add':'Update')),
                         ElevatedButton(
@@ -726,15 +728,19 @@ class _ManageFreeTextTagState extends State<ManageFreeTextTag> {
                               builder: (BuildContext context) => ConfirmDialog(tag: (labelCtrl.text))
                           );
                           if (res??false) {
+                            setState(() {
+                              mainController.saving.value = true;
+                            });
                             await mainController.removeFreeTextTag(labelCtrl.text, templateId);
                             setState(() {
                               /// remove local
+                              mainController.saving.value = false;
                               mainController.freeTextTagsList;
                             });
                           }
                         },
                         child:  const Text('Remove Tag', style: TextStyle(color: Colors.red),)):const SizedBox.shrink(),
-                    mainController.saving.value?const CircularProgressIndicator():const SizedBox.shrink()
+                    mainController.saving.value?const SizedBox(width: 200, child: LinearProgressIndicator()):const SizedBox.shrink()
                   ],
                 ),
               ),
@@ -1378,12 +1384,16 @@ class _ManageFilterTagsState extends State<ManageFilterTags> {
                                                                                   FilterEntryDialog(category: mainController.filteredTagsList[index]['label']));
                                                                           if (res !=
                                                                               null) {
+                                                                            setState(() {
+                                                                              mainController.saving.value=true;
+                                                                            });
                                                                             await mainController.addNewFilterTag(
                                                                                 mainController.filteredTagsList[index]['label'],
                                                                                 res);
                                                                             setState(
                                                                                 () {
                                                                               mainController.filteredTagsList[index]['tags_list'].add(res);
+                                                                              mainController.saving.value=false;
                                                                             });
                                                                           }
                                                                         },
@@ -1422,10 +1432,14 @@ class _ManageFilterTagsState extends State<ManageFilterTags> {
                                                                             ConfirmDialog(tag: mainController.filteredTagsList[index]['label'])
                                                                     );
                                                                     if (res??false) {
+                                                                      setState(() {
+                                                                        mainController.saving.value=true;
+                                                                      });
                                                                       await mainController.removeFilterTagCategory(mainController.filteredTagsList[index]['label']);
                                                                       setState(() {
                                                                         /// remove the category
                                                                         mainController.filteredTagsList.removeAt(index);
+                                                                        mainController.saving.value=false;
                                                                       });
                                                                     }
                                                                   },
@@ -1479,12 +1493,16 @@ class _ManageFilterTagsState extends State<ManageFilterTags> {
                                                                                 ConfirmDialog(tag: mainController.filteredTagsList[index]['tags_list'][tagIndex])
                                                                         );
                                                                         if (res??false) {
+                                                                          setState(() {
+                                                                            mainController.saving.value=true;
+                                                                          });
                                                                           await mainController.removeFilterTag(mainController.filteredTagsList[index]['label'],
                                                                               mainController.filteredTagsList[index]['tags_list'][tagIndex]
                                                                           );
                                                                           setState(() {
                                                                             /// remove the tag
                                                                             mainController.filteredTagsList[index]['tags_list'].removeAt(tagIndex);
+                                                                            mainController.saving.value=false;
                                                                           });
                                                                         }
                                                                       }
@@ -1535,10 +1553,13 @@ class _ManageFilterTagsState extends State<ManageFilterTags> {
                                   builder: (BuildContext context) => const AddNewFilterCategoryDialog());
                               if (res != null) {
                                 /// add Filter Category
-                                mainController.addNewFilterTagCategory(res,'');
+                                setState(() {
+                                  mainController.saving.value = true;
+                                });
+                                await mainController.addNewFilterTagCategory(res,'');
                                 _scrollToEnd();
                                 setState(() {
-
+                                  mainController.saving.value = false;
                                 });
                               }
                             },
