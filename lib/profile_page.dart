@@ -225,25 +225,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                 .loadingProfileImage.value = false;
                                           });
                                         } else {
-                                          showDialog(
-                                            context: context,
-                                            builder: (BuildContext context) {
-                                              return Dialog(
-                                                backgroundColor: Colors.transparent,  // Make the background transparent
-                                                child: ClipOval(
-                                                  child: InteractiveViewer(
-                                                    panEnabled: true,  // Allow panning (moving the image around)
-                                                    scaleEnabled: true,  // Allow zooming
-                                                    child: Image.network(
-                                                      widget.member.profileImage ??
-                                                          'https://firebasestorage.googleapis.com/v0/b/ypodex.appspot.com/o/profile_images%2Fprofile0.jpg?alt=media',
-                                                      fit: BoxFit.contain,  // Ensure the image fits properly
-                                                    ),
-                                                  ),
-                                                ),
-                                              );
-                                            },
-                                          );
+                                          showZoomableImageDialog(context, widget.member.profileImage ?? 'https://firebasestorage.googleapis.com/v0/b/ypodex.appspot.com/o/profile_images%2Fprofile0.jpg?alt=media');
                                         }
                                       },
                                       child: ClipRRect(

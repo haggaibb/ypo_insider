@@ -858,39 +858,49 @@ class About extends StatelessWidget {
 }
 
 
-class ZoomableImage extends StatelessWidget {
-  final String imageUrl;
-
-  ZoomableImage({required this.imageUrl});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        // Show the zoomed image in a dialog
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return Dialog(
-              backgroundColor: Colors.transparent,  // Make the dialog background transparent
-              child: InteractiveViewer(
-                panEnabled: true,  // Allow panning
-                scaleEnabled: true,  // Allow zooming
-                child: Image.network(
-                  imageUrl,
-                  fit: BoxFit.contain,  // Ensure the image fits in the screen
+void showZoomableImageDialog(BuildContext context, String imageUrl) {
+  Navigator.of(context).push(
+    PageRouteBuilder(
+      opaque: false,  // Allows transparency
+      pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
+        return FadeTransition(
+          opacity: animation,
+          child: GestureDetector(
+            onTap: () {
+              Navigator.of(context).pop();  // Close the dialog when tapping outside or on the image
+            },
+            child: Dialog(
+              backgroundColor: Colors.transparent,
+              insetPadding: EdgeInsets.all(10),
+              child: ClipOval(  // Clip as needed (ClipOval or ClipRRect)
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    // Prevent dialog closing when tapping on the image itself
+                  },
+                  child: InteractiveViewer(
+                    panEnabled: true,  // Allow panning (moving the image around)
+                    scaleEnabled: true,  // Allow zooming
+                    child: Image.network(
+                      imageUrl,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
                 ),
               ),
-            );
-          },
+            ),
+          ),
         );
       },
-      child: Image.network(
-        imageUrl,
-        fit: BoxFit.cover,  // Normal image display
-        width: 100,  // Set your preferred width
-        height: 100,  // Set your preferred height
-      ),
-    );
-  }
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        return FadeTransition(
+          opacity: animation,
+          child: ScaleTransition(
+            scale: animation,
+            child: child,
+          ),
+        );
+      },
+    ),
+  );
 }
