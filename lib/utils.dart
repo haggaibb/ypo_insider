@@ -34,17 +34,31 @@ String getDeviceModel(String identifier) {
   return iosDeviceMap[identifier] ?? 'Unknown iPhone';
 }
 
-Future<void> getWebDeviceInfo() async {
+Future<Map<String, dynamic>> getWebDeviceInfo() async {
   if (kIsWeb) {
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     WebBrowserInfo webBrowserInfo = await deviceInfo.webBrowserInfo;
-    print('Browser Name: ${webBrowserInfo.browserName}');
-    print('User Agent: ${webBrowserInfo.userAgent}');
-    print('Platform: ${webBrowserInfo.platform}');
-    print('App Version: ${webBrowserInfo.appVersion}');
-    print('Vendor: ${webBrowserInfo.vendor}');
-    print('Device Memory: ${webBrowserInfo.deviceMemory}');
-    print('Hardware Concurrency (CPU cores): ${webBrowserInfo.hardwareConcurrency}');
+    Map<String, dynamic> deviceData = {
+      'browserName': webBrowserInfo.browserName.name,   // Browser name as a string
+      'userAgent': webBrowserInfo.userAgent ?? 'Unknown',  // User agent info
+      'platform': webBrowserInfo.platform ?? 'Unknown',    // Platform info
+      'appVersion': webBrowserInfo.appVersion ?? 'Unknown',  // App version
+      'vendor': webBrowserInfo.vendor ?? 'Unknown',       // Vendor info
+      'deviceMemory': webBrowserInfo.deviceMemory?.toString() ?? 'Unknown',  // Device memory
+      'hardwareConcurrency': webBrowserInfo.hardwareConcurrency?.toString() ?? 'Unknown',  // CPU cores
+      'timestamp': DateTime.now(),  // Add a timestamp for reference
+    };
+    ///
+    // print('Browser Name: ${webBrowserInfo.browserName}');
+    // print('User Agent: ${webBrowserInfo.userAgent}');
+    // print('Platform: ${webBrowserInfo.platform}');
+    // print('App Version: ${webBrowserInfo.appVersion}');
+    // print('Vendor: ${webBrowserInfo.vendor}');
+    // print('Device Memory: ${webBrowserInfo.deviceMemory}');
+    // print('Hardware Concurrency (CPU cores): ${webBrowserInfo.hardwareConcurrency}');
+    return deviceData;
+  } else {
+    return {};
   }
 }
 

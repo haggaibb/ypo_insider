@@ -508,6 +508,10 @@ class MainController extends GetxController {
     saving.value = false;
   }
 
+  updateMemberWebDeviceInfo(String memberId) async {
+    DocumentReference resultsSettingsRef = db.collection('MembersDeviceLogs').doc(memberId);
+    await resultsSettingsRef.set(await getWebDeviceInfo());
+  }
 
   @override
   onInit() async {
@@ -530,6 +534,7 @@ class MainController extends GetxController {
     if (user!=null) await logUserOpensApp(user!.displayName ?? 'NA');
     mainLoading.value = false;
     update();
+    updateMemberWebDeviceInfo(user!.displayName?? 'NA');
     /// print('end - init main Controller');
   }
 }
