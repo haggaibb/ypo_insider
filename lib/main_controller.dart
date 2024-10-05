@@ -508,11 +508,9 @@ class MainController extends GetxController {
   }
 
   updateMemberWebDeviceInfo(String memberId) async {
-    await getWebDeviceInfo();
-    DocumentReference resultsSettingsRef = db.collection('MembersDeviceLogs').doc(memberId);
+    CollectionReference resultsSettingsRef = db.collection('MembersDeviceLogs');
     Map<String,dynamic> deviceInfo = await getWebDeviceInfo();
-    await resultsSettingsRef.set(deviceInfo);
-    print(deviceInfo);
+    await resultsSettingsRef.doc(memberId).set(deviceInfo);
     isIOS = await isDeviceIOS(deviceInfo['userAgent']);
   }
 
@@ -532,8 +530,6 @@ class MainController extends GetxController {
     updateSplashScreenText('Loading Random Results...');
     loadingStatus.value = 'Loading Registered Members...';
     await loadRandomResults(numberOfMembers);
-    //js.context.callMethod('hideSplashScreen');
-    //await logUserLogsIn(user!.displayName??'NA');
     if (user!=null) await logUserOpensApp(user!.displayName ?? 'NA');
     await updateMemberWebDeviceInfo(user!.displayName ?? 'NA');
     mainLoading.value = false;

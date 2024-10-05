@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sheet/sheet.dart';
 import 'package:ypo_connect/main.dart';
@@ -71,11 +72,28 @@ class _HomeState extends State<Home> {
               onRefresh: _handleRefresh,
               child: Scaffold(
               appBar: AppBar(
+                leading: membersController.isAdmin.value?null:Padding(
+                  padding: const EdgeInsets.all(3.0),
+                  child: Image.network('assets/images/logo.png'),
+                ),
                 centerTitle: true,
                 actions: [
                   Padding(
-                    padding: const EdgeInsets.all(0.0),
-                    child: Image.network('assets/images/logo.png'),
+                    padding: const EdgeInsets.all(3.0),
+                    child: GestureDetector(
+                      onTap: () {
+                        Get.to(() => ProfilePage(
+                            membersController.currentMember.value));
+                      },
+                      child: ClipOval(
+                        child: Image.network(
+                          width: 60,
+                          height: 60,
+                          membersController.currentMember.value.profileImage!,
+                          fit: BoxFit.cover,  // Ensure the image covers the entire area
+                        ),
+                      ),
+                    ),
                   )
                 ],
                 //backgroundColor: Colors.white,

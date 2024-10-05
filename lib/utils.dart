@@ -1,5 +1,5 @@
 import 'dart:js' as js;
-import 'package:device_info_plus/device_info_plus.dart';
+import 'dart:html' as html;
 
 
 
@@ -33,18 +33,31 @@ String getDeviceModel(String identifier) {
 }
 
 Future<Map<String, dynamic>> getWebDeviceInfo() async {
-    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-    WebBrowserInfo webBrowserInfo = await deviceInfo.webBrowserInfo;
-    Map<String, dynamic> deviceData = {
-      'browserName': webBrowserInfo.browserName.name,   // Browser name as a string
-      'userAgent': webBrowserInfo.userAgent ?? 'Unknown',  // User agent info
-      'platform': webBrowserInfo.platform ?? 'Unknown',    // Platform info
-      'appVersion': webBrowserInfo.appVersion ?? 'Unknown',  // App version
-      'vendor': webBrowserInfo.vendor ?? 'Unknown',       // Vendor info
-      'deviceMemory': webBrowserInfo.deviceMemory?.toString() ?? 'Unknown',  // Device memory
-      'hardwareConcurrency': webBrowserInfo.hardwareConcurrency?.toString() ?? 'Unknown',  // CPU cores
-      'timestamp': DateTime.now(),  // Add a timestamp for reference
-    };
+  //print('here');
+    //DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+  //print('here');
+
+  //WebBrowserInfo webBrowserInfo = await deviceInfo.webBrowserInfo;
+  //print('here');
+  Map<String, dynamic> deviceData = {
+    'browserName': 'Unknown',  // Replace with actual detection logic if needed
+    'userAgent': html.window.navigator.userAgent,
+    'platform': html.window.navigator.platform,
+    'appVersion': html.window.navigator.appVersion,
+    'vendor': html.window.navigator.vendor,
+    'hardwareConcurrency': html.window.navigator.hardwareConcurrency.toString(),
+    'timestamp' : DateTime.now()
+  };
+  // Map<String, dynamic> deviceData = {
+  //     'browserName': webBrowserInfo.browserName.name,   // Browser name as a string
+  //     'userAgent': webBrowserInfo.userAgent ?? 'Unknown',  // User agent info
+  //     'platform': webBrowserInfo.platform ?? 'Unknown',    // Platform info
+  //     'appVersion': webBrowserInfo.appVersion ?? 'Unknown',  // App version
+  //     'vendor': webBrowserInfo.vendor ?? 'Unknown',       // Vendor info
+  //     'deviceMemory': webBrowserInfo.deviceMemory?.toString() ?? 'Unknown',  // Device memory
+  //     'hardwareConcurrency': webBrowserInfo.hardwareConcurrency?.toString() ?? 'Unknown',  // CPU cores
+  //     'timestamp': DateTime.now(),  // Add a timestamp for reference
+  //   };
     ///
     // print('Browser Name: ${webBrowserInfo.browserName}');
     // print('User Agent: ${webBrowserInfo.userAgent}');
