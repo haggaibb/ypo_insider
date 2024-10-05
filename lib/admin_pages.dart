@@ -65,7 +65,7 @@ class _AddNewMemberState extends State<AddNewMember> {
                       padding: const EdgeInsets.all(18.0),
                       child: Row(
                         children: [
-                          Text('First Name:',
+                          const Text('First Name:',
                               style: TextStyle(fontWeight: FontWeight.bold)),
                           Padding(
                             padding: const EdgeInsets.only(left: 12.0),
@@ -83,7 +83,7 @@ class _AddNewMemberState extends State<AddNewMember> {
                       padding: const EdgeInsets.all(18.0),
                       child: Row(
                         children: [
-                          Text('Last Name:',
+                          const Text('Last Name:',
                               style: TextStyle(fontWeight: FontWeight.bold)),
                           Padding(
                             padding: const EdgeInsets.only(left: 12.0),
@@ -101,7 +101,7 @@ class _AddNewMemberState extends State<AddNewMember> {
                       padding: const EdgeInsets.all(18.0),
                       child: Row(
                         children: [
-                          Text(
+                          const Text(
                             'Email:',
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
@@ -198,13 +198,13 @@ class _AddNewMemberState extends State<AddNewMember> {
                               });
                               Get.back();
                             },
-                            child: Text('Save')),
+                            child: const Text('Save')),
                         ElevatedButton(
                             onPressed: () {
                               /// print('Cancel');
                               Get.back();
                             },
-                            child: Text('Cancel')),
+                            child: const Text('Cancel')),
                       ],
                     ),
                     mainController.saving.value?const SizedBox(width: 200, child: LinearProgressIndicator()):const SizedBox.shrink()
@@ -1269,9 +1269,9 @@ class _ManageFilterTagsState extends State<ManageFilterTags> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     //mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      SizedBox(height: 80),
-                      Center(child: Text('Manage Filter Tags', style: TextStyle(fontSize: 24, color: Colors.white, fontWeight: FontWeight.bold),)),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 80),
+                      const Center(child: Text('Manage Filter Tags', style: TextStyle(fontSize: 24, color: Colors.white, fontWeight: FontWeight.bold),)),
+                      const SizedBox(height: 10),
                       Expanded(
                         flex: 1,
                         child: Padding(
@@ -1566,7 +1566,7 @@ class _ManageFilterTagsState extends State<ManageFilterTags> {
                             icon: const Icon(Icons.add),
                             color: Colors.white,
                           ),
-                          Text('Add a new Filter Tag Category' , style: TextStyle(fontSize: 12, color: Colors.white),)
+                          const Text('Add a new Filter Tag Category' , style: TextStyle(fontSize: 12, color: Colors.white),)
                         ],
                       ),
                       const SizedBox(
