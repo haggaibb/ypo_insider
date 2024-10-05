@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:ypo_connect/RayBarFields.dart';
 import 'package:ypo_connect/members_controller.dart';
@@ -167,7 +168,8 @@ class _ProfilePageState extends State<ProfilePage> {
               : IconButton(
                   onPressed: () {
                     cancelEdit();
-                    Navigator.pop(context);
+                    Get.back();
+                    //Navigator.pop(context);
                   },
                   icon: const Icon(Icons.arrow_back)),
           title: Column(
@@ -202,13 +204,17 @@ class _ProfilePageState extends State<ProfilePage> {
                               height: 120,
                               child: memberController.loadingProfileImage.value
                                   ? const ProfileImageLoading()
-                                  : ClipRRect(
-                                      borderRadius: BorderRadius.circular(100),
-                                      child: Image.network(editModeOn
-                                          ? tempProfileImageUrl
-                                          : widget.member.profileImage ??
-                                              'https://firebasestorage.googleapis.com/v0/b/ypodex.appspot.com/o/profile_images%2Fprofile0.jpg?alt=media'),
-                                    ),
+                                  : Hero(
+                                    transitionOnUserGestures: true,
+                                    tag : (widget.member.id!=memberController.currentMember.value.id)?'profile_image${widget.member.id}':'profile_image',
+                                    child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(100),
+                                        child: Image.network(editModeOn
+                                            ? tempProfileImageUrl
+                                            : widget.member.profileImage ??
+                                                'https://firebasestorage.googleapis.com/v0/b/ypodex.appspot.com/o/profile_images%2Fprofile0.jpg?alt=media'),
+                                      ),
+                                  ),
                             ),
                             if (editModeOn)
                               Positioned(

@@ -82,15 +82,20 @@ class _HomeState extends State<Home> {
                     padding: const EdgeInsets.all(3.0),
                     child: GestureDetector(
                       onTap: () {
-                        Get.to(() => ProfilePage(
-                            membersController.currentMember.value));
+                        Get.to(
+                              () => ProfilePage(membersController.currentMember.value)
+                          , transition: Transition.zoom, duration: Duration(milliseconds: 750)
+                        );
                       },
-                      child: ClipOval(
-                        child: Image.network(
-                          width: 60,
-                          height: 60,
-                          membersController.currentMember.value.profileImage!,
-                          fit: BoxFit.cover,  // Ensure the image covers the entire area
+                      child: Hero(
+                        tag : 'profile_image',
+                        child: ClipOval(
+                          child: Image.network(
+                            width: 60,
+                            height: 60,
+                            membersController.currentMember.value.profileImage!,
+                            fit: BoxFit.cover,  // Ensure the image covers the entire area
+                          ),
                         ),
                       ),
                     ),
@@ -148,7 +153,7 @@ class _HomeState extends State<Home> {
                         title: const Text('My Profile'),
                         onTap: () {
                           Get.to(() => ProfilePage(
-                              membersController.currentMember.value));
+                              membersController.currentMember.value),transition: Transition.zoom);
                         },
                       ),
                       membersController.isAdmin.value?ExpansionTile(
@@ -282,9 +287,9 @@ class _HomeState extends State<Home> {
                             elevation: 0,
                             backgroundColor: Colors.transparent,
                             controller: sheetController,
-                            minExtent: mainController.isIOS?minSheetPos+50:minSheetPos,
+                            minExtent: mainController.isIOS?minSheetPos:minSheetPos,
                             maxExtent: maxSheetPos,
-                            initialExtent: mainController.isIOS?initSheetPos+50:initSheetPos,
+                            initialExtent: mainController.isIOS?initSheetPos:initSheetPos,
                             fit: SheetFit.expand,
                             child: Padding(
                               padding:

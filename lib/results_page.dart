@@ -79,10 +79,12 @@ class _ResultsPageState extends State<ResultsPage> {
                   },
                   onSelected: (result) async {
                     Member member = await membersController.getMemberById(result.id);
-                    Navigator.of(context).push<void>(
-                      MaterialPageRoute(
-                        builder: (context) => ProfilePage(member),
-                      ),
+                    Get.to(
+                            () => ProfilePage(member)
+                        , transition: Transition.zoom, curve: Curves.easeInOut,
+
+
+
                     );
                   },
                 ),
@@ -135,14 +137,8 @@ class _ResultsPageState extends State<ResultsPage> {
                                                         newMemberFlag: mainController.checkIfNewMember( mainController.filteredResults[index].joinDate),
                                                         isBirthdayToday:  mainController.checkIfTodayIsBirthday(mainController.filteredResults[index].birthdate??Timestamp.fromMicrosecondsSinceEpoch(0)),
                                                       ),
-                                                      onTap: () => {
-                                                        Navigator.of(context).push(
-                                                          MaterialPageRoute(
-                                                              builder: (context) =>
-                                                                  ProfilePage(mainController
-                                                                          .filteredResults[
-                                                                      index])),
-                                                        )
+                                                      onTap: () {
+                                                        Get.to(() => ProfilePage(mainController.filteredResults[index]),transition: Transition.zoom, duration: Duration(seconds: 1));
                                                       },
                                                     ),
                                                   ),

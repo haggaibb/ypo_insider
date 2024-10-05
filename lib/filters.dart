@@ -32,13 +32,13 @@ class _FiltersState extends State<Filters> {
     return Directionality(
         textDirection: TextDirection.ltr,
         child: Padding(
-          padding: const EdgeInsets.only(top: 60.0),
+          padding: const EdgeInsets.only(top: 5.0),
           child: Container(
           decoration: const BoxDecoration(
             border: Border.fromBorderSide(BorderSide(width: 0.5)),
               borderRadius: BorderRadius.only(
-                topRight: Radius.circular(200),
-                topLeft: Radius.circular(200),
+                topRight: Radius.circular(100),
+                topLeft: Radius.circular(100),
               ),
               color: Color(0xff2e4074),
           ),

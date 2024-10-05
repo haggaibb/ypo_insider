@@ -158,11 +158,15 @@ class _ResultCardState extends State<ResultCard> {
               ),
               Column(
                 children: [
-                  BannerProfilePic(
-                      widget.member,
-                      newMember: widget.newMemberFlag ,
-                      isBirthdayToday: widget.isBirthdayToday,
-                      uri:  widget.member.profileImage ?? ''),
+                  Hero(
+                    transitionOnUserGestures: true,
+                    tag : 'profile_image${widget.member.id}',
+                    child: BannerProfilePic(
+                        widget.member,
+                        newMember: widget.newMemberFlag ,
+                        isBirthdayToday: widget.isBirthdayToday,
+                        uri:  widget.member.profileImage ?? ''),
+                  ),
                   Padding(
                     padding: const EdgeInsets.only(top: 10.0),
                     child: SizedBox(
