@@ -1007,7 +1007,10 @@ class _FilterTagsCardsState extends State<FilterTagsCards> {
                   child: (mainController.filteredTagsList[index]['key'] !=
                               'residence' &&
                           mainController.filteredTagsList[index]['key'] !=
-                              'forum')
+                              'forum' &&
+                          mainController.filteredTagsList[index]['key'] !=
+                              'children'
+                  )
                       ? Card(
                           color: Colors.blue.shade900,
                           elevation: 10,
