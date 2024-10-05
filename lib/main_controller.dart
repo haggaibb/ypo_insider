@@ -96,17 +96,23 @@ class MainController extends GetxController {
     final membersRef = db.collection("Members");
     final QuerySnapshot membersQuery = await membersRef.get();
     // Apply local filtering based on the 'filter_tags' field
-    print(selectedFilters);
     List<QueryDocumentSnapshot> allMembers = membersQuery.docs;
     filteredMembers = allMembers.where((doc) {
       List<dynamic> memberFilterTags=[];
-      memberFilterTags = doc['filter_tags'];
+      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+      try {
+        if (data.containsKey('filter_tags') && doc.get('filter_tags') != null) {
+          memberFilterTags = List<dynamic>.from(doc.get('filter_tags'));
+        }
+      } catch (e) {
+        // Handle the case where 'filter_tags' doesn't exist
+        print("Document ${doc.id} does not contain 'filter_tags': $e");
+      }
       memberFilterTags.addAll(Member.fromDocumentSnapshot(doc).getChildrenTags());
       //print(memberFilterTags);
       // Check if any of the selectedFilters are in the document's filterTags
       return memberFilterTags.any((tag) => selectedFilters.contains(tag));
     }).toList();
-    print(filteredMembers.length);
     if (isAnd.value) {
       filteredMembers = membersQuery.docs.where((doc) {
         List<dynamic> memberFilterTags=[];
@@ -114,7 +120,6 @@ class MainController extends GetxController {
         memberFilterTags = List<String>.from(doc['filter_tags'] as List<dynamic>);
         memberFilterTags.addAll(Member.fromDocumentSnapshot(doc).getChildrenTags());
         // Check if all the selectedTags are in filterTags
-        print(memberFilterTags);
         return selectedFilters.every((tag) => memberFilterTags.contains(tag));
       }).toList();
     } else {
