@@ -206,13 +206,34 @@ class _ProfilePageState extends State<ProfilePage> {
                                   : Hero(
                                     transitionOnUserGestures: true,
                                     tag : (widget.member.id!=memberController.currentMember.value.id)?'profile_image${widget.member.id}':'profile_image',
-                                    child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(100),
-                                        child: Image.network(editModeOn
-                                            ? tempProfileImageUrl
-                                            : widget.member.profileImage ??
-                                                'https://firebasestorage.googleapis.com/v0/b/ypodex.appspot.com/o/profile_images%2Fprofile0.jpg?alt=media'),
-                                      ),
+                                    child: GestureDetector(
+                                      onTap: () async {
+                                        if (editModeOn) {
+                                          memberController.loadingProfileImage.value = true;
+                                          profileImage = await picker.pickImage(source: ImageSource.gallery);
+                                          if (profileImage == null) {
+                                            memberController.loadingProfileImage.value =
+                                            false;
+                                            return;
+                                          }
+                                          String url = await memberController.uploadProfileImage(profileImage!, widget.member.id);
+                                          setState(() {
+                                            if (url != '') tempProfileImageUrl = url;
+                                            /// print('new tempprofile:');
+                                            /// print(tempProfileImageUrl);
+                                            memberController
+                                                .loadingProfileImage.value = false;
+                                          });
+                                        }
+                                      },
+                                      child: ClipRRect(
+                                          borderRadius: BorderRadius.circular(100),
+                                          child: Image.network(editModeOn
+                                              ? tempProfileImageUrl
+                                              : widget.member.profileImage ??
+                                                  'https://firebasestorage.googleapis.com/v0/b/ypodex.appspot.com/o/profile_images%2Fprofile0.jpg?alt=media'),
+                                        ),
+                                    ),
                                   ),
                             ),
                             if (editModeOn)

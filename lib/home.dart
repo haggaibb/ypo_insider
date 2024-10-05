@@ -29,7 +29,7 @@ class _HomeState extends State<Home> {
   SheetController sheetController = SheetController();
   final membersController = Get.put(MembersController());
   final mainController = Get.put(MainController());
-  var minSheetPos =100.0;
+  var minSheetPos =40.0;
   var maxSheetPos = 850.0;
   var openSheetPos = 700.0;
   var initSheetPos = 100.0;
