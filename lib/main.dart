@@ -134,7 +134,7 @@ class _FrontGateState extends State<FrontGate> {
            } else if (state is SigningUp) {
              return MainLoading();
            } else if (state is SignedIn) {
-             print('signed in');
+             //print('signed in');
              User user = authController.auth.currentUser!;
              if (user.displayName!=null) {
                try {
@@ -144,7 +144,7 @@ class _FrontGateState extends State<FrontGate> {
                  /// print('log to GA err - signed_in:');
                  /// print(err);
                }
-               print('has ObBoarded go to Home...');
+                // print('has ObBoarded go to Home...');
                //Get.toNamed('/home');
              } else {
                ///print('first time, go to onBoarding');

@@ -50,7 +50,7 @@ class MainController extends GetxController {
 
   }
 
-  fetchFilteredMembers(List<String> selectedFilters) async {
+  fetchFilteredMembersOld(List<String> selectedFilters) async {
     resultsLoading.value = true;
     if (selectedFilters.isEmpty) {
       filteredResults.value = [];
@@ -74,6 +74,52 @@ class MainController extends GetxController {
       }).toList();
     } else {
       filteredMembers = membersQuery.docs;
+    }
+    filteredResults.value = [];
+    for (var member in filteredMembers) {
+      filteredResults.add(Member.fromDocumentSnapshot(member));
+    }
+    resultsLoading.value = false;
+    await AnalyticsEngine.logFilterTagsSearch(tags.toString());
+    update();
+  }
+
+  fetchFilteredMembers(List<String> selectedFilters) async {
+    resultsLoading.value = true;
+    if (selectedFilters.isEmpty) {
+      filteredResults.value = [];
+
+      /// TODO add ref to def result list if we wish
+      resultsLoading.value = false;
+      return;
+    }
+    List<QueryDocumentSnapshot> filteredMembers=[];
+    final membersRef = db.collection("Members");
+    final QuerySnapshot membersQuery = await membersRef.get();
+    // Apply local filtering based on the 'filter_tags' field
+    print(selectedFilters);
+    List<QueryDocumentSnapshot> allMembers = membersQuery.docs;
+    filteredMembers = allMembers.where((doc) {
+      List<dynamic> memberFilterTags=[];
+      memberFilterTags = doc['filter_tags'];
+      memberFilterTags.addAll(Member.fromDocumentSnapshot(doc).getChildrenTags());
+      //print(memberFilterTags);
+      // Check if any of the selectedFilters are in the document's filterTags
+      return memberFilterTags.any((tag) => selectedFilters.contains(tag));
+    }).toList();
+    print(filteredMembers.length);
+    if (isAnd.value) {
+      filteredMembers = membersQuery.docs.where((doc) {
+        List<dynamic> memberFilterTags=[];
+        // Safely cast the 'filter_tags' array to List<String>
+        memberFilterTags = List<String>.from(doc['filter_tags'] as List<dynamic>);
+        memberFilterTags.addAll(Member.fromDocumentSnapshot(doc).getChildrenTags());
+        // Check if all the selectedTags are in filterTags
+        print(memberFilterTags);
+        return selectedFilters.every((tag) => memberFilterTags.contains(tag));
+      }).toList();
+    } else {
+      filteredMembers;
     }
     filteredResults.value = [];
     for (var member in filteredMembers) {

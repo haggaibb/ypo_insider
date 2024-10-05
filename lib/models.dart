@@ -177,6 +177,24 @@ class Member {
       'bannerUri' : bannerUri
     };
   }
+  List<String> getChildrenTags() {
+    int currentYear = DateTime.now().year;
+    List<String> tagList = [];
+    if (children!=null) {
+      for (Map<String,dynamic> child in children!) {
+        int childAge = currentYear - int.parse(child['year_of_birth']);
+        if (childAge>0 && childAge<=3) tagList.add('Age (0-3)');
+        else if (childAge>3 && childAge<=8) tagList.add('Age (4-8)');
+        else if (childAge>8 && childAge<=12) tagList.add('Age (9-12)');
+        else if (childAge>12 && childAge<=18) tagList.add('Age (13-17)');
+        else if (childAge>18 && childAge<=21) tagList.add('Age (18-21)');
+        else if (childAge>21 && childAge<=24) tagList.add('Age (21-24)');
+        else if (childAge>24 && childAge<=29) tagList.add('Age (25-29)');
+        else if (childAge>=30) tagList.add('Age (30+)');
+      }
+    }
+    return tagList;
+  }
   factory Member.fromDocumentSnapshot(DocumentSnapshot<Object?> doc){
     Map<String, dynamic>? data = doc.data() as Map<String, dynamic>?;
     if (data == null ) {
