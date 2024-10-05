@@ -257,25 +257,23 @@ class _HomeState extends State<Home> {
                       const ResultsPage(),
                       Obx(() => mainController.mainLoading.value
                           ? const ResultsLoading()
-                          : SafeArea(
-                        child: Sheet(
-                          shape: ContinuousRectangleBorder(
-                            borderRadius: BorderRadius.circular(50),
-                          ),
-                          elevation: 0,
-                          backgroundColor: Colors.transparent,
-                          controller: sheetController,
-                          minExtent: mainController.isIOS?minSheetPos+50:minSheetPos,
-                          maxExtent: maxSheetPos,
-                          initialExtent: mainController.isIOS?initSheetPos+50:initSheetPos,
-                          fit: SheetFit.expand,
-                          child: Padding(
-                            padding:
-                            const EdgeInsets.only(left: 20, right: 20),
-                            child: Filters(() => sheetJumpFunction()),
-                          ),
-                        ),
-                      )),
+                          : Sheet(
+                            shape: ContinuousRectangleBorder(
+                              borderRadius: BorderRadius.circular(50),
+                            ),
+                            elevation: 0,
+                            backgroundColor: Colors.transparent,
+                            controller: sheetController,
+                            minExtent: mainController.isIOS?minSheetPos+50:minSheetPos,
+                            maxExtent: maxSheetPos,
+                            initialExtent: mainController.isIOS?initSheetPos+50:initSheetPos,
+                            fit: SheetFit.expand,
+                            child: Padding(
+                              padding:
+                              const EdgeInsets.only(left: 20, right: 20),
+                              child: Filters(() => sheetJumpFunction()),
+                            ),
+                          )),
                     ],
                   ),
                 ),

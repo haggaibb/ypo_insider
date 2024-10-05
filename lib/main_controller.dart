@@ -48,7 +48,6 @@ class MainController extends GetxController {
     if (profileScoreQuery.exists) {
       profileScore = ProfileScore.fromDocumentSnapshot(profileScoreQuery);
     }
-    //isIOS = await isDeviceIOS();
   }
 
   fetchFilteredMembersOld(List<String> selectedFilters) async {
@@ -508,10 +507,14 @@ class MainController extends GetxController {
     saving.value = false;
   }
 
-  // updateMemberWebDeviceInfo(String memberId) async {
-  //   DocumentReference resultsSettingsRef = db.collection('MembersDeviceLogs').doc(memberId);
-  //   await resultsSettingsRef.set(await getWebDeviceInfo());
-  // }
+  updateMemberWebDeviceInfo(String memberId) async {
+    await getWebDeviceInfo();
+    DocumentReference resultsSettingsRef = db.collection('MembersDeviceLogs').doc(memberId);
+    Map<String,dynamic> deviceInfo = await getWebDeviceInfo();
+    await resultsSettingsRef.set(deviceInfo);
+    print(deviceInfo);
+    isIOS = await isDeviceIOS(deviceInfo['userAgent']);
+  }
 
   @override
   onInit() async {
@@ -532,9 +535,9 @@ class MainController extends GetxController {
     //js.context.callMethod('hideSplashScreen');
     //await logUserLogsIn(user!.displayName??'NA');
     if (user!=null) await logUserOpensApp(user!.displayName ?? 'NA');
+    await updateMemberWebDeviceInfo(user!.displayName ?? 'NA');
     mainLoading.value = false;
     update();
-    //await updateMemberWebDeviceInfo(user!.displayName?? 'NA');
     /// print('end - init main Controller');
   }
 }
