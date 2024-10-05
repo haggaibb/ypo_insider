@@ -97,8 +97,6 @@ class _HomeState extends State<Home> {
                         tag : 'profile_image',
                         child: ClipOval(
                           child: Image.network(
-                            width: 60,
-                            height: 60,
                             membersController.currentMember.value.profileImage!,
                             fit: BoxFit.cover,  // Ensure the image covers the entire area
                           ),
