@@ -856,3 +856,41 @@ class About extends StatelessWidget {
     );
   }
 }
+
+
+class ZoomableImage extends StatelessWidget {
+  final String imageUrl;
+
+  ZoomableImage({required this.imageUrl});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        // Show the zoomed image in a dialog
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return Dialog(
+              backgroundColor: Colors.transparent,  // Make the dialog background transparent
+              child: InteractiveViewer(
+                panEnabled: true,  // Allow panning
+                scaleEnabled: true,  // Allow zooming
+                child: Image.network(
+                  imageUrl,
+                  fit: BoxFit.contain,  // Ensure the image fits in the screen
+                ),
+              ),
+            );
+          },
+        );
+      },
+      child: Image.network(
+        imageUrl,
+        fit: BoxFit.cover,  // Normal image display
+        width: 100,  // Set your preferred width
+        height: 100,  // Set your preferred height
+      ),
+    );
+  }
+}
