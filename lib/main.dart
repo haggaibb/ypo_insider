@@ -112,9 +112,9 @@ class _FrontGateState extends State<FrontGate> {
   }
   @override
   Widget build(BuildContext context) {
-    print(widget.user);
     if (widget.user!=null) {
-       return Home(user: widget.user);
+      print(widget.user?.reload());
+      return Home(user: widget.user);
      }
      else {
        return AuthFlowBuilder<EmailAuthController>(

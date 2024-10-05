@@ -125,7 +125,8 @@ class MembersController extends GetxController {
     await membersRef.add({
       'firstName' : firstName,
       'lastName' : lastName,
-      'email' : email
+      'email' : email,
+      'profileImage' : 'https://firebasestorage.googleapis.com/v0/b/ypodex.appspot.com/o/profile_images%2Fprofile0.jpg?alt=media'
     });
   }
 

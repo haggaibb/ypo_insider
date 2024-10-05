@@ -531,7 +531,7 @@ class MainController extends GetxController {
     loadingStatus.value = 'Loading Registered Members...';
     await loadRandomResults(numberOfMembers);
     if (user!=null) await logUserOpensApp(user!.displayName ?? 'NA');
-    await updateMemberWebDeviceInfo(user!.displayName ?? 'NA');
+    if (user!=null) await updateMemberWebDeviceInfo(user!.displayName ?? 'NA');
     mainLoading.value = false;
     update();
     /// print('end - init main Controller');

@@ -74,7 +74,13 @@ class _HomeState extends State<Home> {
               appBar: AppBar(
                 leading: membersController.isAdmin.value?null:Padding(
                   padding: const EdgeInsets.all(3.0),
-                  child: Image.network('assets/images/logo.png'),
+                  child: GestureDetector(
+                      child: Image.network('assets/images/logo.png'),
+                    onTap: () => Get.to(
+                            () => About(version: mainController.version, numberOfMembers: mainController.numberOfMembers.toString(),)
+                    , transition: Transition.leftToRightWithFade, duration: Duration(milliseconds: 500)
+                    )
+                  ),
                 ),
                 centerTitle: true,
                 actions: [
@@ -84,7 +90,7 @@ class _HomeState extends State<Home> {
                       onTap: () {
                         Get.to(
                               () => ProfilePage(membersController.currentMember.value)
-                          , transition: Transition.zoom, duration: Duration(milliseconds: 750)
+                          , transition: Transition.rightToLeftWithFade, duration: Duration(milliseconds: 750)
                         );
                       },
                       child: Hero(
@@ -105,14 +111,7 @@ class _HomeState extends State<Home> {
                 title: Column(
                   children: [
                     Image.network(
-                        color:
-                        membersController.themeMode.value.name == 'dark'
-                            ? Colors.white
-                            : Colors.blue.shade900,
-                        colorBlendMode:
-                        membersController.themeMode.value.name == 'dark'
-                            ? BlendMode.srcIn
-                            : null,
+                        color: Colors.blue.shade900,
                         scale: 2,
                         'assets/images/logo-insider.png'),
                   ],
