@@ -34,7 +34,7 @@ class MainController extends GetxController {
   final user = FirebaseAuth.instance.currentUser;
   late String version;
   late ProfileScore profileScore;
-  late bool isIOS;
+  bool isIOS = true;
 
   getSettings() async {
     final settingsRef = db.collection("Settings").doc('results_settings');
@@ -48,7 +48,7 @@ class MainController extends GetxController {
     if (profileScoreQuery.exists) {
       profileScore = ProfileScore.fromDocumentSnapshot(profileScoreQuery);
     }
-    isIOS = await isDeviceIOS();
+    //isIOS = await isDeviceIOS();
   }
 
   fetchFilteredMembersOld(List<String> selectedFilters) async {
@@ -508,10 +508,10 @@ class MainController extends GetxController {
     saving.value = false;
   }
 
-  updateMemberWebDeviceInfo(String memberId) async {
-    DocumentReference resultsSettingsRef = db.collection('MembersDeviceLogs').doc(memberId);
-    await resultsSettingsRef.set(await getWebDeviceInfo());
-  }
+  // updateMemberWebDeviceInfo(String memberId) async {
+  //   DocumentReference resultsSettingsRef = db.collection('MembersDeviceLogs').doc(memberId);
+  //   await resultsSettingsRef.set(await getWebDeviceInfo());
+  // }
 
   @override
   onInit() async {
@@ -534,7 +534,7 @@ class MainController extends GetxController {
     if (user!=null) await logUserOpensApp(user!.displayName ?? 'NA');
     mainLoading.value = false;
     update();
-    await updateMemberWebDeviceInfo(user!.displayName?? 'NA');
+    //await updateMemberWebDeviceInfo(user!.displayName?? 'NA');
     /// print('end - init main Controller');
   }
 }
