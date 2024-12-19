@@ -9,7 +9,6 @@ import 'widgets.dart';
 import 'auth_screens.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:geekyants_flutter_gauges/geekyants_flutter_gauges.dart';
 
 class ProfilePage extends StatefulWidget {
   final Member member;
