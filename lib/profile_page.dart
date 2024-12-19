@@ -332,14 +332,21 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                         ),
                         const SizedBox(height: 20),
-                        // /// Profile score
-                        // Padding(
-                        //   padding: const EdgeInsets.only(bottom: 15.0),
-                        //   child: SizedBox(
-                        //     width: 200,
-                        //     child: ProfileScoreWidget()
-                        //   ),
-                        // ),
+                        /// Profile score
+                        memberController.currentMember.value.email ==
+                            widget.member.email?
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 15.0),
+                          child: Column(
+                            children: [
+                              Text('Profile Score'),
+                              SizedBox(
+                                width: 200,
+                                child: ProfileScoreWidget(score: widget.member.getProfileScore())
+                              ),
+                            ],
+                          ),
+                        ):const SizedBox.shrink(),
                         /// -- BUTTON EDIT and Logout-- Only when Member.
                         memberController.currentMember.value.email ==
                                 widget.member.email
@@ -571,8 +578,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 child: ProfileMenuWidget(
                                   title: "Mobile: ",
                                   icon: Icons.phone,
-                                  value: widget.member.mobileCountryCode +
-                                      widget.member.mobile,
+                                  value: '${widget.member.mobileCountryCode}-${widget.member.mobile}',
                                   type: 'phone',
                                   onPress: () async {
                                   },

@@ -237,6 +237,7 @@ class Member {
         banner: data.containsKey('banner') ? data['banner'] as bool : false,
         bannerUri: data.containsKey('bannerUri') ? data['bannerUri'] as String : '',
 
+
     );
   }
   factory Member.fromJson(Map<String, dynamic> json) {

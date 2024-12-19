@@ -57,6 +57,8 @@ class MembersController extends GetxController {
   /// AUTH
   final user = FirebaseAuth.instance.currentUser;
   ///
+  late ProfileScore profileScore;
+
   setCurrentByUid(User? user) async {
     if (user != null) currentMember.value = await getMemberByUid(user.uid);
     bool res = ((admins.firstWhere((element) => element==currentMember.value.id, orElse: () =>'') !=''));
@@ -155,6 +157,7 @@ class MembersController extends GetxController {
     QuerySnapshot res = await membersRef.where("uid" , isEqualTo: uid).get();
     if (res.docs.isNotEmpty) {
       Member member = Member.fromJson(res.docs.first.data() as Map<String,dynamic>);
+      member.profileScore = profileScore;
       return member;
     } else {
       return noUser;
@@ -211,6 +214,15 @@ class MembersController extends GetxController {
     saving.value = false;
   }
 
+  loadProfileScoreData() async {
+    /// load profile score data
+    final profileScoreRef = db.collection("Settings").doc('profile_score');
+    final DocumentSnapshot profileScoreQuery = await profileScoreRef.get();
+    if (profileScoreQuery.exists) {
+      profileScore = ProfileScore.fromDocumentSnapshot(profileScoreQuery);
+    }
+  }
+
   loadAdmins() async {
     DocumentReference settingsRef = db.collection('Settings').doc('system');
     settingsRef.get().then(
@@ -237,64 +249,66 @@ class MembersController extends GetxController {
 
   @override
   onInit() async {
-    // //     /// for debugging
-    /// Warning!!! use with caution!!!
-    // await  db.collection('Members').doc('dHH4COYXO0GGubvPIVua').set(
-    //     {
-    //       'id' : 'dHH4COYXO0GGubvPIVua',
-    //       'uid' : '',
-    //       'firstName' : 'Haggai',
-    //       'lastName' : 'Barel',
-    //       'email' : 'haggaibb@gmail.com',
-    //       'birthdate' : Timestamp.now(),
-    //       'current_business_name' : 'DEEP IT',
-    //       'current_title' : 'Founder & CEO',
-    //       'filter_tags' : ['Herzliya','5'],
-    //       'forum' : '5',
-    //       'join_date' : '2009',
-    //       'mobile_country_code' : '972',
-    //       'mobile' : '544510999',
-    //       'residence' : 'Herzliya',
-    //       'profileImage' : '',
-    //       'banner' : false,
-    //       'linkedin' : '',
-    //       'instagram' : '',
-    //       'facebook' : '',
-    //       'onBoarding' : {
-    //         'registered': false,
-    //         'verified': false,
-    //         'boarded': false,
-    //       },
-    //       'free_text_tags' : [],
-    //       'settings' : {'theme_mode' : 'light'},
-    //     }
-    // );
-    // print('Done!!!!!!!!!!!');
-    // return;
-    // var membersSnapshot = await db.collection('Members').get();
-    // for (var element in membersSnapshot.docs) {
-    //   //var data = element.data();
-    //     await db.collection('Members').doc(element.id).update({
-    //       'children': []
-    //       //'profileImage' : 'https://firebasestorage.googleapis.com/v0/b/ypodex.appspot.com/o/profile_images%2Fprofile0.jpg?alt=media'
-    //       //'residence' : clean,
-    //       // 'instagram' : '',
-    //       //S3zQJjBzSyNAUXlFm1uh2rtEgwz1
-    //       // 'facebook' : '',
-    //       // 'free_text_tags': [],
-    //     });
-    // }
-    // print('Done!!!!!!!!!!!');
-    // return;
+    await loadProfileScoreData();
     await GetStorage.init();
     Get.changeTheme(
         box.read('themeMode') == 'dark' ? ThemeData.dark() : ThemeData.light());
-    super.onInit();
     /// print('init - Members Controller...');
     tempProfilePicRef = storageRef.child("");
     await loadAdmins();
     loading.value = false;
+    super.onInit();
     update();
     /// print('end - init Members Controller');
   }
 }
+
+// //     /// for debugging
+/// Warning!!! use with caution!!!
+// await  db.collection('Members').doc('dHH4COYXO0GGubvPIVua').set(
+//     {
+//       'id' : 'dHH4COYXO0GGubvPIVua',
+//       'uid' : '',
+//       'firstName' : 'Haggai',
+//       'lastName' : 'Barel',
+//       'email' : 'haggaibb@gmail.com',
+//       'birthdate' : Timestamp.now(),
+//       'current_business_name' : 'DEEP IT',
+//       'current_title' : 'Founder & CEO',
+//       'filter_tags' : ['Herzliya','5'],
+//       'forum' : '5',
+//       'join_date' : '2009',
+//       'mobile_country_code' : '972',
+//       'mobile' : '544510999',
+//       'residence' : 'Herzliya',
+//       'profileImage' : '',
+//       'banner' : false,
+//       'linkedin' : '',
+//       'instagram' : '',
+//       'facebook' : '',
+//       'onBoarding' : {
+//         'registered': false,
+//         'verified': false,
+//         'boarded': false,
+//       },
+//       'free_text_tags' : [],
+//       'settings' : {'theme_mode' : 'light'},
+//     }
+// );
+// print('Done!!!!!!!!!!!');
+// return;
+// var membersSnapshot = await db.collection('Members').get();
+// for (var element in membersSnapshot.docs) {
+//   //var data = element.data();
+//     await db.collection('Members').doc(element.id).update({
+//       'children': []
+//       //'profileImage' : 'https://firebasestorage.googleapis.com/v0/b/ypodex.appspot.com/o/profile_images%2Fprofile0.jpg?alt=media'
+//       //'residence' : clean,
+//       // 'instagram' : '',
+//       //S3zQJjBzSyNAUXlFm1uh2rtEgwz1
+//       // 'facebook' : '',
+//       // 'free_text_tags': [],
+//     });
+// }
+// print('Done!!!!!!!!!!!');
+// return;

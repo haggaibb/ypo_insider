@@ -949,7 +949,9 @@ class ChapterManagement extends StatelessWidget {
 }
 
 class ProfileScoreWidget extends StatefulWidget {
-  const ProfileScoreWidget({super.key});
+  final int score;
+
+  const ProfileScoreWidget({required this.score ,super.key});
 
   @override
   State<ProfileScoreWidget> createState() => _ProfileScoreWidgetState();
@@ -980,7 +982,7 @@ class _ProfileScoreWidgetState extends State<ProfileScoreWidget> {
         ],
         pointers: [
           Pointer(
-            value: 15,
+            value: widget.score>31?31:widget.score.toDouble(),
             width: 15,
             height: 15,
             showLabel: false,
