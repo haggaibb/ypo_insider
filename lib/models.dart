@@ -123,6 +123,16 @@ class Member {
     if (checkIfNewMember()) score = score + profileScore!.newMemberScore!;
     return score;
   }
+  int getNetProfileScore() {
+    int score = 0;
+    if (!profileImage!.contains('profile0.jpg')) {
+      score = score + profileScore!.profileImageScore!;
+    }
+    if (linkedin!='' || facebook!='' || linkedin!='') score = score + profileScore!.socialScore!;
+    score = score + filterTags!.length;
+    score = score + freeTextTags!.length;
+    return score;
+  }
   bool checkIfTodayIsBirthday(Timestamp birthdayTimestamp) {
     DateTime today = DateTime.now();
     DateTime birthday = birthdayTimestamp.toDate();

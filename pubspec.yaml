@@ -57,6 +57,8 @@ dependencies:
   firebase_analytics_web: ^0.5.9+2
   fancy_password_field: ^2.0.7
   animated_toggle_switch: ^0.8.3
+  geekyants_flutter_gauges: ^1.0.4
+  date_format_field: ^0.1.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -120,12 +120,17 @@ class MembersController extends GetxController {
     //loading.value = false;
   }
 
-  addNewMember(String firstName,String lastName,String email) async {
+  addNewMember(String firstName,String lastName,currentBusinessName,currentTitle,String email, String forum, DateTime birthday, String memberSince) async {
     CollectionReference membersRef = db.collection('Members');
     await membersRef.add({
       'firstName' : firstName,
       'lastName' : lastName,
+      'current_business_name' : currentBusinessName,
+      'current_title' : currentTitle,
       'email' : email,
+      'forum' : forum,
+      'birthdate' : birthday,
+      'join_date' : memberSince,
       'profileImage' : 'https://firebasestorage.googleapis.com/v0/b/ypodex.appspot.com/o/profile_images%2Fprofile0.jpg?alt=media',
       'filter_tags' : []
     });

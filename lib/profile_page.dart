@@ -9,6 +9,7 @@ import 'widgets.dart';
 import 'auth_screens.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:geekyants_flutter_gauges/geekyants_flutter_gauges.dart';
 
 class ProfilePage extends StatefulWidget {
   final Member member;
@@ -332,7 +333,14 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                         ),
                         const SizedBox(height: 20),
-
+                        // /// Profile score
+                        // Padding(
+                        //   padding: const EdgeInsets.only(bottom: 15.0),
+                        //   child: SizedBox(
+                        //     width: 200,
+                        //     child: ProfileScoreWidget()
+                        //   ),
+                        // ),
                         /// -- BUTTON EDIT and Logout-- Only when Member.
                         memberController.currentMember.value.email ==
                                 widget.member.email

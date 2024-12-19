@@ -4,6 +4,7 @@ import 'main_controller.dart';
 import 'package:get/get.dart';
 import 'utils.dart';
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
+import 'package:date_format_field/date_format_field.dart';
 
 class AddNewMember extends StatefulWidget {
   const AddNewMember({
@@ -21,9 +22,13 @@ class _AddNewMemberState extends State<AddNewMember> {
     final mainController = Get.put(MainController());
     TextEditingController firstNameCtrl = TextEditingController();
     TextEditingController lastNameCtrl = TextEditingController();
+    TextEditingController currentBusinessNameCtrl = TextEditingController();
+    TextEditingController currentTitleCtrl = TextEditingController();
     TextEditingController emailCtrl = TextEditingController();
     TextEditingController residenceCtrl = TextEditingController();
     TextEditingController forumCtrl = TextEditingController();
+    DateTime birthdayCtrl = DateTime.now();
+    TextEditingController memberSinceCtrl = TextEditingController();
     return MaterialApp(
       home: Directionality(
         textDirection: TextDirection.ltr,
@@ -79,7 +84,7 @@ class _AddNewMemberState extends State<AddNewMember> {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.all(18.0),
+                      padding: const EdgeInsets.only(left: 12.0),
                       child: Row(
                         children: [
                           const Text('Last Name:',
@@ -97,7 +102,43 @@ class _AddNewMemberState extends State<AddNewMember> {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.all(18.0),
+                      padding:const EdgeInsets.only(left: 12.0),
+                      child: Row(
+                        children: [
+                          const Text('Current Business Name:',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 12.0),
+                            child: SizedBox(
+                                width: 150,
+                                height: 50,
+                                child: TextField(
+                                  controller: currentBusinessNameCtrl,
+                                )),
+                          )
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 12.0),
+                      child: Row(
+                        children: [
+                          const Text('Current Title:',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 12.0),
+                            child: SizedBox(
+                                width: 200,
+                                height: 50,
+                                child: TextField(
+                                  controller: currentTitleCtrl,
+                                )),
+                          )
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 12.0),
                       child: Row(
                         children: [
                           const Text(
@@ -178,6 +219,46 @@ class _AddNewMemberState extends State<AddNewMember> {
                         enabled: true,
                       ),
                     ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 12.0),
+                      child: Row(
+                        children: [
+                          const Text('Birthday:',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 12.0),
+                            child: SizedBox(
+                                width: 200,
+                                height: 50,
+                                child: DateFormatField(
+                                    type: DateFormatType.type2,
+                                    onComplete: (date){
+                                      birthdayCtrl = date!;
+                                    }
+                                )
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 12.0),
+                      child: Row(
+                        children: [
+                          const Text('Member Since:',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 12.0),
+                            child: SizedBox(
+                                width: 200,
+                                height: 50,
+                                child: TextField(
+                                  controller: memberSinceCtrl,
+                                )),
+                          )
+                        ],
+                      ),
+                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
@@ -190,7 +271,13 @@ class _AddNewMemberState extends State<AddNewMember> {
                               await membersController.addNewMember(
                                   firstNameCtrl.text,
                                   lastNameCtrl.text,
-                                  emailCtrl.text
+                                  currentBusinessNameCtrl.text,
+                                  currentTitleCtrl.text,
+                                  emailCtrl.text,
+                                  forumCtrl.text,
+                                birthdayCtrl,
+                                memberSinceCtrl.text
+
                               );
                               setState(() {
                                 mainController.saving.value = false;

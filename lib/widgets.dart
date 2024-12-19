@@ -6,18 +6,20 @@ import 'dart:html' as html;
 import 'RayBarFields.dart';
 import 'package:get/get.dart';
 import 'main_controller.dart';
+import 'package:geekyants_flutter_gauges/geekyants_flutter_gauges.dart';
+import 'package:flutter/services.dart';
 
 class ResultCard extends StatefulWidget {
   final Member member;
   final bool newMemberFlag;
   final bool isBirthdayToday;
 
-  const ResultCard(
-   { required this.member,
-     this.newMemberFlag = false,
-     this.isBirthdayToday = false,
+  const ResultCard({
+    required this.member,
+    this.newMemberFlag = false,
+    this.isBirthdayToday = false,
     super.key,
-  } );
+  });
 
   @override
   _ResultCardState createState() => _ResultCardState();
@@ -58,7 +60,7 @@ class _ResultCardState extends State<ResultCard> {
     /// check if new member checkIfNewMember(widget.member.joinDate)
     if (widget.newMemberFlag) {
       return Positioned(
-        top : 65,
+        top: 65,
         left: 0,
         child: Container(
           decoration: BoxDecoration(
@@ -159,12 +161,11 @@ class _ResultCardState extends State<ResultCard> {
                 children: [
                   Hero(
                     transitionOnUserGestures: true,
-                    tag : 'profile_image${widget.member.id}',
-                    child: BannerProfilePic(
-                        widget.member,
-                        newMember: widget.newMemberFlag ,
+                    tag: 'profile_image${widget.member.id}',
+                    child: BannerProfilePic(widget.member,
+                        newMember: widget.newMemberFlag,
                         isBirthdayToday: widget.isBirthdayToday,
-                        uri:  widget.member.profileImage ?? ''),
+                        uri: widget.member.profileImage ?? ''),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 10.0),
@@ -191,11 +192,11 @@ class _ResultCardState extends State<ResultCard> {
 
 class BannerProfilePic extends StatelessWidget {
   const BannerProfilePic(
-      this.member,
-     { this.uri ='',
-       this.newMember = false,
-       this.isBirthdayToday = false,
-       super.key,
+    this.member, {
+    this.uri = '',
+    this.newMember = false,
+    this.isBirthdayToday = false,
+    super.key,
   });
 
   final String uri;
@@ -225,10 +226,11 @@ class BannerProfilePic extends StatelessWidget {
         ),
       );
     }
+
     /// check if new member
     if (newMember) {
       return Positioned(
-        top : 65,
+        top: 65,
         left: 0,
         child: Container(
           decoration: BoxDecoration(
@@ -260,6 +262,7 @@ class BannerProfilePic extends StatelessWidget {
       }
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -280,11 +283,12 @@ class BannerProfilePic extends StatelessWidget {
     );
   }
 }
+
 class ProfilePic extends StatelessWidget {
   const ProfilePic(
-      this.uri, {
-        super.key,
-      });
+    this.uri, {
+    super.key,
+  });
 
   final String uri;
 
@@ -300,13 +304,14 @@ class ProfilePic extends StatelessWidget {
               child: uri != ''
                   ? Image.network(uri)
                   : Image(
-                  image:
-                  AssetImage(uri != '' ? uri : 'images/profile0.jpg'))),
+                      image:
+                          AssetImage(uri != '' ? uri : 'images/profile0.jpg'))),
         ),
       ],
     );
   }
 }
+
 ///
 ///
 ///
@@ -349,6 +354,7 @@ class ProfileAppDrawer extends StatelessWidget {
     );
   }
 }
+
 ///
 class MainLoading extends StatelessWidget {
   //final String status = 'Loading...';
@@ -387,6 +393,7 @@ class MainLoading extends StatelessWidget {
         ));
   }
 }
+
 ///
 class ResultsLoading extends StatelessWidget {
   final String statusMsg;
@@ -410,6 +417,7 @@ class ResultsLoading extends StatelessWidget {
     );
   }
 }
+
 ///
 class ProfileImageLoading extends StatelessWidget {
   const ProfileImageLoading({super.key});
@@ -427,6 +435,7 @@ class ProfileImageLoading extends StatelessWidget {
     );
   }
 }
+
 /// open url in browser
 Future<void> _launchInBrowser(String url) async {
   /// print(url);
@@ -439,14 +448,16 @@ Future<void> _launchInBrowser(String url) async {
     throw Exception('Could not launch $_url');
   }
 }
+
 /// send email
 void _launchMailClient(String targetEmail) async {
   String? encodeQueryParameters(Map<String, String> params) {
     return params.entries
         .map((MapEntry<String, String> e) =>
-    '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
+            '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
         .join('&');
   }
+
   final Uri emailLaunchUri = Uri(
     scheme: 'mailto',
     path: targetEmail,
@@ -458,16 +469,19 @@ void _launchMailClient(String targetEmail) async {
   await launchUrl(emailLaunchUri);
   //print('done');
 }
+
 /// make call
 void _launchPhoneClient(String targetPhone) async {
   final Uri telLaunchUri = Uri(scheme: 'tel', path: '+$targetPhone');
   await launchUrl(telLaunchUri);
 }
+
 /// whatsapp
 void _launchWhatsappClient(String targetPhone) async {
   String webUrl = 'https://api.whatsapp.com/send/?phone=+$targetPhone&text=hi';
   await launchUrl(Uri.parse(webUrl), mode: LaunchMode.externalApplication);
 }
+
 ///
 class SocialBar extends StatelessWidget {
   final String? linkedin;
@@ -529,6 +543,7 @@ class SocialBar extends StatelessWidget {
     );
   }
 }
+
 ///
 class ProfileMenuWidget extends StatelessWidget {
   const ProfileMenuWidget(
@@ -570,6 +585,11 @@ class ProfileMenuWidget extends StatelessWidget {
               )
             : type == 'link'
                 ? GestureDetector(
+                    onDoubleTap: () =>
+                        Clipboard.setData(ClipboardData(text: value)).then((_) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("Copied to clipboard!")));
+                        }),
                     onTap: () => html.window
                         .open(value, 'new tab'), //_launchInBrowser(value),
                     child: SizedBox(
@@ -582,6 +602,13 @@ class ProfileMenuWidget extends StatelessWidget {
                     ))
                 : type == 'email' || type == 'Email'
                     ? GestureDetector(
+                        onDoubleTap: () =>
+                            Clipboard.setData(ClipboardData(text: value))
+                                .then((_) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content: Text("Copied to clipboard!")));
+                            }),
                         onTap: () => _launchMailClient(value),
                         child: Text(
                           value,
@@ -590,6 +617,14 @@ class ProfileMenuWidget extends StatelessWidget {
                         ))
                     : type == 'phone' || type == 'Phone'
                         ? GestureDetector(
+                            onDoubleTap: () =>
+                                Clipboard.setData(ClipboardData(text: value))
+                                    .then((_) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                          content:
+                                              Text("Copied to clipboard!")));
+                                }),
                             onTap: () => _launchPhoneClient(value),
                             child: Text(
                               value,
@@ -619,6 +654,7 @@ class ProfileMenuWidget extends StatelessWidget {
     ]);
   }
 }
+
 ///
 enum PreferredChannelLabel {
   email('Email', Icons.email),
@@ -632,6 +668,7 @@ enum PreferredChannelLabel {
   final String label;
   final IconData icon;
 }
+
 ///
 PreferredChannelLabel getLabel(String txtLabel) {
   switch (txtLabel) {
@@ -644,6 +681,7 @@ PreferredChannelLabel getLabel(String txtLabel) {
   }
   return PreferredChannelLabel.email;
 }
+
 ///
 class TestPage extends StatefulWidget {
   TestPage({
@@ -653,6 +691,7 @@ class TestPage extends StatefulWidget {
   @override
   State<TestPage> createState() => _TestPageState();
 }
+
 ///
 class _TestPageState extends State<TestPage> {
   final TextEditingController controller = TextEditingController();
@@ -793,18 +832,17 @@ class _TestPageState extends State<TestPage> {
     ));
   }
 }
+
 ///
 class About extends StatelessWidget {
   final String version;
   final String numberOfMembers;
-  const About({this.numberOfMembers='', this.version = '' ,  super.key});
+  const About({this.numberOfMembers = '', this.version = '', super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-
-      ),
+      appBar: AppBar(),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -829,7 +867,10 @@ class About extends StatelessWidget {
               children: [
                 Padding(
                   padding: const EdgeInsets.only(top: 0, bottom: 0.0),
-                  child: Text('ver:$version' , style: TextStyle(fontSize: 16),),
+                  child: Text(
+                    'ver:$version',
+                    style: TextStyle(fontSize: 16),
+                  ),
                 ),
                 // Text('${numberOfMembers} Registered Members' ,
                 //     style: TextStyle(fontSize: 16,
@@ -838,15 +879,12 @@ class About extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.only(top: 0, bottom: 0.0),
                   child: GestureDetector(
-                    onTap: () {
-                      _launchMailClient('support@raybar.co.il');
-                    },
-                      child: Text('contact support' ,
-                          style: TextStyle(fontSize: 16,
-                              color: Colors.blue.shade900
-                          )
-                      )
-                  ),
+                      onTap: () {
+                        _launchMailClient('support@raybar.co.il');
+                      },
+                      child: Text('contact support',
+                          style: TextStyle(
+                              fontSize: 16, color: Colors.blue.shade900))),
                 ),
               ],
             ),
@@ -857,30 +895,191 @@ class About extends StatelessWidget {
   }
 }
 
+///
+class ChapterManagement extends StatelessWidget {
+  const ChapterManagement({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 10, bottom: 0.0),
+              child: Image.network(
+                'assets/images/logo.png',
+                width: 200,
+                height: 200,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 0, bottom: 0.0),
+              child: Image.network(
+                'assets/images/logo-insider.png',
+                width: 200,
+                height: 200,
+              ),
+            ),
+            Column(
+              children: [
+                // Text('${numberOfMembers} Registered Members' ,
+                //     style: TextStyle(fontSize: 16,
+                //         color: Colors.black
+                //     )),
+                Padding(
+                  padding: const EdgeInsets.only(top: 0, bottom: 0.0),
+                  child: GestureDetector(
+                      onTap: () {
+                        _launchMailClient('support@raybar.co.il');
+                      },
+                      child: Text('contact support',
+                          style: TextStyle(
+                              fontSize: 16, color: Colors.blue.shade900))),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ProfileScoreWidget extends StatefulWidget {
+  const ProfileScoreWidget({super.key});
+
+  @override
+  State<ProfileScoreWidget> createState() => _ProfileScoreWidgetState();
+}
+
+class _ProfileScoreWidgetState extends State<ProfileScoreWidget> {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: LinearGauge(
+        linearGaugeBoxDecoration: const LinearGaugeBoxDecoration(
+          thickness: 10,
+          borderRadius: 30,
+          linearGradient: LinearGradient(
+            colors: [
+              Colors.red,
+              Colors.yellow,
+              Colors.green,
+            ],
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+          ),
+        ),
+        customLabels: [
+          CustomRulerLabel(text: "Lazy", value: 0),
+          CustomRulerLabel(text: "Ok", value: 14),
+          CustomRulerLabel(text: "Good", value: 31),
+        ],
+        pointers: [
+          Pointer(
+            value: 15,
+            width: 15,
+            height: 15,
+            showLabel: false,
+            shape: PointerShape.triangle,
+            labelStyle: TextStyle(color: Colors.green),
+            color: Color(0xff624CAB),
+            enableAnimation: true,
+            // shape: PointerShape.circle,
+          ),
+        ],
+        rulers: RulerStyle(
+            rulerPosition: RulerPosition.bottom,
+            showLabel: true,
+            showPrimaryRulers: false,
+            showSecondaryRulers: false),
+      ),
+      // LinearGauge(
+      //   //extendLinearGauge: 20,
+      //   enableGaugeAnimation: true,
+      //   rangeLinearGauge: [
+      //     RangeLinearGauge(
+      //       start: 0,
+      //       end: 13,
+      //       color: Colors.red,
+      //     ),
+      //     RangeLinearGauge(
+      //       end: 30,
+      //       start: 14,
+      //       color: Colors.orange,
+      //     ),
+      //     RangeLinearGauge(
+      //       end: 45,
+      //       start: 31,
+      //       color: Colors.green,
+      //     ),
+      //   ],
+      //   pointers: [
+      //     Pointer(
+      //       value: 28,
+      //       width: 20,
+      //       height: 30,
+      //       showLabel: false,
+      //       shape: PointerShape.triangle,
+      //       labelStyle: TextStyle(color: Colors.green),
+      //       color: Color(0xff624CAB),
+      //       // shape: PointerShape.circle,
+      //     ),
+      //   ],
+      //   // Custom box decoration for the filled bar appearance
+      //   linearGaugeBoxDecoration: LinearGaugeBoxDecoration(
+      //     thickness: 40, // Thickness of the filled bar
+      //     borderRadius: 10, // Rounded corners
+      //     edgeStyle: LinearEdgeStyle.bothCurve, // Curved edges
+      //     backgroundColor: Colors.blue, // Background color for the gauge
+      //   ),
+      //   gaugeOrientation: GaugeOrientation.horizontal,
+      //   rulers: RulerStyle(
+      //     //rulersOffset: 10,
+      //     //labelOffset: 10,
+      //     inverseRulers: false,
+      //     rulerPosition: RulerPosition.top,
+      //     showLabel: true,
+      //   ),
+      //   customLabels: [
+      //     CustomRulerLabel(text: "Lazy", value: 0),
+      //     CustomRulerLabel(text: "Ok", value: 14),
+      //     CustomRulerLabel(text: "Good", value: 31),
+      //   ],
+      // ),
+    );
+  }
+}
 
 void showZoomableImageDialog(BuildContext context, String imageUrl) {
   Navigator.of(context).push(
     PageRouteBuilder(
-      opaque: false,  // Allows transparency
-      pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
+      opaque: false, // Allows transparency
+      pageBuilder: (BuildContext context, Animation<double> animation,
+          Animation<double> secondaryAnimation) {
         return FadeTransition(
           opacity: animation,
           child: GestureDetector(
             onTap: () {
-              Navigator.of(context).pop();  // Close the dialog when tapping outside or on the image
+              Navigator.of(context)
+                  .pop(); // Close the dialog when tapping outside or on the image
             },
             child: Dialog(
               backgroundColor: Colors.transparent,
               insetPadding: EdgeInsets.all(10),
-              child: ClipOval(  // Clip as needed (ClipOval or ClipRRect)
+              child: ClipOval(
+                // Clip as needed (ClipOval or ClipRRect)
                 child: GestureDetector(
                   onTap: () {
                     Navigator.of(context).pop();
                     // Prevent dialog closing when tapping on the image itself
                   },
                   child: InteractiveViewer(
-                    panEnabled: true,  // Allow panning (moving the image around)
-                    scaleEnabled: true,  // Allow zooming
+                    panEnabled: true, // Allow panning (moving the image around)
+                    scaleEnabled: true, // Allow zooming
                     child: Image.network(
                       imageUrl,
                       fit: BoxFit.contain,
