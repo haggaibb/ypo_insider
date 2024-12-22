@@ -142,7 +142,9 @@ class MembersController extends GetxController {
     CollectionReference membersRef = db.collection('Members');
     DocumentSnapshot res = await membersRef.doc(id).get();
     if (res.exists) {
-      return Member.fromDocumentSnapshot(res);
+      Member member = Member.fromDocumentSnapshot(res);
+      member.profileScore = profileScore;
+      return member;
     } else {
       /// print('get by id - no user found');
       noUser;

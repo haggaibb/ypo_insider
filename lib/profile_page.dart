@@ -333,8 +333,6 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                         const SizedBox(height: 20),
                         /// Profile score
-                        memberController.currentMember.value.email ==
-                            widget.member.email?
                         Padding(
                           padding: const EdgeInsets.only(bottom: 15.0),
                           child: Column(
@@ -346,7 +344,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                             ],
                           ),
-                        ):const SizedBox.shrink(),
+                        ),
                         /// -- BUTTON EDIT and Logout-- Only when Member.
                         memberController.currentMember.value.email ==
                                 widget.member.email
