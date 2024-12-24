@@ -1,5 +1,6 @@
 import 'dart:html' as html;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 enum Lines { single, multi }
 
@@ -28,7 +29,8 @@ class RayBarTextField extends StatelessWidget {
     required this.controller,
     required this.lines,
     required this.label,
-    this.displayLabelStyle = const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+    this.displayLabelStyle =
+        const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
     this.icon,
     this.imageIcon,
     this.enableIcon = false,
@@ -55,7 +57,8 @@ class RayBarTextField extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               RayBarCustomFieldLabel(
-                labelStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                labelStyle:
+                    TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 label: label,
                 icon: icon,
                 imageIcon: imageIcon,
@@ -187,7 +190,7 @@ class RayBarDropdownMenu extends StatelessWidget {
                   ? EdgeInsets.only(left: 40, bottom: 0)
                   : EdgeInsets.only(),
               child: RayBarCustomDropdownMenu(
-                onSelected: onSelected,
+                  onSelected: onSelected,
                   width: fieldWidth,
                   controller: controller,
                   dropdownMenuEntries: dropdownMenuEntries,
@@ -195,9 +198,8 @@ class RayBarDropdownMenu extends StatelessWidget {
                   label: label,
                   leadingIcon: icon,
                   style: TextStyle(
-                      color: type == FieldType.link
-                          ? Colors.blue
-                          : Colors.black),
+                      color:
+                          type == FieldType.link ? Colors.blue : Colors.black),
                   helperText: helperText,
                   //leadingIcon: enableIcon!?icon!:null,
                   hintText: hintText),
@@ -345,17 +347,16 @@ class RayBarCustomTextField extends TextField {
       int super.maxLines = 1,
       int super.minLines = 1,
       String? helperText,
-      TextStyle? style = const TextStyle(color: Colors.black),
+      super.style = const TextStyle(color: Colors.black),
       TextStyle? labelStyle,
       TextAlign? textAlign,
       String? hintText,
       IconData? icon,
-        bool? editMode,
+      bool? editMode,
       super.enabled,
       super.textDirection,
       BorderRadius? borderRadius})
       : super(
-          style: style,
           textAlign: textAlign = TextAlign.start,
           decoration: InputDecoration(
             icon: enabled! ? Icon(icon) : null,
@@ -364,7 +365,8 @@ class RayBarCustomTextField extends TextField {
                 : maxLines > 1
                     ? const EdgeInsets.only(
                         left: 30, right: 30, top: 0, bottom: 0.0)
-                    : EdgeInsets.only(left: 0, right: 0, top: 0, bottom: 0.0),
+                    : const EdgeInsets.only(
+                        left: 0, right: 0, top: 0, bottom: 0.0),
             isCollapsed: true,
             labelText: enabled ? label : '',
             labelStyle: labelStyle,
@@ -374,7 +376,7 @@ class RayBarCustomTextField extends TextField {
                 ? FloatingLabelBehavior.always
                 : FloatingLabelBehavior.never,
             border: OutlineInputBorder(
-              borderSide: enabled ? BorderSide() : BorderSide.none,
+              borderSide: enabled ? const BorderSide() : BorderSide.none,
               borderRadius: borderRadius = BorderRadius.circular(5.0),
             ),
           ),
@@ -394,7 +396,7 @@ class RayBarCustomDropdownMenu extends DropdownMenu {
       TextAlign? textAlign,
       String? hintText,
       IconData? leadingIcon,
-        required editMode,
+      required editMode,
       Function(dynamic)? onSelected,
       double? width,
       BorderRadius? borderRadius})
@@ -406,7 +408,7 @@ class RayBarCustomDropdownMenu extends DropdownMenu {
             enabled: editMode,
             initialSelection: controller.text,
             label: editMode ? Text(label ?? '') : null,
-            trailingIcon: editMode? Icon(Icons.arrow_drop_down) : null,
+            trailingIcon: editMode ? Icon(Icons.arrow_drop_down) : null,
             leadingIcon: editMode ? Icon(leadingIcon) : null,
             inputDecorationTheme: InputDecorationTheme(
               filled: false,
@@ -428,6 +430,7 @@ class RayBarCustomDropdownMenu extends DropdownMenu {
             //inputDecorationTheme:
             );
 }
+
 ///
 class RayBarCustomFieldLabel extends StatelessWidget {
   final String label;
@@ -441,7 +444,7 @@ class RayBarCustomFieldLabel extends StatelessWidget {
       {super.key,
       required this.label,
       this.icon,
-        this.imageIcon,
+      this.imageIcon,
       required this.editMode,
       this.labelStyle = const TextStyle(color: Colors.black, fontSize: 16),
       this.enableIcon = false});
@@ -455,7 +458,12 @@ class RayBarCustomFieldLabel extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(right: 8.0),
                 child: enableIcon!
-                    ? imageIcon!=null?imageIcon:Icon(icon, color: Colors.blue.shade900,)
+                    ? imageIcon != null
+                        ? imageIcon
+                        : Icon(
+                            icon,
+                            color: Colors.blue.shade900,
+                          )
                     : const SizedBox(),
               ),
               Padding(
@@ -471,12 +479,134 @@ class RayBarCustomFieldLabel extends StatelessWidget {
 }
 
 ///
-typedef OnChangeMultiFieldCallback = void Function(Map<String,dynamic> dataMap);
+typedef OnChangeMultiFieldCallback = void Function(
+    Map<String, dynamic> dataMap);
 
+class Field {
+  String key;
+  String value;
+  String get validKey => key.toLowerCase().replaceAll(' ', '_');
+  Field(this.key, this.value);
+  @override
+  String toString() {
+    return '{ ${this.key}, ${this.value} }';
+  }
+}
+
+class EntryDialog extends StatefulWidget {
+  final List<String> keysPerEntry;
+  final List<TextInputType> keysTextInputType;
+  final List<List<TextInputFormatter>> keysTextInputFormatter;
+  final String note;
+  final double? fieldWidth;
+  const EntryDialog(
+      {super.key,
+      this.note = '',
+      this.fieldWidth = 100,
+      required this.keysPerEntry,
+      required this.keysTextInputType,
+      required this.keysTextInputFormatter});
+  @override
+  State<EntryDialog> createState() => _EntryDialogState();
+}
+
+class _EntryDialogState extends State<EntryDialog> {
+  late List<TextEditingController> fieldsList;
+  late String dynamicNote;
+  bool inputErr = false;
+  @override
+  void initState() {
+    dynamicNote = widget.note;
+    fieldsList = List.generate(
+        widget.keysPerEntry.length, (index) => TextEditingController());
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      titlePadding: const EdgeInsets.only(left: 80.0, top: 20),
+      title: const Text('Add Entry'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            dynamicNote,
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: inputErr ? Colors.red : Colors.black),
+          ),
+          const SizedBox(
+            height: 25,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: List.generate(
+                widget.keysPerEntry.length,
+                (fieldIndex) => SizedBox(
+                      width: widget.fieldWidth,
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 8.0),
+                        child: TextField(
+                            controller: fieldsList[fieldIndex],
+                            keyboardType: widget.keysTextInputType[fieldIndex],
+                            inputFormatters: widget.keysTextInputFormatter[fieldIndex],
+                            decoration: InputDecoration(
+                              contentPadding: const EdgeInsets.only(
+                                  left: 8, right: 8, top: 5, bottom: 8),
+                              isCollapsed: true,
+                              labelText: widget.keysPerEntry[fieldIndex],
+                              //helperText: helperText:'',
+                              //hintText:   widget.hintText,
+                              floatingLabelBehavior:
+                                  FloatingLabelBehavior.always,
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide(),
+                                borderRadius: BorderRadius.circular(5.0),
+                              ),
+                            )),
+                      ),
+                    )),
+          ),
+        ],
+      ),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () {
+            if (int.tryParse(fieldsList[1].text) != null) {
+              Navigator.pop(context, fieldsList);
+            } else {
+              setState(() {
+                dynamicNote =
+                    'Wrong Date Format!!!! Please enter a valid year of birth for example 1998';
+                inputErr = true;
+              });
+            }
+          },
+          child: const Text('Add'),
+        ),
+        TextButton(
+          onPressed: () => Navigator.pop(context, null),
+          child: const Text('Cancel'),
+        ),
+      ],
+    );
+  }
+}
+
+///
 class RayBarMultiField extends StatefulWidget {
   final List<String> keysPerEntry;
-  final List<Map<String,dynamic>>? entries;
+  final List<TextInputType> keysTextInputType;
+  final List<List<TextInputFormatter>> keysTextInputFormatter;
+  final List<Map<String, dynamic>>? entries;
   final String label;
+  final String? note;
   final bool editMode;
   final OnChangeMultiFieldCallback? onChangeMultiFieldCallback;
   final String? initialSelection;
@@ -493,8 +623,11 @@ class RayBarMultiField extends StatefulWidget {
   ///
   const RayBarMultiField({
     required this.keysPerEntry,
+    required this.keysTextInputType,
+    required this.keysTextInputFormatter,
     this.entries = const [],
     required this.label,
+    this.note,
     required this.editMode,
     this.onChangeMultiFieldCallback,
     this.initialSelection,
@@ -513,113 +646,33 @@ class RayBarMultiField extends StatefulWidget {
   @override
   State<RayBarMultiField> createState() => _RayBarMultiFieldState();
 }
-class Field{
-  String key;
-  String value;
-  String get validKey => key.toLowerCase().replaceAll(' ', '_');
-  Field(this.key, this.value);
-  @override
-  String toString() {
-    return '{ ${this.key}, ${this.value} }';
-  }
-}
 
-class EntryDialog extends StatefulWidget {
-  final List<String> keysPerEntry;
-  final double? fieldWidth;
-  const EntryDialog( {super.key, this.fieldWidth=100, required this.keysPerEntry});
-  @override
-  State<EntryDialog> createState() => _EntryDialogState();
-}
-
-class _EntryDialogState extends State<EntryDialog> {
-  late List<TextEditingController> fieldsList;
-  @override
-  void initState() {
-    super.initState();
-    fieldsList = List.generate(
-        widget.keysPerEntry.length, (index) => TextEditingController());
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-
-  @override
-  Widget build(BuildContext context) {
-
-    return AlertDialog(
-      titlePadding: EdgeInsets.only(left: 80.0, top: 20),
-      title: const Text('Add Entry'),
-      content:
-      Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: List.generate(widget.keysPerEntry.length,
-                (fieldIndex) =>
-                SizedBox(
-                  width: widget.fieldWidth,
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
-                    child: TextField(
-                        controller: fieldsList[fieldIndex],
-                        decoration: InputDecoration(
-                          contentPadding: const EdgeInsets.only(left: 8, right: 8, top: 5, bottom: 8),
-                          isCollapsed: true,
-                          labelText: widget.keysPerEntry[fieldIndex],
-                          //helperText: helperText:'',
-                          //hintText:   widget.hintText,
-                          floatingLabelBehavior: FloatingLabelBehavior.always,
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide(),
-                            borderRadius: BorderRadius.circular(5.0),
-                          ),
-                        )
-
-                    ),
-                  ),
-                )
-
-        ),
-      ),
-      actions: <Widget>[
-        TextButton(
-          onPressed: () => Navigator.pop(context, fieldsList),
-          child: const Text('Add'),
-        ),
-        TextButton(
-          onPressed: () => Navigator.pop(context, null),
-          child: const Text('Cancel'),
-        ),
-      ],
-    );
-  }
-}
-///
 class _RayBarMultiFieldState extends State<RayBarMultiField> {
   List<TextEditingController> controllerEntryFiledList =
       List.empty(growable: true);
   List<List<TextEditingController>> controllerEntryList =
       List.empty(growable: true);
-  Map<String,dynamic> dataMap={};
+  Map<String, dynamic> dataMap = {};
   onAddEntry() async {
-    List<TextEditingController>? res = await showDialog<List<TextEditingController>>(
-          context: context,
-          builder: (BuildContext context) =>
-              EntryDialog(
-                keysPerEntry:widget.keysPerEntry,
-                fieldWidth: widget.fieldWidth,
-              )
-      );
+    List<TextEditingController>? res =
+        await showDialog<List<TextEditingController>>(
+            context: context,
+            builder: (BuildContext context) => EntryDialog(
+                  keysPerEntry: widget.keysPerEntry,
+                  keysTextInputType: widget.keysTextInputType,
+                  keysTextInputFormatter: widget.keysTextInputFormatter,
+                  fieldWidth: widget.fieldWidth,
+                  note: widget.note!,
+                ));
     setState(() {
-      if (res!=null) {
+      if (res != null) {
         controllerEntryList.add(res);
         dataMap = buildMap();
         widget.onChangeMultiFieldCallback!(dataMap);
       }
     });
   }
+
   onRemove(int entryIndex) {
     setState(() {
       controllerEntryList.removeAt(entryIndex);
@@ -627,15 +680,19 @@ class _RayBarMultiFieldState extends State<RayBarMultiField> {
     dataMap = buildMap();
     widget.onChangeMultiFieldCallback!(dataMap);
   }
-  Map<String,dynamic> buildMap() {
+
+  Map<String, dynamic> buildMap() {
     String label = widget.label.toLowerCase().replaceAll(' ', '_');
-    Map<String,dynamic> map = {
-      label : []
-    };
-    for (var entryIndex=0; entryIndex<controllerEntryList.length;entryIndex++) {
+    Map<String, dynamic> map = {label: []};
+    for (var entryIndex = 0;
+        entryIndex < controllerEntryList.length;
+        entryIndex++) {
       List<Field> entryFields = [];
-      for (var fieldIndex=0; fieldIndex<controllerEntryList[entryIndex].length;fieldIndex++) {
-        entryFields.add(Field(widget.keysPerEntry[fieldIndex],controllerEntryList[entryIndex][fieldIndex].text));
+      for (var fieldIndex = 0;
+          fieldIndex < controllerEntryList[entryIndex].length;
+          fieldIndex++) {
+        entryFields.add(Field(widget.keysPerEntry[fieldIndex],
+            controllerEntryList[entryIndex][fieldIndex].text));
       }
       var map2 = {};
       for (var field in entryFields) {
@@ -650,23 +707,22 @@ class _RayBarMultiFieldState extends State<RayBarMultiField> {
 
   @override
   void initState() {
-
     super.initState();
-    if (widget.entries!=null) {
+    if (widget.entries != null) {
       if (widget.entries!.isNotEmpty) {
-        for (Map<String,dynamic> entry in widget.entries!) {
-          List<TextEditingController> fieldsList = List.generate(
-              widget.keysPerEntry.length, (index)  {
+        for (Map<String, dynamic> entry in widget.entries!) {
+          List<TextEditingController> fieldsList =
+              List.generate(widget.keysPerEntry.length, (index) {
             TextEditingController ctx = TextEditingController();
-            var key = widget.keysPerEntry[index].toLowerCase().replaceAll(' ', '_');
+            var key =
+                widget.keysPerEntry[index].toLowerCase().replaceAll(' ', '_');
             ctx.text = entry[key];
             return ctx;
-          } );
+          });
           controllerEntryList.add(fieldsList);
         }
       }
     }
-
   }
 
   @override
@@ -677,73 +733,103 @@ class _RayBarMultiFieldState extends State<RayBarMultiField> {
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.only(left: 0.0, right:0, top:0,bottom: 20),
+            padding:
+                const EdgeInsets.only(left: 0.0, right: 0, top: 0, bottom: 20),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Icon(widget.icon, color: widget.iconColor,),
-                Padding(
-                  padding: const EdgeInsets.only(left:8.0),
-                  child: Text(widget.label , style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+                Icon(
+                  widget.icon,
+                  color: widget.iconColor,
                 ),
-                widget.editMode?IconButton(
-                    onPressed: () {
-                      setState(() {
-                        onAddEntry();
-                      });
-                      },
-                    icon: Icon(Icons.add)):SizedBox()
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0),
+                  child: Text(
+                    widget.label,
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                widget.editMode
+                    ? IconButton(
+                        onPressed: () {
+                          setState(() {
+                            onAddEntry();
+                          });
+                        },
+                        icon: Icon(Icons.add))
+                    : SizedBox()
               ],
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(left:40.0),
+            padding: const EdgeInsets.only(left: 40.0),
             child: Column(
               children: List.generate(
                   controllerEntryList.length,
                   (entryIndex) => Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      widget.editMode?IconButton(
-                          onPressed: () {
-                            onRemove(entryIndex);
-                          },
-                          icon: Icon(color: Colors.red, Icons.remove_circle_outline_sharp)):SizedBox(),
-                      Row(
                         mainAxisAlignment: MainAxisAlignment.start,
-                            children: List.generate(widget.keysPerEntry.length,
-                                (fieldIndex) =>
-                                    SizedBox(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          widget.editMode
+                              ? IconButton(
+                                  onPressed: () {
+                                    onRemove(entryIndex);
+                                  },
+                                  icon: const Icon(
+                                      color: Colors.red,
+                                      Icons.remove_circle_outline_sharp))
+                              : const SizedBox(),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: List.generate(
+                                widget.keysPerEntry.length,
+                                (fieldIndex) => SizedBox(
                                       width: widget.fieldWidth,
                                       child: Padding(
-                                        padding: const EdgeInsets.only(right: 8.0),
+                                        padding:
+                                            const EdgeInsets.only(right: 8.0),
                                         child: TextField(
-                                          onChanged: (val) {
-                                            widget.onChangeMultiFieldCallback!(buildMap());
-                                        },
-                                          controller: controllerEntryList[entryIndex][fieldIndex],
+                                            inputFormatters:
+                                                widget.keysTextInputFormatter[
+                                                    fieldIndex],
+                                            keyboardType: widget
+                                                .keysTextInputType[fieldIndex],
+                                            onChanged: (val) {
+                                              widget.onChangeMultiFieldCallback!(
+                                                  buildMap());
+                                            },
+                                            controller:
+                                                controllerEntryList[entryIndex]
+                                                    [fieldIndex],
                                             decoration: InputDecoration(
-                                            contentPadding: EdgeInsets.only(left: 5, right: 5, top: 5, bottom: 5),
-                                            isCollapsed: true,
-                                            labelText: widget.keysPerEntry[fieldIndex],
-                                            helperText: widget.editMode?widget.helperText:'',
-                                            hintText:    widget.editMode?widget.hintText:'',
-                                            floatingLabelBehavior: FloatingLabelBehavior.always,
-                                            border: OutlineInputBorder(
-                                              borderSide: BorderSide.none,
-                                              borderRadius: BorderRadius.circular(5.0),
-                                            ),
-                                          )
-
-                                        ),
+                                              contentPadding:
+                                                  const EdgeInsets.only(
+                                                      left: 5,
+                                                      right: 5,
+                                                      top: 5,
+                                                      bottom: 5),
+                                              isCollapsed: true,
+                                              labelText: widget
+                                                  .keysPerEntry[fieldIndex],
+                                              helperText: widget.editMode
+                                                  ? widget.helperText
+                                                  : '',
+                                              hintText: widget.editMode
+                                                  ? widget.hintText
+                                                  : '',
+                                              floatingLabelBehavior:
+                                                  FloatingLabelBehavior.always,
+                                              border: OutlineInputBorder(
+                                                borderSide: BorderSide.none,
+                                                borderRadius:
+                                                    BorderRadius.circular(5.0),
+                                              ),
+                                            )),
                                       ),
-                                    )
-
-                            ),
+                                    )),
                           ),
-                    ],
-                  )),
+                        ],
+                      )),
             ),
           )
         ],
@@ -751,3 +837,5 @@ class _RayBarMultiFieldState extends State<RayBarMultiField> {
     );
   }
 }
+
+///

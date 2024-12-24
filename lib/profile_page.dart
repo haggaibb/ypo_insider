@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
@@ -338,9 +339,10 @@ class _ProfilePageState extends State<ProfilePage> {
                           child: Column(
                             children: [
                               Text('Profile Score'),
+                              Text(widget.member.getNetProfileScore().toString()),
                               SizedBox(
                                 width: 200,
-                                child: ProfileScoreWidget(score: widget.member.getProfileScore())
+                                child: ProfileScoreWidget(score: widget.member.getNetProfileScore())
                               ),
                             ],
                           ),
@@ -841,8 +843,14 @@ class _ProfilePageState extends State<ProfilePage> {
                               left: editModeOn ? 60 : 0, bottom: 16.0),
                           child: RayBarMultiField(
                               keysPerEntry: const ['Name', 'Year of Birth'],
+                              keysTextInputType: [TextInputType.text,TextInputType.number],
+                              keysTextInputFormatter: [
+                                List.empty(),
+                                [FilteringTextInputFormatter.digitsOnly,LengthLimitingTextInputFormatter((4))]
+                              ],
                               entries: childrenCtrl,
                               label: 'Children',
+                              note: 'Note: please fill in only the year of birth (e.g. 1998), not the full birth date.',
                               editMode: editModeOn,
                               icon: Icons.family_restroom_rounded,
                               iconColor: Colors.blue.shade900,
