@@ -789,6 +789,7 @@ class _RayBarMultiFieldState extends State<RayBarMultiField> {
                                         padding:
                                             const EdgeInsets.only(right: 8.0),
                                         child: TextField(
+                                          readOnly: !widget.editMode,
                                             inputFormatters:
                                                 widget.keysTextInputFormatter[
                                                     fieldIndex],
