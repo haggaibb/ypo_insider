@@ -117,8 +117,13 @@ class Member {
       score = score + profileScore!.profileImageScore!;
     }
     if (linkedin!='' || facebook!='' || linkedin!='') score = score + profileScore!.socialScore!;
-    score = score + filterTags!.length;
+    score = score + (filterTags!.length>5?5:filterTags!.length);
     score = score + freeTextTags!.length;
+    if ((children ?? []).isEmpty) {
+    } else {
+      score = score + 2;
+    }
+
     if (checkIfTodayIsBirthday(birthdate!)) score = score + profileScore!.birthdayScore!;
     if (checkIfNewMember()) score = score + profileScore!.newMemberScore!;
     return score;
@@ -128,9 +133,19 @@ class Member {
     if (!profileImage!.contains('profile0.jpg')) {
       score = score + profileScore!.profileImageScore!;
     }
+    if ((children ?? []).isEmpty) {
+    } else {
+      score = score + 2;
+    }
     if (linkedin!='' || facebook!='' || linkedin!='') score = score + profileScore!.socialScore!;
-    score = score + filterTags!.length;
-    score = score + freeTextTags!.length;
+    score = score + (filterTags!.length>5?5:filterTags!.length);
+    if ((freeTextTags! ?? []).isEmpty) {
+      score = score - 2;
+    } else {
+      score = score + freeTextTags!.length;
+    }
+
+    print('net score $score');
     return score;
   }
   bool checkIfTodayIsBirthday(Timestamp birthdayTimestamp) {

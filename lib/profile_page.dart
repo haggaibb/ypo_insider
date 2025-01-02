@@ -55,9 +55,10 @@ class _ProfilePageState extends State<ProfilePage> {
 
   cancelEdit() {
     setState(() {
+      /// children tag
+      childrenCtrl = widget.member.children!;
       /// clear Filter Tags
       selectedTags = memberFilterTags;
-
       /// reset TextFiled Tags
       for (var i = 0; i < mainController.freeTextTagsList.length; i++) {
         //freeTextControls.add(TextEditingController());
@@ -65,7 +66,6 @@ class _ProfilePageState extends State<ProfilePage> {
         freeTextControls[i].text = widget.member.getFreeTextTagValueByKey(
             mainController.freeTextTagsList[i]['key']);
       }
-
       /// clear temp ProfilePic
       if (tempProfilePicRef.name != '') {
         memberController.deleteTempProfilePic(tempProfilePicRef);
@@ -339,7 +339,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           child: Column(
                             children: [
                               Text('Profile Score'),
-                              Text(widget.member.getNetProfileScore().toString()),
+                              //Text(widget.member.getNetProfileScore().toString()),
                               SizedBox(
                                 width: 200,
                                 child: ProfileScoreWidget(score: widget.member.getNetProfileScore())

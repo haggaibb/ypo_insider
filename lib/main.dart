@@ -113,7 +113,6 @@ class _FrontGateState extends State<FrontGate> {
   @override
   Widget build(BuildContext context) {
     if (widget.user!=null) {
-      print(widget.user?.reload());
       return Home(user: widget.user);
      }
      else {

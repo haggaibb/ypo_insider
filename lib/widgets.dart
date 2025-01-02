@@ -647,7 +647,7 @@ class ProfileMenuWidget extends StatelessWidget {
       type == 'textbox'
           ? SizedBox(
               height:
-                  (value.length / 50 * 40) > 50 ? (value.length / 50 * 40) : 50,
+                  (value.length / 40 * 40) > 50 ? (value.length / 40 * 40) : 50,
               width: 350,
               child: Text(value, maxLines: 3, style: TextStyle(fontSize: 18)))
           : SizedBox(width: 1),
@@ -825,9 +825,9 @@ class _ProfileScoreWidgetState extends State<ProfileScoreWidget> {
           ),
         ),
         customLabels: [
-          CustomRulerLabel(text: "Lazy", value: 3),
-          CustomRulerLabel(text: "Ok", value: 24),
-          CustomRulerLabel(text: "Good", value: 35),
+          CustomRulerLabel(text: "Lazy", value: 0),
+          CustomRulerLabel(text: "Ok", value: 17),
+          CustomRulerLabel(text: "Great", value: 34),
         ],
         pointers: [
           Pointer(
