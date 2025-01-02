@@ -24,6 +24,8 @@ class _AddNewMemberState extends State<AddNewMember> {
     TextEditingController lastNameCtrl = TextEditingController();
     TextEditingController currentBusinessNameCtrl = TextEditingController();
     TextEditingController currentTitleCtrl = TextEditingController();
+    TextEditingController mobileCountryCodeCtrl = TextEditingController();
+    TextEditingController mobileCtrl = TextEditingController();
     TextEditingController emailCtrl = TextEditingController();
     TextEditingController residenceCtrl = TextEditingController();
     TextEditingController forumCtrl = TextEditingController();
@@ -134,6 +136,98 @@ class _AddNewMemberState extends State<AddNewMember> {
                                   controller: currentTitleCtrl,
                                 )),
                           )
+                        ],
+                      ),
+                    ),
+                    // Padding(
+                    //   padding: const EdgeInsets.only(left: 12.0),
+                    //   child: Row(
+                    //     children: [
+                    //       const Text('Mobile:',
+                    //           style: TextStyle(fontWeight: FontWeight.bold)),
+                    //       Padding(
+                    //         padding: const EdgeInsets.only(left: 12.0),
+                    //         child: SizedBox(
+                    //           width: 85,
+                    //           child: TextField(
+                    //             decoration: InputDecoration(
+                    //                 iconColor: Colors.blue.shade900,
+                    //                 label: const Text('Code:'),
+                    //                 contentPadding:
+                    //                 const EdgeInsets.symmetric(
+                    //                   vertical: 0.0,
+                    //                   horizontal: 0.0,
+                    //                 ),
+                    //                 isDense: true,
+                    //                 helperText:
+                    //                 'e.g.+972',
+                    //                 border: const OutlineInputBorder()),
+                    //             textAlign: TextAlign.start,
+                    //             controller: mobileCountryCodeCtrl,
+                    //             enabled: true,
+                    //             style: const TextStyle(fontSize: 20),
+                    //           ),
+                    //         ),
+                    //       )
+                    //     ],
+                    //   ),
+                    // ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 0.0, top : 25, bottom: 15),
+                      child: Row(
+                        mainAxisAlignment:
+                        MainAxisAlignment.spaceAround,
+                        children: [
+                          Text('Mobile:', style: TextStyle(fontWeight: FontWeight.bold),),
+                          SizedBox(
+                            width: 60,
+                            child: TextField(
+                              decoration: InputDecoration(
+                                  iconColor: Colors.blue.shade900,
+                                  label: const Text('Code:'),
+                                  contentPadding:
+                                  const EdgeInsets.symmetric(
+                                    vertical: 0.0,
+                                    horizontal: 0.0,
+                                  ),
+                                  isDense: true,
+                                  helperText:
+                                  'e.g.+972',
+                                  border: const OutlineInputBorder()),
+                              textAlign: TextAlign.start,
+                              controller: mobileCountryCodeCtrl,
+                              enabled: true,
+                              style: const TextStyle(fontSize: 20),
+                            ),
+                          ),
+                          SizedBox(
+                            width: 150,
+                            child: TextField(
+                              decoration: InputDecoration(
+                                  iconColor: Colors.blue.shade900,
+                                  label: const Text('Mobile:'),
+                                  contentPadding:
+                                  const EdgeInsets.symmetric(
+                                    vertical: 0.0,
+                                    horizontal: 0.0,
+                                  ),
+                                  isDense: true,
+                                  helperText: 'fill your mobile number.',
+                                  border: const OutlineInputBorder()),
+                              textAlign: TextAlign.start,
+                              controller: mobileCtrl,
+                              enabled: true,
+                              style: const TextStyle(
+                                fontSize: 20,
+                              ),
+                              onChanged: (s) => {
+                                if (GetUtils.isPhoneNumber(s))
+                                  {}
+                                else
+                                  {}
+                              },
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -274,7 +368,10 @@ class _AddNewMemberState extends State<AddNewMember> {
                                   currentBusinessNameCtrl.text,
                                   currentTitleCtrl.text,
                                   emailCtrl.text,
+                                  mobileCountryCodeCtrl.text,
+                                  mobileCtrl.text,
                                   forumCtrl.text,
+                                residenceCtrl.text,
                                 birthdayCtrl,
                                 memberSinceCtrl.text
 

@@ -144,8 +144,6 @@ class Member {
     } else {
       score = score + freeTextTags!.length;
     }
-
-    print('net score $score');
     return score;
   }
   bool checkIfTodayIsBirthday(Timestamp birthdayTimestamp) {

@@ -34,6 +34,11 @@ class MainController extends GetxController {
   late String version;
   late ProfileScore profileScore;
   bool isIOS = true;
+  /// todo adding paging
+  DocumentSnapshot? lastDocument; // Track the last document fetched
+  final int pageSize = 20; // Number of documents to fetch per page
+
+
 
   getSettings() async {
     final settingsRef = db.collection("Settings").doc('results_settings');
@@ -49,46 +54,10 @@ class MainController extends GetxController {
     }
   }
 
-  fetchFilteredMembersOld(List<String> selectedFilters) async {
-    resultsLoading.value = true;
-    if (selectedFilters.isEmpty) {
-      filteredResults.value = [];
-
-      /// TODO add ref to def result list if we wish
-      resultsLoading.value = false;
-      return;
-    }
-    List<QueryDocumentSnapshot> filteredMembers;
-    final membersRef = db.collection("Members");
-    final QuerySnapshot membersQuery = await membersRef
-        .where("filter_tags", arrayContainsAny: selectedFilters)
-        .get();
-    if (isAnd.value) {
-      filteredMembers = membersQuery.docs.where((doc) {
-          // Safely cast the 'filter_tags' array to List<String>
-        List<String> filterTags =
-            List<String>.from(doc['filter_tags'] as List<dynamic>);
-        // Check if all the selectedTags are in filterTags
-        return selectedFilters.every((tag) => filterTags.contains(tag));
-      }).toList();
-    } else {
-      filteredMembers = membersQuery.docs;
-    }
-    filteredResults.value = [];
-    for (var member in filteredMembers) {
-      filteredResults.add(Member.fromDocumentSnapshot(member));
-    }
-    resultsLoading.value = false;
-    await AnalyticsEngine.logFilterTagsSearch(tags.toString());
-    update();
-  }
-
   fetchFilteredMembers(List<String> selectedFilters) async {
     resultsLoading.value = true;
     if (selectedFilters.isEmpty) {
       filteredResults.value = [];
-
-      /// TODO add ref to def result list if we wish
       resultsLoading.value = false;
       return;
     }
@@ -186,39 +155,57 @@ class MainController extends GetxController {
     }
   }
 
-  loadRandomResults(size) async {
+  Future<void> loadRandomResults(int size) async {
+   // if (resultsLoading.value) return; // Prevent concurrent loads
     resultsLoading.value = true;
-    CollectionReference membersRef = db.collection('Members');
-    QuerySnapshot membersSnapshot = await membersRef.get();
-    List<QueryDocumentSnapshot> membersDocs = membersSnapshot.docs;
-    filteredResults.value = [];
-    for (var member in membersDocs) {
-      filteredResults.add(Member.fromDocumentSnapshot(member));
-      filteredResults[filteredResults.length-1].newMemberThresholdInMonths = newMemberThreshold;
-      filteredResults[filteredResults.length-1].profileScore = profileScore;
+
+    try {
+      CollectionReference membersRef = db.collection('Members');
+
+      //Query query = membersRef.limit(pageSize);
+
+      Query query = membersRef.limit(numberOfMembers);
+
+
+      // If lastDocument is set, start fetching after the last document
+      if (lastDocument != null) {
+        query = query.startAfterDocument(lastDocument!);
+      }
+
+      QuerySnapshot membersSnapshot = await query.get();
+
+      // Update lastDocument for the next fetch
+      if (membersSnapshot.docs.isNotEmpty) {
+        lastDocument = membersSnapshot.docs.last;
+      }
+
+      // Process fetched documents
+      List<Member> newMembers = membersSnapshot.docs.map((doc) {
+        var member = Member.fromDocumentSnapshot(doc);
+        member.newMemberThresholdInMonths = newMemberThreshold;
+        member.profileScore = profileScore;
+        return member;
+      }).toList();
+
+      // Sort the new members and update the filteredResults list
+      newMembers.sort((b, a) => a.getProfileScore().compareTo(b.getProfileScore()));
+
+      int startIndex = newMembers.lastIndexWhere((element) => element.getProfileScore() > profileScore.topThreshold!);
+      int endIndex = newMembers.indexWhere((element) => element.getProfileScore() < profileScore.bottomThreshold!);
+
+      List<Member> birthdayProfiles = newMembers.sublist(0, startIndex + 1);
+      List<Member> topProfiles = newMembers.sublist(startIndex + 1, endIndex);
+      List<Member> remainingProfiles = newMembers.sublist(endIndex, newMembers.length);
+
+      topProfiles.shuffle();
+
+      // Append to filteredResults
+      filteredResults.addAll(birthdayProfiles + topProfiles + remainingProfiles);
+    } catch (e) {
+      print("Error loading results: $e");
+    } finally {
+      resultsLoading.value = false;
     }
-    filteredResults.sort((b, a) => a.getProfileScore().compareTo(b.getProfileScore()));
-    int startIndex = filteredResults.lastIndexWhere((element) => element.getProfileScore()>profileScore.topThreshold!);
-    int endIndex = filteredResults.indexWhere((element) => element.getProfileScore()<profileScore.bottomThreshold!);
-    List<Member> birthdayProfiles = filteredResults.sublist(0,startIndex+1);
-    List<Member> topProfiles = filteredResults.sublist(startIndex+1,endIndex);
-    List<Member> remainingProfiles = filteredResults.sublist(endIndex+1,filteredResults.length);
-    topProfiles.shuffle();
-    filteredResults.value = [];
-    filteredResults.value = birthdayProfiles + topProfiles + remainingProfiles;
-    /// add random
-    // List randomArr = [];
-    // final Random _random = Random();
-    // for (int i = 0; i < numberOfRandomMembers; i++) {
-    //   int _randomNumber = _random.nextInt(size);
-    //   randomArr.add(_randomNumber);
-    // };
-    // for (var index in randomArr) {
-    //   if (filteredResults.indexWhere((element) => element.id==membersDocs[index])<0){
-    //     filteredResults.add(Member.fromDocumentSnapshot(membersDocs[index]));
-    //   }
-    // }
-    resultsLoading.value = false;
   }
 
   loadTags() async {
