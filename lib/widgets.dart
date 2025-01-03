@@ -643,7 +643,7 @@ class ProfileMenuWidget extends StatelessWidget {
       ]),
       type == 'textbox'
           ? SizedBox(
-              height: (value.split('\n').length - 1)*50,
+              height: (value.split('\n').length)*30,
                   //(value.length / 40 * 40) > 50 ? (value.length / 40 * 40) : 50,
               width: 350,
               child: Text(value, maxLines: 3, style: TextStyle(fontSize: 18)))
