@@ -142,7 +142,7 @@ class MembersController extends GetxController {
       DateTime birthday,
       String memberSince) async {
     CollectionReference membersRef = db.collection('Members');
-     DocumentReference newMemberRef = await membersRef.add({
+    DocumentReference newMemberRef = await membersRef.add({
       'firstName': firstName,
       'lastName': lastName,
       'current_business_name': currentBusinessName,
@@ -163,7 +163,9 @@ class MembersController extends GetxController {
          "verified": false
        }
     });
+    await membersRef.doc(newMemberRef.id).update({'id' : newMemberRef.id});
   }
+
 
   getMemberById(String id) async {
     CollectionReference membersRef = db.collection('Members');

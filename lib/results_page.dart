@@ -7,7 +7,6 @@ import 'profile_page.dart';
 import 'widgets.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'models.dart';
-import 'package:chips_choice/chips_choice.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ResultsPage extends StatefulWidget {
