@@ -438,7 +438,6 @@ class ProfileImageLoading extends StatelessWidget {
 
 /// open url in browser
 Future<void> _launchInBrowser(String url) async {
-  /// print(url);
   final Uri _url = Uri.parse(url);
   if (!await launchUrl(
     webOnlyWindowName: '_blank',
@@ -465,9 +464,7 @@ void _launchMailClient(String targetEmail) async {
       'subject': 'Help needed with YPO Israel Insider App.',
     }),
   );
-  //print(await canLaunchUrl(emailLaunchUri));
   await launchUrl(emailLaunchUri);
-  //print('done');
 }
 
 /// make call
@@ -646,8 +643,8 @@ class ProfileMenuWidget extends StatelessWidget {
       ]),
       type == 'textbox'
           ? SizedBox(
-              height:
-                  (value.length / 40 * 40) > 50 ? (value.length / 40 * 40) : 50,
+              height: (value.split('\n').length - 1)*50,
+                  //(value.length / 40 * 40) > 50 ? (value.length / 40 * 40) : 50,
               width: 350,
               child: Text(value, maxLines: 3, style: TextStyle(fontSize: 18)))
           : SizedBox(width: 1),
@@ -848,59 +845,6 @@ class _ProfileScoreWidgetState extends State<ProfileScoreWidget> {
             showPrimaryRulers: false,
             showSecondaryRulers: false),
       ),
-      // LinearGauge(
-      //   //extendLinearGauge: 20,
-      //   enableGaugeAnimation: true,
-      //   rangeLinearGauge: [
-      //     RangeLinearGauge(
-      //       start: 0,
-      //       end: 13,
-      //       color: Colors.red,
-      //     ),
-      //     RangeLinearGauge(
-      //       end: 30,
-      //       start: 14,
-      //       color: Colors.orange,
-      //     ),
-      //     RangeLinearGauge(
-      //       end: 45,
-      //       start: 31,
-      //       color: Colors.green,
-      //     ),
-      //   ],
-      //   pointers: [
-      //     Pointer(
-      //       value: 28,
-      //       width: 20,
-      //       height: 30,
-      //       showLabel: false,
-      //       shape: PointerShape.triangle,
-      //       labelStyle: TextStyle(color: Colors.green),
-      //       color: Color(0xff624CAB),
-      //       // shape: PointerShape.circle,
-      //     ),
-      //   ],
-      //   // Custom box decoration for the filled bar appearance
-      //   linearGaugeBoxDecoration: LinearGaugeBoxDecoration(
-      //     thickness: 40, // Thickness of the filled bar
-      //     borderRadius: 10, // Rounded corners
-      //     edgeStyle: LinearEdgeStyle.bothCurve, // Curved edges
-      //     backgroundColor: Colors.blue, // Background color for the gauge
-      //   ),
-      //   gaugeOrientation: GaugeOrientation.horizontal,
-      //   rulers: RulerStyle(
-      //     //rulersOffset: 10,
-      //     //labelOffset: 10,
-      //     inverseRulers: false,
-      //     rulerPosition: RulerPosition.top,
-      //     showLabel: true,
-      //   ),
-      //   customLabels: [
-      //     CustomRulerLabel(text: "Lazy", value: 0),
-      //     CustomRulerLabel(text: "Ok", value: 14),
-      //     CustomRulerLabel(text: "Good", value: 31),
-      //   ],
-      // ),
     );
   }
 }
@@ -953,4 +897,56 @@ void showZoomableImageDialog(BuildContext context, String imageUrl) {
       },
     ),
   );
+}
+
+class MultiSelectChip extends StatefulWidget {
+  final List<String> tags; // Single list of tags passed in
+  final Function(List<String>) onSelectionChanged; // Callback to parent
+
+  MultiSelectChip({
+    required this.tags,
+    required this.onSelectionChanged,
+  });
+
+  @override
+  _MultiSelectChipState createState() => _MultiSelectChipState();
+}
+
+class _MultiSelectChipState extends State<MultiSelectChip> {
+  late List<String> selectedTags; // Track selected tags internally
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  List<Widget> _buildChoiceList() {
+    return widget.tags.map((tag) {
+      return Container(
+        padding: const EdgeInsets.all(4.0),
+        child: ChoiceChip(
+          label: Text(tag),
+          selected: true,
+          selectedColor: Colors.blue.shade200, // Highlight selected chip
+          onSelected: (isSelected) {
+            setState(() {
+              selectedTags.remove(tag); // Remove from selected
+              // Notify parent of updated selection
+              widget.onSelectionChanged(selectedTags);
+            });
+          },
+        ),
+      );
+    }).toList();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    selectedTags = List<String>.from(widget.tags);
+    return Wrap(
+      spacing: 8.0,
+      runSpacing: 4.0,
+      children: _buildChoiceList(),
+    );
+  }
 }

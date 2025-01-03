@@ -14,7 +14,7 @@ class Filters extends StatefulWidget {
 class _FiltersState extends State<Filters> {
   final mainController = Get.put(MainController());
   late List filtersCategory;
-  List<String> tags =[];
+ // List<String> tags =[];
 
 
   @override
@@ -71,7 +71,7 @@ class _FiltersState extends State<Filters> {
                         labels: const ['And', 'Or'],
                         activeBgColors: const [[Colors.green],[Colors.green]],
                         onToggle: (index) async {
-                          await mainController.switchAndOrFilter(tags);
+                              await mainController.switchAndOrFilter(mainController.tags);
                         },
                       ),
                     ),
@@ -79,8 +79,8 @@ class _FiltersState extends State<Filters> {
                       flex: 1,
                       child: Padding(
                         padding: const EdgeInsets.only(bottom: 8.0),
-                        child: ListView(
-                          children: List.generate(filtersCategory.length, (index) =>
+                        child:  ListView(
+                          children:  List.generate(filtersCategory.length, (index) =>
                               Padding(
                                 padding: const EdgeInsets.only(left : 30.0, right: 30.0, top: 10, bottom: 10),
                                 child: SizedBox(
@@ -94,15 +94,16 @@ class _FiltersState extends State<Filters> {
                                           title:  Text(filtersCategory[index]['label'] ,style: Theme.of(context).textTheme.titleLarge),
                                           subtitle: Text((filtersCategory[index]['label']=='Forum' || filtersCategory[index]['label'] == 'Residence')?'Please select one option from the list below':'Please select all relevant' ),
                                         ),
-                                          mainController.getFilteredTagsFromCategory(filtersCategory[index]['key']).isNotEmpty?
-                                          ChipsChoice<String>.multiple(
+                                          Obx( () {
+                                            mainController.tags.isNotEmpty;
+                                            return mainController.getFilteredTagsFromCategory(filtersCategory[index]['key']).isNotEmpty
+                                                ?  ChipsChoice<String>.multiple(
                                           value: mainController.tags,
                                           onChanged: (val) {
-                                            setState(()  {
-                                              tags = val;
-                                              mainController.tags.value=val;
-                                            });
+                                            mainController.resultsLoading.value = true;
+                                            mainController.tags.value=val;
                                             mainController.fetchFilteredMembers(val);
+                                            mainController.resultsLoading.value = false;
                                           },
                                           choiceItems: C2Choice.listFrom<String, String>(
                                             source: mainController.getFilteredTagsFromCategory(filtersCategory[index]['key']),
@@ -113,14 +114,14 @@ class _FiltersState extends State<Filters> {
                                           choiceCheckmark: true,
                                           textDirection: TextDirection.ltr,
                                           wrapped: true,
-                                        ):SizedBox.shrink(),
-
+                                        )
+                                                : const SizedBox.shrink();
+                                          }),
                                       ],
                                     ),
                                   ),
                                 ),
-                              )
-                          ),
+                              )),
                         ),
                       ),
                     ),

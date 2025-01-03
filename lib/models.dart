@@ -154,7 +154,6 @@ class Member {
       //('Today is the birthday!');
       return true;
     } else {
-      //print('Today is not the birthday.');
       return false;
     }
   }

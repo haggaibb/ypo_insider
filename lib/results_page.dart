@@ -52,15 +52,19 @@ class _ResultsPageState extends State<ResultsPage> {
   Widget build(BuildContext context) {
     return Obx(() => !mainController.resultsLoading.value
         ? Directionality(
-            textDirection: TextDirection.ltr,
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              child: Center(
+      textDirection: TextDirection.ltr,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: constraints.maxHeight, // Ensure bounded height
+              ),
+              child: IntrinsicHeight(
                 child: Column(
                   children: [
-                    const SizedBox(
-                      height: 20,
-                    ),
+                    const SizedBox(height: 20),
                     TypeAheadField<ResultRecord>(
                       suggestionsCallback: (search) => filterResult(search),
                       builder: (context, controller, focusNode) {
@@ -71,7 +75,8 @@ class _ResultsPageState extends State<ResultsPage> {
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               labelText: 'Search by Name or Company',
-                            ));
+                            )
+                        );
                       },
                       itemBuilder: (context, result) {
                         return ListTile(
@@ -79,175 +84,146 @@ class _ResultsPageState extends State<ResultsPage> {
                         );
                       },
                       onSelected: (result) async {
-                        Member member =
-                            await membersController.getMemberById(result.id);
+                        Member member = await membersController.getMemberById(result.id);
                         Get.to(
-                          () => ProfilePage(member),
+                              () => ProfilePage(member),
                           transition: Transition.zoom,
                           curve: Curves.easeInOut,
                         );
                       },
                     ),
-
-                    /// selected Tags & Results
+                    /// Selected Tags & Results
                     Padding(
                       padding: const EdgeInsets.only(top: 20.0),
-                      child: Container(
-                        child: Obx(
-                          () => mainController.resultsLoading.value
-                              ? const ResultsLoading()
-                              : Column(children: [
-                                  mainController.tags.isNotEmpty
-                                      ? SingleChildScrollView(
-                                          scrollDirection: Axis.horizontal,
-                                          child: Row(
-                                            children: [
-                                              ChipsChoice<String>.multiple(
-                                                value: mainController.tags,
-                                                onChanged: (val) async {
-                                                  setState(() => mainController
-                                                      .tags.value = val);
-                                                  await mainController
-                                                      .fetchFilteredMembers(
-                                                          val);
-                                                },
-                                                choiceItems: C2Choice.listFrom<
-                                                    String, String>(
-                                                  source: mainController.tags,
-                                                  value: (i, v) => v,
-                                                  label: (i, v) => v,
-                                                  tooltip: (i, v) => v,
-                                                ),
-                                                choiceCheckmark: true,
-                                                textDirection:
-                                                    TextDirection.ltr,
-                                                wrapped: true,
-                                              )
-                                            ],
-                                          ),
-                                        )
-                                      : SizedBox(
-                                          width: 1,
-                                        ),
-                                  mainController.filteredResults.isNotEmpty
-                                      ? ListView(
-                                          physics: BouncingScrollPhysics(),
-                                          padding: const EdgeInsets.all(10.0),
-                                          shrinkWrap: true,
-                                          //physics: ClampingScrollPhysics(),
-                                          children: ListTile.divideTiles(
-                                              context: context,
-                                              tiles: List.generate(
-                                                  mainController
-                                                      .filteredResults.length,
-                                                  (index) => Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .only(
-                                                                bottom: 6.0),
-                                                        child: SizedBox(
-                                                          height: 200,
-                                                          child:
-                                                              GestureDetector(
-                                                            child: ResultCard(
-                                                              member: mainController
-                                                                      .filteredResults[
-                                                                  index],
-                                                              newMemberFlag: mainController.checkIfNewMember(
-                                                                  mainController
-                                                                      .filteredResults[
-                                                                          index]
-                                                                      .joinDate),
-                                                              isBirthdayToday: mainController.checkIfTodayIsBirthday(mainController
-                                                                      .filteredResults[
-                                                                          index]
-                                                                      .birthdate ??
-                                                                  Timestamp
-                                                                      .fromMicrosecondsSinceEpoch(
-                                                                          0)),
-                                                            ),
-                                                            onTap: () {
-                                                              Get.to(
-                                                                  () => ProfilePage(
-                                                                      mainController
-                                                                              .filteredResults[
-                                                                          index]),
-                                                                  transition:
-                                                                      Transition
-                                                                          .zoom,
-                                                                  duration:
-                                                                      Duration(
-                                                                          seconds:
-                                                                              1));
-                                                            },
-                                                          ),
-                                                        ),
-                                                      ))).toList(),
-                                        )
-                                      : Padding(
-                                          padding: const EdgeInsets.all(20.0),
-                                          child: Column(
-                                            children: [
-                                              const Text(
-                                                'No results found.',
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    top: 20.0),
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    GestureDetector(
-                                                      child: const Text(
-                                                        'To continue please press the shuffle icon',
-                                                        style: TextStyle(
-                                                          color: Colors.blue,
-                                                        ),
-                                                      ),
-                                                      onTap: () => {
-                                                        mainController
-                                                            .loadRandomResults(
-                                                                mainController
-                                                                    .numberOfMembers)
-                                                      },
-                                                    ),
-                                                    IconButton(
-                                                        color: Colors.blue,
-                                                        onPressed: () => {
-                                                              mainController
-                                                                  .loadRandomResults(
-                                                                      mainController
-                                                                          .numberOfMembers)
-                                                            },
-                                                        icon: Icon(
-                                                            Icons.shuffle)),
-                                                  ],
-                                                ),
-                                              ),
-                                              const Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  Text(
-                                                      'or you can also use the filters below'),
-                                                  //Icon(Icons.filter_list_outlined)
-                                                ],
-                                              )
-                                            ],
+                      child: Obx(
+                            () => mainController.resultsLoading.value
+                            ? const ResultsLoading()
+                            : Column(
+                          children: [
+                            mainController.tags.isNotEmpty
+                                ? SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: MultiSelectChip(
+                                 tags:  mainController.tags,
+                                onSelectionChanged: (tags) async  {
+                                   setState(() {
+                                     mainController.tags.value = tags;
+                                   });
+                                   mainController.tags.value = tags;
+                                   await mainController.fetchFilteredMembers(tags);
+                                },
+                              ),
+                            )
+                                : const SizedBox(width: 1),
+                            mainController.filteredResults.isNotEmpty
+                                ? SizedBox(
+                              height: constraints.maxHeight -
+                                  150, // Set height for ListView
+                              child: ListView.builder(
+                                controller: mainController.scrollController,
+                                physics: const BouncingScrollPhysics(),
+                                padding: const EdgeInsets.all(10.0),
+                                itemCount: mainController.filteredResults.length +
+                                    (mainController.isLoadingMore.value ? 1 : 0), // Add loading indicator
+                                itemBuilder: (context, index) {
+                                  if (index == mainController.filteredResults.length &&
+                                      mainController.isLoadingMore.value) {
+                                    return const Padding(
+                                      padding: EdgeInsets.all(20.0),
+                                      child: Center(
+                                        child: CircularProgressIndicator(),
+                                      ),
+                                    );
+                                  }
+
+                                  return Padding(
+                                    padding: const EdgeInsets.only(bottom: 6.0),
+                                    child: SizedBox(
+                                      height: 200,
+                                      child: GestureDetector(
+                                        child: ResultCard(
+                                          member: mainController.filteredResults[index],
+                                          newMemberFlag: mainController.checkIfNewMember(
+                                              mainController.filteredResults[index].joinDate),
+                                          isBirthdayToday: mainController.checkIfTodayIsBirthday(
+                                            mainController.filteredResults[index].birthdate ??
+                                                Timestamp.fromMicrosecondsSinceEpoch(0),
                                           ),
                                         ),
-                                ]),
+                                        onTap: () {
+                                          Get.to(
+                                                () => ProfilePage(mainController.filteredResults[index]),
+                                            transition: Transition.zoom,
+                                            duration: const Duration(seconds: 1),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            )
+                                : Padding(
+                              padding: const EdgeInsets.all(20.0),
+                              child: Column(
+                                children: [
+                                  const Text(
+                                    'No results found.',
+                                    style: TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 20.0),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        GestureDetector(
+                                          child: const Text(
+                                            'To continue please press the shuffle icon',
+                                            style: TextStyle(color: Colors.blue),
+                                          ),
+                                          onTap: ()  {
+                                            setState(() {
+                                              mainController.lastMember = 0 ;
+                                              mainController.allMembers.shuffle();
+                                              mainController.loadRandomResults(mainController.pageSize);
+                                            });
+                                          },
+                                        ),
+                                        IconButton(
+                                          color: Colors.blue,
+                                          onPressed: ()  {
+                                            setState(() {
+                                              mainController.lastMember = 0 ;
+                                              mainController.allMembers.shuffle();
+                                              mainController.loadRandomResults(mainController.pageSize);
+                                            });
+                                          },
+                                          icon: const Icon(Icons.shuffle),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text('or you can also use the filters below'),
+                                    ],
+                                  )
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     )
                   ],
                 ),
               ),
-            ))
-        : ResultsLoading());
+            ),
+          );
+        },
+      ),
+    )
+        : const ResultsLoading());
   }
 }

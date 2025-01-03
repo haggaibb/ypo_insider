@@ -31,8 +31,7 @@ class MembersController extends GetxController {
           currentTitle: 'NA',
           currentBusinessName: 'NA',
           mobileCountryCode: 'NA',
-          joinDate: 'NA')
-      .obs;
+          joinDate: 'NA').obs;
   Member noUser = Member(
       forum: 'NA',
       id: 'NA',
@@ -48,7 +47,6 @@ class MembersController extends GetxController {
       joinDate: 'NA');
   Rx<String> authErrMsg = ''.obs;
   Rx<String> loadingStatus = 'Loading....'.obs;
-
   /// storage for profile pics
   Reference storageRef = FirebaseStorage.instance.ref();
   late Reference tempProfilePicRef;
@@ -56,10 +54,8 @@ class MembersController extends GetxController {
   /// settings
   Rx<ThemeMode> themeMode = ThemeMode.system.obs;
   final box = GetStorage();
-
   /// AUTH
   final user = FirebaseAuth.instance.currentUser;
-
   ///
   late ProfileScore profileScore;
 
@@ -289,6 +285,7 @@ class MembersController extends GetxController {
     //db.collection("Members").doc(id).update({'settings.theme_mode': themeMode});
   }
 
+
   @override
   onInit() async {
     await loadProfileScoreData();
@@ -296,7 +293,6 @@ class MembersController extends GetxController {
     Get.changeTheme(
         box.read('themeMode') == 'dark' ? ThemeData.dark() : ThemeData.light());
 
-    /// print('init - Members Controller...');
     tempProfilePicRef = storageRef.child("");
     await loadAdmins();
     loading.value = false;

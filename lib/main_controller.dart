@@ -8,6 +8,8 @@ import 'ga.dart';
 import 'utils.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 
 class MainController extends GetxController {
@@ -21,6 +23,7 @@ class MainController extends GetxController {
   List<Map> filteredTagsList = [];
   RxList<String> tags = <String>[].obs;
   List<String> activeFilters = <String>[].obs;
+  List<Member> allMembers = [];
   RxList<Member> filteredResults = RxList<Member>();
   RxBool resultsLoading = true.obs;
   RxBool mainLoading = false.obs;
@@ -34,11 +37,35 @@ class MainController extends GetxController {
   late String version;
   late ProfileScore profileScore;
   bool isIOS = true;
-  /// todo adding paging
+  int lastMember = -1; // Track the last document fetched
   DocumentSnapshot? lastDocument; // Track the last document fetched
   final int pageSize = 20; // Number of documents to fetch per page
+  final ScrollController scrollController = ScrollController();
+  final isLoadingMore = false.obs;
 
+  Future<void> loadMoreResults() async {
+    if (isLoadingMore.value) return;
 
+    isLoadingMore.value = true;
+
+    try {
+      await loadRandomResults(20); // Load next batch of 20 results
+    } finally {
+      isLoadingMore.value = false;
+    }
+  }
+
+// Attach listener to ScrollController
+  void initScrollController() {
+    scrollController.addListener(() {
+      if (scrollController.position.pixels >=
+          scrollController.position.maxScrollExtent &&
+          !resultsLoading.value &&
+          !isLoadingMore.value && !tags.isNotEmpty) {
+        loadMoreResults();
+      }
+    });
+  }
 
   getSettings() async {
     final settingsRef = db.collection("Settings").doc('results_settings');
@@ -54,6 +81,27 @@ class MainController extends GetxController {
     }
   }
 
+  loadAllMembers() async {
+    final membersRef = db.collection("Members");
+    final QuerySnapshot membersSnapshot = await membersRef.get();
+    // Apply local filtering based on the 'filter_tags' field
+    List<Member> loadedAllMembers = membersSnapshot.docs.map((doc) {
+      var member = Member.fromDocumentSnapshot(doc);
+      member.newMemberThresholdInMonths = newMemberThreshold;
+      member.profileScore = profileScore;
+      return member;
+    }).toList();
+    loadedAllMembers.sort((b, a) => a.getProfileScore().compareTo(b.getProfileScore()));
+    int startIndex = loadedAllMembers.lastIndexWhere((element) => element.getProfileScore() > profileScore.topThreshold!);
+    int endIndex = loadedAllMembers.indexWhere((element) => element.getProfileScore() < profileScore.bottomThreshold!);
+    List<Member> birthdayProfiles = loadedAllMembers.sublist(0, startIndex + 1);
+    List<Member> topProfiles = loadedAllMembers.sublist(startIndex + 1, endIndex);
+    List<Member> remainingProfiles = loadedAllMembers.sublist(endIndex, loadedAllMembers.length);
+    topProfiles.shuffle();
+    allMembers =[];
+    allMembers.addAll(birthdayProfiles + topProfiles + remainingProfiles);
+  }
+
   fetchFilteredMembers(List<String> selectedFilters) async {
     resultsLoading.value = true;
     if (selectedFilters.isEmpty) {
@@ -61,45 +109,44 @@ class MainController extends GetxController {
       resultsLoading.value = false;
       return;
     }
-    List<QueryDocumentSnapshot> filteredMembers=[];
-    final membersRef = db.collection("Members");
-    final QuerySnapshot membersQuery = await membersRef.get();
-    // Apply local filtering based on the 'filter_tags' field
-    List<QueryDocumentSnapshot> allMembers = membersQuery.docs;
-    filteredMembers = allMembers.where((doc) {
-      List<dynamic> memberFilterTags=[];
-      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+    // Apply local filtering based on 'filter_tags'
+    List<Member> filteredMembers = allMembers.where((member) {
+      List<String> memberFilterTags = [];
       try {
-        if (data.containsKey('filter_tags') && doc.get('filter_tags') != null) {
-          memberFilterTags = List<dynamic>.from(doc.get('filter_tags'));
+        // Assuming 'filter_tags' exists in the Member object
+        if (member.filterTags != null) {
+          memberFilterTags = List<String>.from(member.filterTags!);
         }
+        // Add children tags for additional filtering
+        memberFilterTags.addAll(member.getChildrenTags());
       } catch (e) {
-        // Handle the case where 'filter_tags' doesn't exist
-        print("Document ${doc.id} does not contain 'filter_tags': $e");
+        print("Member ${member.id} does not contain 'filter_tags': $e");
       }
-      memberFilterTags.addAll(Member.fromDocumentSnapshot(doc).getChildrenTags());
-      //print(memberFilterTags);
-      // Check if any of the selectedFilters are in the document's filterTags
+      // Check if any of the selectedFilters match the member's tags
       return memberFilterTags.any((tag) => selectedFilters.contains(tag));
     }).toList();
+    // Apply AND logic if isAnd.value is true
     if (isAnd.value) {
-      filteredMembers = membersQuery.docs.where((doc) {
-        List<dynamic> memberFilterTags=[];
-        // Safely cast the 'filter_tags' array to List<String>
-        memberFilterTags = List<String>.from(doc['filter_tags'] as List<dynamic>);
-        memberFilterTags.addAll(Member.fromDocumentSnapshot(doc).getChildrenTags());
-        // Check if all the selectedTags are in filterTags
+      filteredMembers = allMembers.where((member) {
+        List<String> memberFilterTags = [];
+        try {
+          if (member.filterTags != null) {
+            memberFilterTags = List<String>.from(member.filterTags!);
+          }
+          memberFilterTags.addAll(member.getChildrenTags());
+        } catch (e) {
+          print("Member ${member.id} does not contain 'filter_tags': $e");
+        }
+        // Check if all selectedFilters are in the member's tags
         return selectedFilters.every((tag) => memberFilterTags.contains(tag));
       }).toList();
-    } else {
-      filteredMembers;
     }
-    filteredResults.value = [];
-    for (var member in filteredMembers) {
-      filteredResults.add(Member.fromDocumentSnapshot(member));
-    }
+    // Update the filtered results
+    filteredResults.value = filteredMembers;
     resultsLoading.value = false;
-    await AnalyticsEngine.logFilterTagsSearch(tags.toString());
+
+    // Log the filter tags search
+    await AnalyticsEngine.logFilterTagsSearch(selectedFilters.toString());
     update();
   }
 
@@ -150,66 +197,17 @@ class MainController extends GetxController {
       //('Today is the birthday!');
       return true;
     } else {
-      //print('Today is not the birthday.');
       return false;
     }
   }
 
   Future<void> loadRandomResults(int size) async {
-   // if (resultsLoading.value) return; // Prevent concurrent loads
-    resultsLoading.value = true;
-
-    try {
-      CollectionReference membersRef = db.collection('Members');
-
-      //Query query = membersRef.limit(pageSize);
-
-      Query query = membersRef.limit(numberOfMembers);
-
-
-      // If lastDocument is set, start fetching after the last document
-      if (lastDocument != null) {
-        query = query.startAfterDocument(lastDocument!);
-      }
-
-      QuerySnapshot membersSnapshot = await query.get();
-
-      // Update lastDocument for the next fetch
-      if (membersSnapshot.docs.isNotEmpty) {
-        lastDocument = membersSnapshot.docs.last;
-      }
-
-      // Process fetched documents
-      List<Member> newMembers = membersSnapshot.docs.map((doc) {
-        var member = Member.fromDocumentSnapshot(doc);
-        member.newMemberThresholdInMonths = newMemberThreshold;
-        member.profileScore = profileScore;
-        return member;
-      }).toList();
-
-      // Sort the new members and update the filteredResults list
-      newMembers.sort((b, a) => a.getProfileScore().compareTo(b.getProfileScore()));
-
-      int startIndex = newMembers.lastIndexWhere((element) => element.getProfileScore() > profileScore.topThreshold!);
-      int endIndex = newMembers.indexWhere((element) => element.getProfileScore() < profileScore.bottomThreshold!);
-
-      List<Member> birthdayProfiles = newMembers.sublist(0, startIndex + 1);
-      List<Member> topProfiles = newMembers.sublist(startIndex + 1, endIndex);
-      List<Member> remainingProfiles = newMembers.sublist(endIndex, newMembers.length);
-
-      topProfiles.shuffle();
-
-      // Append to filteredResults
-      filteredResults.addAll(birthdayProfiles + topProfiles + remainingProfiles);
-    } catch (e) {
-      print("Error loading results: $e");
-    } finally {
-      resultsLoading.value = false;
-    }
+    filteredResults.addAll(allMembers.sublist(lastMember+1,lastMember+size));
+    lastMember = lastMember+size;
+    resultsLoading.value = false;
   }
 
   loadTags() async {
-    /// print('load tags');
     ///load free text tags
     CollectionReference freeTextTagsRef = db.collection('FreeTextTags');
     QuerySnapshot freeTextTagsSnapshot = await freeTextTagsRef.get();
@@ -271,7 +269,6 @@ class MainController extends GetxController {
     }
     //filtersLoading.value=false;
     update();
-    /// print('tags loaded');
   }
 
   addNewResidence(String newResidence) async {
@@ -297,7 +294,6 @@ class MainController extends GetxController {
   addNewFreeTextField(Map<String,dynamic> freeTextData) async {
     CollectionReference freeTextTagsRef = db.collection('FreeTextTags');
     var res = await freeTextTagsRef.add(freeTextData);
-    print(res.id);
     await freeTextTagsRef.doc(res.id).update({'templateId' : res.id});
   }
 
@@ -412,7 +408,7 @@ class MainController extends GetxController {
           });
         }
       } catch (e) {
-        //print("Error: $e");
+        print("Error: $e");
       }
     }
     saving.value = true;
@@ -476,7 +472,7 @@ class MainController extends GetxController {
       }
       //print("All relevant members have been processed.");
     } catch (e) {
-      //print("Error: $e");
+      print("Error: $e");
     }
     saving.value = false;
   }
@@ -527,7 +523,9 @@ class MainController extends GetxController {
     await loadTags();
     updateSplashScreenText('Loading Random Results...');
     loadingStatus.value = 'Loading Registered Members...';
-    await loadRandomResults(numberOfMembers);
+    await loadAllMembers();
+    initScrollController();
+    await loadRandomResults(pageSize);
     if (user!=null) await logUserOpensApp(user!.displayName ?? 'NA');
     if (user!=null) await updateMemberWebDeviceInfo(user!.displayName ?? 'NA');
     mainLoading.value = false;
