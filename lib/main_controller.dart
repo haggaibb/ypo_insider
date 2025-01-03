@@ -215,7 +215,6 @@ class MainController extends GetxController {
     for (var tag in freeTextTagsDocList) {
       freeTextTagsList.add(tag.data() as Map<String, dynamic>);
     }
-
     ///load filtered tags
     CollectionReference filteredTagsRef = db.collection('FilterTags');
     QuerySnapshot filteredTagsSnapshot =
@@ -223,7 +222,6 @@ class MainController extends GetxController {
     List<QueryDocumentSnapshot> filteredTagsQuery = filteredTagsSnapshot.docs;
     for (var tag in filteredTagsQuery) {
       filteredTagsList.add(tag.data() as Map<String, dynamic>);
-
       /// build residence list for use in dropdown in profile
       var tempTag = tag.data() as Map<String, dynamic>;
       if (tempTag['key'] == 'residence') {
@@ -234,7 +232,6 @@ class MainController extends GetxController {
           residenceList.add(element);
         }
       }
-
       /// build forum list for use in dropdown in profile
       if (tempTag['key'] == 'forum') {
         List list = tempTag['tags_list'];
@@ -245,29 +242,34 @@ class MainController extends GetxController {
         }
       }
     }
-
+    ///
     /// App filter tags and free text
-    final membersRef = db.collection("Members");
-    final membersQuery = await membersRef.get();
-    final membersSnapshot = membersQuery.docs;
-    numberOfMembers = membersSnapshot.length;
-    for (var member in membersSnapshot) {
-      Map<String, dynamic>? data = member.data() as Map<String, dynamic>?;
+    for (Member member in allMembers) {
       suggestionsList.add(ResultRecord(
-          label: member['firstName'] + ' ' + member['lastName'],
+          label: '${member.firstName} ${member.lastName}',
           id: member.id));
-      var bizName;
-      if (data != null) {
-        bizName = data.containsKey('current_business_name')
-            ? data['current_business_name'] as String
-            : null;
-      }
-      (bizName != null && bizName != '')
-          ? suggestionsList.add(ResultRecord(label: bizName, id: member.id))
-          : null;
-      suggestionsList.sort((a, b) => a.label.compareTo(b.label));
+      suggestionsList.add(ResultRecord(label: member.currentBusinessName??'', id: member.id));
     }
-    //filtersLoading.value=false;
+    ///
+    // final membersRef = db.collection("Members");
+    // final membersQuery = await membersRef.get();
+    // final membersSnapshot = membersQuery.docs;
+    // for (var member in membersSnapshot) {
+    //   Map<String, dynamic>? data = member.data() as Map<String, dynamic>?;
+    //   suggestionsList.add(ResultRecord(
+    //       label: member['firstName'] + ' ' + member['lastName'],
+    //       id: member.id));
+    //   var bizName;
+    //   if (data != null) {
+    //     bizName = data.containsKey('current_business_name')
+    //         ? data['current_business_name'] as String
+    //         : null;
+    //   }
+    //   (bizName != null && bizName != '')
+    //       ? suggestionsList.add(ResultRecord(label: bizName, id: member.id))
+    //       : null;
+    //   suggestionsList.sort((a, b) => a.label.compareTo(b.label));
+    // }
     update();
   }
 
@@ -519,11 +521,11 @@ class MainController extends GetxController {
     /// loadTags() should be first, it also gets the number of members data
     updateSplashScreenText('Loading Filter Tags...');
     await getSettings();
+    loadingStatus.value = 'Loading Registered Members...';
+    await loadAllMembers();
     loadingStatus.value = 'Loading Tags';
     await loadTags();
     updateSplashScreenText('Loading Random Results...');
-    loadingStatus.value = 'Loading Registered Members...';
-    await loadAllMembers();
     initScrollController();
     await loadRandomResults(pageSize);
     if (user!=null) await logUserOpensApp(user!.displayName ?? 'NA');
