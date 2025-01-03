@@ -37,9 +37,6 @@ class _ResultsPageState extends State<ResultsPage> {
   @override
   void initState() {
     super.initState();
-    setState(() {
-      //mainController.resultsLoading.value=true;
-    });
   }
 
   @override
