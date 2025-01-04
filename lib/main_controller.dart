@@ -33,7 +33,7 @@ class MainController extends GetxController {
   int numberOfMembers = 1;
   int numberOfRandomMembers =10;
   int newMemberThreshold = 12;
-  final user = FirebaseAuth.instance.currentUser;
+  late User? user;
   late String version;
   late ProfileScore profileScore;
   bool isIOS = true;
@@ -135,6 +135,7 @@ class MainController extends GetxController {
     topProfiles.shuffle();
     allMembers =[];
     allMembers.addAll(birthdayProfiles + topProfiles + remainingProfiles);
+    user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       currentMember.value = allMembers.firstWhere((element) => element.uid == user!.uid);
     } else {
@@ -568,7 +569,7 @@ class MainController extends GetxController {
   @override
   onInit() async {
     super.onInit();
-    print('init - main Controller...');
+    //print('init - main Controller...');
     loadingStatus.value = 'Loading Insider Home';
     mainLoading.value = true;
     js.context.callMethod('hideSplashScreen');

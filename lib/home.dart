@@ -53,12 +53,8 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
-    //initSheetPos = mainController.isIOS?150.0:100;
-    //minSheetPos = mainController.isIOS?150.0:100;
-    //print('init home');
     updateSplashScreenText('Loading Insider Home...');
     membersController.loadingStatus.value = 'Loading Insider Home';
-    //if (membersController.currentMember.value.id == 'NA') mainController.setCurrentByUid(user);
     /// print('init home end');
   }
 
