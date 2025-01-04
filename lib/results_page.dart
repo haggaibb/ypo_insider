@@ -1,7 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'main_controller.dart';
-import 'members_controller.dart';
 import 'package:get/get.dart';
 import 'profile_page.dart';
 import 'widgets.dart';
@@ -20,7 +18,6 @@ class ResultsPage extends StatefulWidget {
 
 class _ResultsPageState extends State<ResultsPage> {
   final mainController = Get.put(MainController());
-  final membersController = Get.put(MembersController());
   List<String> activeSuggestionsList = [];
   bool memberSearchIsActive = true;
   bool companySearchIsActive = false;
@@ -80,7 +77,7 @@ class _ResultsPageState extends State<ResultsPage> {
                         );
                       },
                       onSelected: (result) async {
-                        Member member = await membersController.getMemberById(result.id);
+                        Member member = await mainController.getMemberById(result.id);
                         Get.to(
                               () => ProfilePage(member),
                           transition: Transition.zoom,

@@ -58,7 +58,7 @@ class _HomeState extends State<Home> {
     //print('init home');
     updateSplashScreenText('Loading Insider Home...');
     membersController.loadingStatus.value = 'Loading Insider Home';
-    if (membersController.currentMember.value.id == 'NA') membersController.setCurrentByUid(user);
+    //if (membersController.currentMember.value.id == 'NA') mainController.setCurrentByUid(user);
     /// print('init home end');
   }
 
@@ -72,7 +72,7 @@ class _HomeState extends State<Home> {
               onRefresh: _handleRefresh,
               child: Scaffold(
               appBar: AppBar(
-                leading: membersController.isAdmin.value?null:Padding(
+                leading: mainController.isAdmin.value?null:Padding(
                   padding: const EdgeInsets.all(3.0),
                   child: GestureDetector(
                       child: Image.network('assets/images/logo.png'),
@@ -89,7 +89,7 @@ class _HomeState extends State<Home> {
                     child: GestureDetector(
                       onTap: () {
                         Get.to(
-                              () => ProfilePage(membersController.currentMember.value)
+                              () => ProfilePage(mainController.currentMember.value)
                           , transition: Transition.rightToLeftWithFade, duration: Duration(milliseconds: 750)
                         );
                       },
@@ -97,7 +97,7 @@ class _HomeState extends State<Home> {
                         tag : 'profile_image',
                         child: ClipOval(
                           child: Image.network(
-                            membersController.currentMember.value.profileImage!,
+                            mainController.currentMember.value.profileImage!,
                             fit: BoxFit.cover,  // Ensure the image covers the entire area
                           ),
                         ),
@@ -116,7 +116,7 @@ class _HomeState extends State<Home> {
                 ),
               ),
               drawer: SizedBox(
-                height: membersController.isAdmin.value?700:460,
+                height: mainController.isAdmin.value?700:460,
                 child: Drawer(
                   shape: ContinuousRectangleBorder(
                       borderRadius: BorderRadius.circular(75),
@@ -141,7 +141,7 @@ class _HomeState extends State<Home> {
                           //color: Colors.blue.shade50,
                         ),
                         child: Obx(() => ProfileAppDrawer(
-                            membersController.currentMember.value)),
+                            mainController.currentMember.value)),
                       ),
                       ListTile(
                         leading: const Icon(
@@ -150,26 +150,26 @@ class _HomeState extends State<Home> {
                         title: const Text('My Profile'),
                         onTap: () {
                           Get.to(() => ProfilePage(
-                              membersController.currentMember.value),transition: Transition.zoom);
+                              mainController.currentMember.value),transition: Transition.zoom);
                         },
                       ),
-                      membersController.isAdmin.value?ExpansionTile(
+                      mainController.isAdmin.value?ExpansionTile(
                         //textColor: Colors.blue.shade900,
                         //iconColor: Colors.blue.shade900,
                         leading: const Icon(Icons.settings),
                         trailing:
-                        membersController.themeMode.value.name == 'dark'
+                        mainController.themeMode.value.name == 'dark'
                             ? const Icon(Icons.dark_mode)
                             : const Icon(Icons.light_mode),
                         title: const Text('Display Settings'),
                         children: <Widget>[
                           ChipsChoice<ThemeMode>.single(
                             //placeholderStyle: TextStyle(color: Colors.blue.shade900),
-                            value: membersController.themeMode.value,
+                            value: mainController.themeMode.value,
                             onChanged: (val) {
                               setState(() {
                                 membersController.saveThemeMode(val.name);
-                                membersController.themeMode.value = val;
+                                mainController.themeMode.value = val;
                                 /// print('change theme mode');
                                 Get.changeTheme(val.name == 'dark'
                                     ? ThemeData.dark()
@@ -191,7 +191,7 @@ class _HomeState extends State<Home> {
                       const Divider(),
                       /// About
                       /// Admin pages
-                      membersController.isAdmin.value?ListTile(
+                      mainController.isAdmin.value?ListTile(
                         leading: const Icon(
                           Icons.info_outline,
                         ),
@@ -201,7 +201,7 @@ class _HomeState extends State<Home> {
                         },
                       ):const SizedBox(),
                       /// new member
-                      membersController.isAdmin.value?ListTile(
+                      mainController.isAdmin.value?ListTile(
                         leading: const Icon(
                           Icons.person,
                         ),
@@ -212,7 +212,7 @@ class _HomeState extends State<Home> {
                         },
                       ):const SizedBox(),
                       /// new residence
-                      membersController.isAdmin.value?ListTile(
+                      mainController.isAdmin.value?ListTile(
                         leading: const Icon(
                           Icons.house_outlined,
                         ),
@@ -223,7 +223,7 @@ class _HomeState extends State<Home> {
                         },
                       ):const SizedBox(),
                       /// new forum
-                      membersController.isAdmin.value?ListTile(
+                      mainController.isAdmin.value?ListTile(
                         leading: const Icon(
                           Icons.group_add,
                         ),
@@ -234,7 +234,7 @@ class _HomeState extends State<Home> {
                         },
                       ):const SizedBox(),
                       /// add Filter Tags
-                      membersController.isAdmin.value?ListTile(
+                      mainController.isAdmin.value?ListTile(
                         leading: const Icon(
                           Icons.filter_list_outlined,
                         ),
@@ -245,7 +245,7 @@ class _HomeState extends State<Home> {
                         },
                       ):const SizedBox(),
                       /// add free text
-                      membersController.isAdmin.value?ListTile(
+                      mainController.isAdmin.value?ListTile(
                         leading: const Icon(
                           Icons.text_fields,
                         ),
@@ -256,7 +256,7 @@ class _HomeState extends State<Home> {
                         },
                       ):SizedBox(),
                       /// Settings
-                      membersController.isAdmin.value?ListTile(
+                      mainController.isAdmin.value?ListTile(
                         leading: const Icon(
                           Icons.settings,
                         ),

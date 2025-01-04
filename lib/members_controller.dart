@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart'
@@ -12,66 +11,16 @@ import './ga.dart';
 
 class MembersController extends GetxController {
   var db = FirebaseFirestore.instance;
-  List<String> admins = [];
   RxBool loading = true.obs;
   RxBool saving = false.obs;
-  RxBool isAdmin = false.obs;
   RxBool loadingProfileImage = false.obs;
-  RxList<Member> allMembers = RxList<Member>();
-  RxString currentUserUid = ''.obs;
-  Rx<Member> currentMember = Member(
-          forum: 'NA',
-          id: 'NA',
-          firstName: 'NAA',
-          lastName: 'NA',
-          residence: 'NA',
-          mobile: 'NA',
-          email: 'NA',
-          birthdate: Timestamp.now(),
-          currentTitle: 'NA',
-          currentBusinessName: 'NA',
-          mobileCountryCode: 'NA',
-          joinDate: 'NA').obs;
-  Member noUser = Member(
-      forum: 'NA',
-      id: 'NA',
-      firstName: 'NA',
-      lastName: 'NA',
-      residence: 'NA',
-      mobile: 'NA',
-      email: 'NA',
-      birthdate: Timestamp.now(),
-      currentTitle: 'NA',
-      currentBusinessName: 'NA',
-      mobileCountryCode: 'NA',
-      joinDate: 'NA');
   Rx<String> authErrMsg = ''.obs;
   Rx<String> loadingStatus = 'Loading....'.obs;
   /// storage for profile pics
   Reference storageRef = FirebaseStorage.instance.ref();
   late Reference tempProfilePicRef;
-  //final box = GetStorage();
-  /// settings
-  Rx<ThemeMode> themeMode = ThemeMode.system.obs;
-  final box = GetStorage();
   /// AUTH
   final user = FirebaseAuth.instance.currentUser;
-  ///
-  late ProfileScore profileScore;
-
-  setCurrentByUid(User? user) async {
-    if (user != null) currentMember.value = await getMemberByUid(user.uid);
-    bool res = ((admins.firstWhere(
-            (element) => element == currentMember.value.id,
-            orElse: () => '') !=
-        ''));
-
-    /// print('Member is $res for AdminUx');
-    isAdmin.value = res;
-    themeMode.value = currentMember.value.settings?['theme_mode'] == 'light'
-        ? ThemeMode.light
-        : ThemeMode.dark;
-  }
 
   validateMemberEmail(String email) async {
     CollectionReference membersRef = db.collection('Members');
@@ -79,7 +28,6 @@ class MembersController extends GetxController {
         await membersRef.where('email', isEqualTo: email).get();
     return (memberSnapshot.docs.isNotEmpty);
   }
-
   onRegister(User user) async {
     /// print('Registration');
     /// print('for User ${user.email} uid is ${user.uid}');
@@ -94,21 +42,19 @@ class MembersController extends GetxController {
       'onBoarding.verified': false,
       'onBoarding.boarded': false,
     });
-    DocumentSnapshot refreshedMember = await membersRef.doc(memberId).get();
-    currentMember.value = Member.fromDocumentSnapshot(refreshedMember);
-    await AnalyticsEngine.logMemberRegistered(currentMember.value.fullName());
-    print('Registration done - member is ${currentMember.value.fullName()}');
+    // DocumentSnapshot refreshedMember = await membersRef.doc(memberId).get();
+    // currentMember.value = Member.fromDocumentSnapshot(refreshedMember);
+    await AnalyticsEngine.logMemberRegistered(user.uid);
+    print('Registration done - member is ${user.uid}');
     return (memberSnapshot.docs.isNotEmpty);
   }
-
   onVerify(User user) async {
     /// print('user has just verified his email');
     /// print('update his profile');
     CollectionReference membersRef = db.collection('Members');
-    var memberId = currentMember.value.id;
-    await membersRef.doc(memberId).update({'onBoarding.verified': true});
+    //var memberId = currentMember.value.id;
+    //await membersRef.doc(memberId).update({'onBoarding.verified': true});
   }
-
   onBoardingFinished(User user) async {
     //loadingStatus.value = 'Finished onBoarding.';
     //loading.value = true;
@@ -118,17 +64,15 @@ class MembersController extends GetxController {
     ///   'update full name to Auth User, this must be done as it acts as a flag for onboarding');
     //loadingStatus.value = 'Updating authentication profile...';
     //print(currentMember.value.fullName());
-    await FirebaseAuth.instance.currentUser!
-        .updateDisplayName(currentMember.value.fullName());
-    var memberId = currentMember.value.id;
-    CollectionReference membersRef = db.collection('Members');
-    await membersRef.doc(memberId).update({'onBoarding.boarded': true});
-    currentMember.value.onBoarding!['boarded'] = true;
-    await AnalyticsEngine.logOnBoarding(
-        currentMember.value.fullName(), 'finished');
-    //loading.value = false;
+    // await FirebaseAuth.instance.currentUser!.updateDisplayName(currentMember.value.fullName());
+    // var memberId = currentMember.value.id;
+    // CollectionReference membersRef = db.collection('Members');
+    // await membersRef.doc(memberId).update({'onBoarding.boarded': true});
+    // currentMember.value.onBoarding!['boarded'] = true;
+    // await AnalyticsEngine.logOnBoarding(
+    //     currentMember.value.fullName(), 'finished');
+    // //loading.value = false;
   }
-
   addNewMember(
       String firstName,
       String lastName,
@@ -165,62 +109,11 @@ class MembersController extends GetxController {
     });
     await membersRef.doc(newMemberRef.id).update({'id' : newMemberRef.id});
   }
-
-
-  getMemberById(String id) async {
-    CollectionReference membersRef = db.collection('Members');
-    DocumentSnapshot res = await membersRef.doc(id).get();
-    if (res.exists) {
-      Member member = Member.fromDocumentSnapshot(res);
-      member.profileScore = profileScore;
-      return member;
-    } else {
-      /// print('get by id - no user found');
-      noUser;
-    }
-    // Member foundMember = allMembers.firstWhere((element) => element.id == id,
-    //     orElse: () => noUser);
-    // return foundMember;
-  }
-
-  getMemberByUid(String uid) async {
-    CollectionReference membersRef = db.collection('Members');
-    QuerySnapshot res = await membersRef.where("uid", isEqualTo: uid).get();
-    if (res.docs.isNotEmpty) {
-      Member member =
-          Member.fromJson(res.docs.first.data() as Map<String, dynamic>);
-      member.profileScore = profileScore;
-      return member;
-    } else {
-      return noUser;
-    }
-  }
-
-  setCurrentByMember(Member member) async {
-    currentMember.value = member;
-    var memberId = currentMember.value.id;
-
-    /// check for mail verification
-    /// print('verification check');
-    if (user!.emailVerified) {
-      await db
-          .collection('Members')
-          .doc(memberId)
-          .update({'onBoarding.verified': true});
-
-      /// print('update email verification for user ${member.fullName()} to ${user?.emailVerified}');
-    }
-    themeMode.value = currentMember.value.settings?['theme_mode'] == 'light'
-        ? ThemeMode.light
-        : ThemeMode.dark;
-  }
-
   logout() async {
     /// print('logout');
     await FirebaseAuth.instance.signOut();
     return;
   }
-
   Future<String> uploadProfileImage(XFile img, String id) async {
     loadingProfileImage.value = true;
     final fileBytes = await img.readAsBytes();
@@ -238,11 +131,9 @@ class MembersController extends GetxController {
     loadingProfileImage.value = false;
     return url;
   }
-
   deleteTempProfilePic(Reference ref) async {
     await ref.delete();
   }
-
   updateMemberInfo(Member member) async {
     saving.value = true;
     CollectionReference membersRef = db.collection('Members');
@@ -250,37 +141,6 @@ class MembersController extends GetxController {
     await AnalyticsEngine.logProfileEdit(member.fullName());
     saving.value = false;
   }
-
-  loadProfileScoreData() async {
-    /// load profile score data
-    final profileScoreRef = db.collection("Settings").doc('profile_score');
-    final DocumentSnapshot profileScoreQuery = await profileScoreRef.get();
-    if (profileScoreQuery.exists) {
-      profileScore = ProfileScore.fromDocumentSnapshot(profileScoreQuery);
-    }
-  }
-
-  loadAdmins() async {
-    DocumentReference settingsRef = db.collection('Settings').doc('system');
-    settingsRef.get().then(
-      (DocumentSnapshot doc) {
-        final data = doc.data() as Map<String, dynamic>;
-        admins =
-            data.containsKey('admins') ? List<String>.from(data["admins"]) : [];
-        bool res = ((admins.firstWhere(
-                (element) => element == currentMember.value.id,
-                orElse: () => '') !=
-            ''));
-
-        /// print('Member is $res for AdminUx');
-        isAdmin.value = res;
-      },
-      onError: (e) => {
-        // print("Error getting document: $e")
-      },
-    );
-  }
-
   saveThemeMode(themeMode) {
     //box.write('themeMode', themeMode);
     //var id = currentMember.value.id;
@@ -290,17 +150,10 @@ class MembersController extends GetxController {
 
   @override
   onInit() async {
-    await loadProfileScoreData();
     await GetStorage.init();
-    Get.changeTheme(
-        box.read('themeMode') == 'dark' ? ThemeData.dark() : ThemeData.light());
-
     tempProfilePicRef = storageRef.child("");
-    await loadAdmins();
     loading.value = false;
     super.onInit();
-    update();
-
     /// print('end - init Members Controller');
   }
 }

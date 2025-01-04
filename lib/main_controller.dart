@@ -42,7 +42,38 @@ class MainController extends GetxController {
   final int pageSize = 20; // Number of documents to fetch per page
   final ScrollController scrollController = ScrollController();
   final isLoadingMore = false.obs;
+  ///
+  Rx<Member> currentMember = Member(
+      forum: 'NA',
+      id: 'NA',
+      firstName: 'NAA',
+      lastName: 'NA',
+      residence: 'NA',
+      mobile: 'NA',
+      email: 'NA',
+      birthdate: Timestamp.now(),
+      currentTitle: 'NA',
+      currentBusinessName: 'NA',
+      mobileCountryCode: 'NA',
+      joinDate: 'NA').obs;
+  List<String> admins = [];
+  RxBool isAdmin = false.obs;
+  Rx<ThemeMode> themeMode = ThemeMode.system.obs;
+  Member noUser = Member(
+      forum: 'NA',
+      id: 'NA',
+      firstName: 'NA',
+      lastName: 'NA',
+      residence: 'NA',
+      mobile: 'NA',
+      email: 'NA',
+      birthdate: Timestamp.now(),
+      currentTitle: 'NA',
+      currentBusinessName: 'NA',
+      mobileCountryCode: 'NA',
+      joinDate: 'NA');
 
+  ///
   Future<void> loadMoreResults() async {
     if (isLoadingMore.value) return;
 
@@ -68,17 +99,21 @@ class MainController extends GetxController {
   }
 
   getSettings() async {
-    final settingsRef = db.collection("Settings").doc('results_settings');
-    final DocumentSnapshot membersQuery = await settingsRef.get();
-    var settingsData = membersQuery.data() as Map<String, dynamic>;
+    final settingsRef = db.collection("Settings");
+    final QuerySnapshot settingsQuery = await settingsRef.get();
+    /// load Results Settings
+    QueryDocumentSnapshot resultsSettingsSnapshot= settingsQuery.docs.firstWhere((element) => element.id == 'results_settings');
+    var settingsData = resultsSettingsSnapshot.data() as Map<String, dynamic>;
     numberOfRandomMembers = settingsData['number_of_random_members'];
     newMemberThreshold  = settingsData['new_member_threshold_in_months'];
     /// load profile score data
-    final profileScoreRef = db.collection("Settings").doc('profile_score');
-    final DocumentSnapshot profileScoreQuery = await profileScoreRef.get();
-    if (profileScoreQuery.exists) {
-      profileScore = ProfileScore.fromDocumentSnapshot(profileScoreQuery);
+    QueryDocumentSnapshot profileScoreSnapshot= settingsQuery.docs.firstWhere((element) => element.id == 'profile_score');
+    if (profileScoreSnapshot.exists) {
+      profileScore = ProfileScore.fromDocumentSnapshot(profileScoreSnapshot);
     }
+    QueryDocumentSnapshot adminsSnapshot= settingsQuery.docs.firstWhere((element) => element.id == 'system');
+    final data = adminsSnapshot.data() as Map<String, dynamic>;
+    admins = data.containsKey('admins') ? List<String>.from(data["admins"]) : [];
   }
 
   loadAllMembers() async {
@@ -100,6 +135,22 @@ class MainController extends GetxController {
     topProfiles.shuffle();
     allMembers =[];
     allMembers.addAll(birthdayProfiles + topProfiles + remainingProfiles);
+    if (user != null) {
+      currentMember.value = allMembers.firstWhere((element) => element.uid == user!.uid);
+    } else {
+      currentMember.value = noUser;
+    }
+    /// check if Admin
+    bool res = ((admins.firstWhere(
+              (element) => element == currentMember.value.id,
+              orElse: () => '') !=
+          ''));
+    /// print('Member is $res for AdminUx');
+    isAdmin.value = res;
+    themeMode.value = currentMember.value.settings?['theme_mode'] == 'light'
+          ? ThemeMode.light
+          : ThemeMode.dark;
+
   }
 
   fetchFilteredMembers(List<String> selectedFilters) async {
@@ -509,22 +560,26 @@ class MainController extends GetxController {
     await resultsSettingsRef.doc(memberId).set(deviceInfo);
     isIOS = await isDeviceIOS(deviceInfo['userAgent']);
   }
-
+  ///
+  getMemberById(String id) async {
+    return allMembers.firstWhere((element) => element.id== id, orElse: () => noUser);
+  }
+  ///
   @override
   onInit() async {
     super.onInit();
-    /// print('init - main Controller...');
+    print('init - main Controller...');
     loadingStatus.value = 'Loading Insider Home';
     mainLoading.value = true;
     js.context.callMethod('hideSplashScreen');
     version = await fetchVersionFromAssets();
     /// loadTags() should be first, it also gets the number of members data
-    updateSplashScreenText('Loading Filter Tags...');
+    updateSplashScreenText('Loading Settings...');
     await getSettings();
     loadingStatus.value = 'Loading Registered Members...';
     await loadAllMembers();
     loadingStatus.value = 'Loading Tags';
-    await loadTags();
+    loadTags();
     updateSplashScreenText('Loading Random Results...');
     initScrollController();
     await loadRandomResults(pageSize);

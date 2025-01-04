@@ -96,6 +96,7 @@ class _FiltersState extends State<Filters> {
                                         ),
                                           Obx( () {
                                             mainController.tags.isNotEmpty;
+                                            mainController.filteredTagsList.isNotEmpty;
                                             return mainController.getFilteredTagsFromCategory(filtersCategory[index]['key']).isNotEmpty
                                                 ?  ChipsChoice<String>.multiple(
                                           value: mainController.tags,

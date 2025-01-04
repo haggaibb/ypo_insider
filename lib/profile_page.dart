@@ -71,7 +71,7 @@ class _ProfilePageState extends State<ProfilePage> {
         memberController.deleteTempProfilePic(tempProfilePicRef);
       }
       tempProfileImageUrl =
-          memberController.currentMember.value.profileImage ?? '';
+          mainController.currentMember.value.profileImage ?? '';
 
       editModeOn = false;
     });
@@ -149,7 +149,7 @@ class _ProfilePageState extends State<ProfilePage> {
     tempProfilePicRef = storageRef.child("");
     tempProfileImageUrl =
         widget.member.profileImage ?? '/assets/images/profile0.jpg';
-    if (widget.member.email != memberController.currentMember.value.email) {
+    if (widget.member.email != mainController.currentMember.value.email) {
       mainController.logProfileView(widget.member.fullName());
     }
   }
@@ -206,7 +206,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   ? const ProfileImageLoading()
                                   : Hero(
                                     transitionOnUserGestures: true,
-                                    tag : (widget.member.id!=memberController.currentMember.value.id)?'profile_image${widget.member.id}':'profile_image',
+                                    tag : (widget.member.id!=mainController.currentMember.value.id)?'profile_image${widget.member.id}':'profile_image',
                                     child: GestureDetector(
                                       onTap: () async {
                                         if (editModeOn) {
@@ -348,7 +348,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                         ),
                         /// -- BUTTON EDIT and Logout-- Only when Member.
-                        memberController.currentMember.value.email ==
+                        mainController.currentMember.value.email ==
                                 widget.member.email
                             ? SizedBox(
                                 width: 200,
@@ -413,7 +413,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                           fontWeight: FontWeight.bold),
                                     ),
                                   )
-                                : memberController.currentMember.value.email ==
+                                : mainController.currentMember.value.email ==
                                         widget.member.email
                                     ? ElevatedButton(
                                         onPressed: () async {
@@ -436,7 +436,6 @@ class _ProfilePageState extends State<ProfilePage> {
                                       )),
                         /////////
                         const Divider(),
-
                         /// Social Bar
                         Padding(
                           padding: const EdgeInsets.all(12.0),
@@ -449,7 +448,6 @@ class _ProfilePageState extends State<ProfilePage> {
                                       instagram: widget.member.instagram,
                                       facebook: widget.member.facebook))),
                         ),
-
                         /// Residence
                         editModeOn
                             ? Padding(
