@@ -72,6 +72,7 @@ class MainController extends GetxController {
       currentBusinessName: 'NA',
       mobileCountryCode: 'NA',
       joinDate: 'NA');
+  final int maxSizeInBytes = 1 * 1024 * 1024; // 1 MB limit
 
   ///
   Future<void> loadMoreResults() async {

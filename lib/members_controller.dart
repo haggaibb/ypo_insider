@@ -120,7 +120,7 @@ class MembersController extends GetxController {
     final reference = FirebaseStorage.instance.ref();
     final now = DateTime.now();
     final imageRef = reference.child(
-        'profile_images/${img.name + now.millisecondsSinceEpoch.toString()}');
+        'profile_images/pp$id-${img.name}');
     final metadata = SettableMetadata(contentType: img.mimeType);
     final uploadTask = await imageRef.putData(fileBytes, metadata);
     String url = await uploadTask.ref.getDownloadURL();
