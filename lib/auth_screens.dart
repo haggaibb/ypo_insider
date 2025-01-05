@@ -197,6 +197,7 @@ class _EmailRegisterFormState extends State<EmailRegisterForm> {
 
   sendRegistration(BuildContext context) async {
     controller.loading.value = true;
+    emailCtrl.text = emailCtrl.text.toLowerCase();
     bool emailValidated = await validateMembersEmail(emailCtrl.text);
     if (emailValidated) {
       if ((passwordCtrl.text == passwordCtrl2.text) &&
