@@ -222,21 +222,42 @@ class _ProfilePageState extends State<ProfilePage> {
                                             final int fileSize = await profileImage!.length(); // Use XFile.length()
                                             if (fileSize > mainController.maxSizeInBytes) {
                                               // File exceeds the size limit
-                                              print('File exceeds the size limit: $fileSize bytes');
-                                            } else {
+                                              //print('File exceeds the size limit: $fileSize bytes');
+                                              showDialog<String>(
+                                                context: context,
+                                                builder: (BuildContext context) => Dialog(
+                                                  child: Column(
+                                                    mainAxisSize: MainAxisSize.min,
+                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                    children: <Widget>[
+                                                      Text('exceeds the limit(under ${mainController.maxSizeInBytes/1024/1024}MB)', style: TextStyle(fontWeight: FontWeight.bold),),
+                                                      const SizedBox(height: 15),
+                                                      TextButton(
+                                                        onPressed: () {
+                                                          Navigator.pop(context);
+                                                        },
+                                                        child: const Text('Close'),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              );
+                                              memberController.loadingProfileImage.value = false;
+                                            }
+                                            else {
                                               // File is within the size limit
-                                              print('File is within the size limit: $fileSize bytes');
+                                              String url = await memberController
+                                                  .uploadProfileImage(
+                                                  profileImage!, widget.member.id);
+                                              setState(() {
+                                                if (url != '') tempProfileImageUrl = url;
+                                                memberController
+                                                    .loadingProfileImage.value = false;
+                                              });
+                                              //print('File is within the size limit: $fileSize bytes');
                                               // Continue with your upload logic
                                             }
                                           }
-                                          String url = await memberController.uploadProfileImage(profileImage!, widget.member.id);
-                                          setState(() {
-                                            if (url != '') tempProfileImageUrl = url;
-                                            /// print('new tempprofile:');
-                                            /// print(tempProfileImageUrl);
-                                            memberController
-                                                .loadingProfileImage.value = false;
-                                          });
                                         } else {
                                           showZoomableImageDialog(context, widget.member.profileImage ?? 'https://firebasestorage.googleapis.com/v0/b/ypodex.appspot.com/o/profile_images%2Fprofile0.jpg?alt=media');
                                         }
@@ -280,7 +301,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                               mainAxisSize: MainAxisSize.min,
                                               mainAxisAlignment: MainAxisAlignment.center,
                                               children: <Widget>[
-                                                const Text('exceeds the limit(under 1 Mega)', style: TextStyle(fontWeight: FontWeight.bold),),
+                                                Text('exceeds the limit(under ${mainController.maxSizeInBytes/1024/1024}MB)', style: TextStyle(fontWeight: FontWeight.bold),),
                                                 const SizedBox(height: 15),
                                                 TextButton(
                                                   onPressed: () {
@@ -293,7 +314,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                           ),
                                         );
                                         memberController.loadingProfileImage.value = false;
-                                      } else {
+                                      }
+                                      else {
                                         // File is within the size limit
                                         String url = await memberController
                                             .uploadProfileImage(

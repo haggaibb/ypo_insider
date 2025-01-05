@@ -72,7 +72,9 @@ class MainController extends GetxController {
       currentBusinessName: 'NA',
       mobileCountryCode: 'NA',
       joinDate: 'NA');
-  final int maxSizeInBytes = 3 * 1024 * 1024; // 3 MB limit
+  int maxSizeInMB = 3; // 3 MB limit
+  int maxSizeInBytes = 3 * 1024 * 1024; // 3 MB limit
+
 
   ///
   Future<void> loadMoreResults() async {
@@ -112,9 +114,11 @@ class MainController extends GetxController {
     if (profileScoreSnapshot.exists) {
       profileScore = ProfileScore.fromDocumentSnapshot(profileScoreSnapshot);
     }
-    QueryDocumentSnapshot adminsSnapshot= settingsQuery.docs.firstWhere((element) => element.id == 'system');
-    final data = adminsSnapshot.data() as Map<String, dynamic>;
-    admins = data.containsKey('admins') ? List<String>.from(data["admins"]) : [];
+    QueryDocumentSnapshot systemSnapshot = settingsQuery.docs.firstWhere((element) => element.id == 'system');
+    final systemData = systemSnapshot.data() as Map<String, dynamic>;
+    admins = systemData.containsKey('admins') ? List<String>.from(systemData["admins"]) : [];
+    maxSizeInMB = systemData.containsKey('img_max_size') ? systemData["img_max_size"]:3;
+    maxSizeInBytes = maxSizeInMB * 1024 * 1024;
   }
 
   loadAllMembers() async {
