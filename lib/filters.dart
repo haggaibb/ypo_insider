@@ -75,7 +75,9 @@ class _FiltersState extends State<Filters> {
                         },
                       ),
                     ),
-                    Expanded(
+                    Obx(() => mainController.filtersLoading.value
+                        ?LinearProgressIndicator()
+                        :Expanded(
                       flex: 1,
                       child: Padding(
                         padding: const EdgeInsets.only(bottom: 8.0),
@@ -94,30 +96,30 @@ class _FiltersState extends State<Filters> {
                                           title:  Text(filtersCategory[index]['label'] ,style: Theme.of(context).textTheme.titleLarge),
                                           subtitle: Text((filtersCategory[index]['label']=='Forum' || filtersCategory[index]['label'] == 'Residence')?'Please select one option from the list below':'Please select all relevant' ),
                                         ),
-                                          Obx( () {
-                                            mainController.tags.isNotEmpty;
-                                            mainController.filteredTagsList.isNotEmpty;
-                                            return mainController.getFilteredTagsFromCategory(filtersCategory[index]['key']).isNotEmpty
-                                                ?  ChipsChoice<String>.multiple(
-                                          value: mainController.tags,
-                                          onChanged: (val) {
-                                            mainController.resultsLoading.value = true;
-                                            mainController.tags.value=val;
-                                            mainController.fetchFilteredMembers(val);
-                                            mainController.resultsLoading.value = false;
-                                          },
-                                          choiceItems: C2Choice.listFrom<String, String>(
-                                            source: mainController.getFilteredTagsFromCategory(filtersCategory[index]['key']),
-                                            value: (i, v) => v,
-                                            label: (i, v) => v,
-                                            tooltip: (i, v) => v,
-                                          ),
-                                          choiceCheckmark: true,
-                                          textDirection: TextDirection.ltr,
-                                          wrapped: true,
-                                        )
-                                                : const SizedBox.shrink();
-                                          }),
+                                        Obx( () {
+                                          mainController.tags.isNotEmpty;
+                                          mainController.filteredTagsList.isNotEmpty;
+                                          return mainController.getFilteredTagsFromCategory(filtersCategory[index]['key']).isNotEmpty
+                                              ?  ChipsChoice<String>.multiple(
+                                            value: mainController.tags,
+                                            onChanged: (val) {
+                                              mainController.resultsLoading.value = true;
+                                              mainController.tags.value=val;
+                                              mainController.fetchFilteredMembers(val);
+                                              mainController.resultsLoading.value = false;
+                                            },
+                                            choiceItems: C2Choice.listFrom<String, String>(
+                                              source: mainController.getFilteredTagsFromCategory(filtersCategory[index]['key']),
+                                              value: (i, v) => v,
+                                              label: (i, v) => v,
+                                              tooltip: (i, v) => v,
+                                            ),
+                                            choiceCheckmark: true,
+                                            textDirection: TextDirection.ltr,
+                                            wrapped: true,
+                                          )
+                                              : const SizedBox.shrink();
+                                        }),
                                       ],
                                     ),
                                   ),
@@ -125,7 +127,7 @@ class _FiltersState extends State<Filters> {
                               )),
                         ),
                       ),
-                    ),
+                    )),
                     const SizedBox(height: 50,)
                   ]),
             ),

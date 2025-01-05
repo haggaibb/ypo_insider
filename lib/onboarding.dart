@@ -55,7 +55,6 @@ class OnBoardingPageState extends State<OnBoardingPage> {
   Future<void> _onIntroEnd(context) async  {
     await membersController.onBoardingFinished(user!);
     //Get.replace(Home(user: user,));
-    //runApp(Home(user: user,));
   }
   Widget _buildFullscreenImage() {
     return Image.asset(

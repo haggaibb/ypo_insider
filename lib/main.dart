@@ -133,8 +133,10 @@ class _FrontGateState extends State<FrontGate> {
            } else if (state is SigningUp) {
              return MainLoading();
            } else if (state is SignedIn) {
-             //print('signed in');
+             print('builder signed in');
              User user = authController.auth.currentUser!;
+             /// displayName acts as flag for onBoarding
+             print(user.displayName);
              if (user.displayName!=null) {
                try {
                  AnalyticsEngine.userLogsIn('firebase_auth',user.displayName!);
@@ -145,7 +147,8 @@ class _FrontGateState extends State<FrontGate> {
                }
                 // print('has ObBoarded go to Home...');
                //Get.toNamed('/home');
-             } else {
+             }
+             else {
                ///print('first time, go to onBoarding');
                AnalyticsEngine.logOnBoarding(user.email!,'start');
                Get.toNamed("/onboarding");
@@ -153,8 +156,7 @@ class _FrontGateState extends State<FrontGate> {
              }
              //Get.offAllNamed('/home');
            } else if (state is AuthFailed) {
-             /// print(state.exception);
-             /// add errmsg to signin, add a err parm
+             /// add err msg to signing, add a err param
              return EmailSignInForm(authController:  authController, errMsg: state.exception.toString());
              //return ErrorText(exception: state.exception);
            }

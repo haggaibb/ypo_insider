@@ -45,7 +45,8 @@ class MembersController extends GetxController {
     // DocumentSnapshot refreshedMember = await membersRef.doc(memberId).get();
     // currentMember.value = Member.fromDocumentSnapshot(refreshedMember);
     await AnalyticsEngine.logMemberRegistered(user.uid);
-    print('Registration done - member is ${user.uid}');
+    //print('Registration done - member is ${user.uid}');
+    FirebaseAuth.instance.currentUser?.sendEmailVerification();
     return (memberSnapshot.docs.isNotEmpty);
   }
   onVerify(User user) async {
@@ -56,22 +57,28 @@ class MembersController extends GetxController {
     //await membersRef.doc(memberId).update({'onBoarding.verified': true});
   }
   onBoardingFinished(User user) async {
-    //loadingStatus.value = 'Finished onBoarding.';
-    //loading.value = true;
-    print('finished onboarding');
-
-    /// print(
+    //print('finished onboarding');
     ///   'update full name to Auth User, this must be done as it acts as a flag for onboarding');
-    //loadingStatus.value = 'Updating authentication profile...';
-    //print(currentMember.value.fullName());
-    // await FirebaseAuth.instance.currentUser!.updateDisplayName(currentMember.value.fullName());
-    // var memberId = currentMember.value.id;
-    // CollectionReference membersRef = db.collection('Members');
-    // await membersRef.doc(memberId).update({'onBoarding.boarded': true});
-    // currentMember.value.onBoarding!['boarded'] = true;
-    // await AnalyticsEngine.logOnBoarding(
-    //     currentMember.value.fullName(), 'finished');
-    // //loading.value = false;
+    try {
+      // Reference to the Members collection
+      CollectionReference membersRef = FirebaseFirestore.instance.collection('Members');
+      // Query for the document where uid equals the provided ID
+      QuerySnapshot querySnapshot = await membersRef.where('uid', isEqualTo: user.uid).get();
+      // Check if any documents are returned
+      if (querySnapshot.docs.isNotEmpty) {
+        // Return the first document (assuming uid is unique)
+        QueryDocumentSnapshot doc = querySnapshot.docs.first;
+        if (doc.data() != null && doc.data() is Map<String, dynamic>) {
+          Map<String, dynamic> docData = doc.data() as Map<String, dynamic>;
+          await FirebaseAuth.instance.currentUser!.updateDisplayName(docData['firstName']??'' +' ' + docData['lasName']??'');
+          await membersRef.doc(doc.id).update({'onBoarding.boarded': true});
+        }
+      } else {
+        print('No member found with uid: ${user.uid}');
+      }
+    } catch (e) {
+      print('Error fetching member: $e');
+    }
   }
   addNewMember(
       String firstName,
@@ -146,7 +153,6 @@ class MembersController extends GetxController {
     //var id = currentMember.value.id;
     //db.collection("Members").doc(id).update({'settings.theme_mode': themeMode});
   }
-
 
   @override
   onInit() async {

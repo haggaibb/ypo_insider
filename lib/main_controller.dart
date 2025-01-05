@@ -27,6 +27,7 @@ class MainController extends GetxController {
   RxList<Member> filteredResults = RxList<Member>();
   RxBool resultsLoading = true.obs;
   RxBool mainLoading = false.obs;
+  RxBool filtersLoading = false.obs;
   Rx<String> loadingStatus = 'Loading....'.obs;
   RxBool isAnd = true.obs;
   RxBool saving = false.obs;
@@ -265,6 +266,7 @@ class MainController extends GetxController {
   }
 
   loadTags() async {
+    filtersLoading.value = true;
     ///load free text tags
     CollectionReference freeTextTagsRef = db.collection('FreeTextTags');
     QuerySnapshot freeTextTagsSnapshot = await freeTextTagsRef.get();
@@ -300,7 +302,7 @@ class MainController extends GetxController {
       }
     }
     ///
-    /// App filter tags and free text
+    /// build lists for typehahead
     for (Member member in allMembers) {
       suggestionsList.add(ResultRecord(
           label: '${member.firstName} ${member.lastName}',
@@ -327,6 +329,7 @@ class MainController extends GetxController {
     //       : null;
     //   suggestionsList.sort((a, b) => a.label.compareTo(b.label));
     // }
+    filtersLoading.value=false;
     update();
   }
 
@@ -560,17 +563,27 @@ class MainController extends GetxController {
     saving.value = false;
   }
 
+  updateMaxFileSizePageSettings({maxFileSize}) async {
+    saving.value = true;
+    DocumentReference maxFileSizeSettingsRef = db.collection('Settings').doc('system');
+    await maxFileSizeSettingsRef.update({
+      'img_max_size' : int.parse(maxFileSize)
+    });
+    saving.value = false;
+  }
+
   updateMemberWebDeviceInfo(String memberId) async {
     CollectionReference resultsSettingsRef = db.collection('MembersDeviceLogs');
     Map<String,dynamic> deviceInfo = await getWebDeviceInfo();
     await resultsSettingsRef.doc(memberId).set(deviceInfo);
     isIOS = await isDeviceIOS(deviceInfo['userAgent']);
   }
-  ///
+
   getMemberById(String id) async {
     return allMembers.firstWhere((element) => element.id== id, orElse: () => noUser);
   }
-  ///
+
+
   @override
   onInit() async {
     super.onInit();

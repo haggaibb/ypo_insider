@@ -950,8 +950,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
   TextEditingController topThresholdCtrl = TextEditingController();
   TextEditingController bottomThresholdCtrl = TextEditingController();
 
+  TextEditingController profilePictureMaxSizeInMBCtrl = TextEditingController();
+
+
   bool profileScoreEditModeOn = false;
   bool resultsPageEditModeOn = false;
+  bool maxFileSizeEditModeOn = false;
+
 
   @override
   void initState() {
@@ -964,7 +969,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     profileImageScoreCtrl.text = mainController.profileScore.profileImageScore.toString();
     topThresholdCtrl.text =  mainController.profileScore.topThreshold.toString();
     bottomThresholdCtrl.text = mainController.profileScore.bottomThreshold.toString();
-    print( bottomThresholdCtrl.text);
+    profilePictureMaxSizeInMBCtrl.text = mainController.maxSizeInMB.toString();
   }
   @override
   Widget build(BuildContext context) {
@@ -1332,6 +1337,108 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   child: const Text('Edit')),
                                 ),
                             mainController.saving.value && resultsPageEditModeOn
+                                ?SizedBox(width: 200, child: LinearProgressIndicator(color: Colors.blue.shade900))
+                                : SizedBox.shrink()
+
+                            /// Save and Cancel
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  /// Max profile pic file size
+                  Padding(
+                    padding:  const EdgeInsets.only(left: 30, right:30, top: 20, bottom: 20),
+                    child: Center(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.blueGrey.shade100, // Background color
+                          // border: Border.all(color: Colors.red, width: 1), // Border
+                          borderRadius: BorderRadius.circular(50), // Rounded corners
+                        ),
+                        width: 500,
+                        child: Column(
+                          children: [
+                            const Padding(
+                              padding: EdgeInsets.only(top: 20, bottom: 10),
+                              child: Text(
+                                'Profile Picture File Size',
+                                style: TextStyle(fontSize: 24),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 18.0, top: 20),
+                              child: Row(
+                                children: [
+                                  const Text('Max size of image in MB:',
+                                      style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 12.0),
+                                    child: SizedBox(
+                                        width: 50,
+                                        height: 50,
+                                        child: TextField(
+                                          enabled: maxFileSizeEditModeOn?true:false,
+                                          controller: profilePictureMaxSizeInMBCtrl,
+                                        )),
+                                  )
+                                ],
+                              ),
+                            ),
+                            /// actions
+                            maxFileSizeEditModeOn
+                                ? Padding(
+                              padding:
+                              const EdgeInsets.only(left: 18.0, top: 50, bottom: 50),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  ElevatedButton(
+                                      onPressed: () async {
+                                        /// print('save data');
+                                        setState(() {
+                                          mainController.saving.value = true;
+                                        });
+                                        await mainController.updateMaxFileSizePageSettings(
+                                            maxFileSize : profilePictureMaxSizeInMBCtrl.text,
+                                        );
+                                        setState(() {
+                                          mainController.saving.value = false;
+                                         maxFileSizeEditModeOn = false;
+                                        });
+                                        const snackBar = SnackBar(
+                                          content: Text(
+                                            'Settings Saved!',
+                                            style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        );
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(snackBar);
+                                      },
+                                      child: const Text('Save')),
+                                  ElevatedButton(
+                                      onPressed: () {
+                                        setState(() {maxFileSizeEditModeOn = false;
+                                        });
+                                      },
+                                      child: const Text('Cancel')),
+                                ],
+                              ),
+                            )
+                                : Padding(
+                              padding: const EdgeInsets.only(left: 18.0, top: 50, bottom: 50),
+                              child: ElevatedButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      maxFileSizeEditModeOn = true;
+                                    });
+                                  },
+                                  child: const Text('Edit')),
+                            ),
+                            mainController.saving.value && maxFileSizeEditModeOn
                                 ?SizedBox(width: 200, child: LinearProgressIndicator(color: Colors.blue.shade900))
                                 : SizedBox.shrink()
 
