@@ -14,6 +14,8 @@ import 'package:chips_choice/chips_choice.dart';
 //import 'theme.dart';
 import 'admin_pages.dart';
 import 'utils.dart';
+import 'reports.dart';
+
 
 
 class Home extends StatefulWidget {
@@ -259,6 +261,16 @@ class _HomeState extends State<Home> {
                         title: const Text('General Settings'),
                         onTap: () {
                           Get.to(() => SettingsScreen());
+                        },
+                      ):const SizedBox(),
+                      /// Reports
+                      mainController.isAdmin.value?ListTile(
+                        leading: const Icon(
+                          Icons.list_alt_outlined,
+                        ),
+                        title: const Text('Reports'),
+                        onTap: () {
+                          Get.to(() => Reports());
                         },
                       ):const SizedBox(),
                     ],

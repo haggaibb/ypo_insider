@@ -10,6 +10,9 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:csv/csv.dart';
+import 'dart:typed_data';
+import 'package:file_saver/file_saver.dart';
 
 
 class MainController extends GetxController {
@@ -24,6 +27,7 @@ class MainController extends GetxController {
   RxList<String> tags = <String>[].obs;
   List<String> activeFilters = <String>[].obs;
   List<Member> allMembers = [];
+  List<Member> registeredMembers = [];
   RxList<Member> filteredResults = RxList<Member>();
   RxBool resultsLoading = true.obs;
   RxBool mainLoading = false.obs;
@@ -581,6 +585,39 @@ class MainController extends GetxController {
 
   getMemberById(String id) async {
     return allMembers.firstWhere((element) => element.id== id, orElse: () => noUser);
+  }
+
+  List<Member> getRegisteredMembers() {
+    registeredMembers = allMembers.where((Member member) => member.uid!=null &&  member.uid!='').toList();
+    registeredMembers.sort((b, a) => a.getNetProfileScore(). compareTo(b.getNetProfileScore()));
+    return registeredMembers;
+  }
+
+  saveRegisteredMembersCSV(List<Member> list) async {
+    List<List<dynamic>> rows = [];
+    rows.add(['First Name', 'LastName','Profile Score']);
+    for (var member in list) {
+      rows.add([
+        member.firstName,
+        member.lastName,
+        member.getNetProfileScore()
+      ]);
+    }
+    // Convert your CSV string to a Uint8List for downloading.
+    String csv = const ListToCsvConverter().convert(rows);
+    //Uint8List bytes = Uint8List.fromList(utf8.encode(csv));
+    List<int> intBytes = List.from(utf8.encode(csv));
+    intBytes.insert(0, 0xBF );
+    intBytes.insert(0, 0xBB );
+    intBytes.insert(0, 0xEF );
+    // This will download the file on the device.
+    Uint8List bytes = Uint8List.fromList(intBytes);
+    await FileSaver.instance.saveFile(
+      name: 'Registered Members [${DateTime.now().toIso8601String()}]', // you can give the CSV file name here.
+      bytes: bytes,
+      ext: 'csv',
+      mimeType: MimeType.csv,
+    );
   }
 
 
