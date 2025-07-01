@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ypo_connect/main_controller.dart';
-import 'package:ypo_connect/widgets.dart';
 import 'models.dart';
 
 
@@ -219,4 +218,7 @@ class BoardedRegisteredMembers extends StatelessWidget {
     );
   }
 }
+
+///
+///
 
